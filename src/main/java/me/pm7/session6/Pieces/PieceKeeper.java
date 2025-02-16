@@ -27,8 +27,10 @@ public class PieceKeeper {
 
     private void loop() {
         for(Piece piece : Piece.getPieces()) {
-            if(piece.isRunning()) piece.moveDown();
-            piece.tickColor();
+            if(piece.isRunning()) {
+                piece.moveDown();
+                piece.tickColor();
+            }
         }
 
         // collision detection & piece ambient sound possibility
@@ -39,10 +41,15 @@ public class PieceKeeper {
             // Gather a list of pieces that might be near the player based on some loose criteria
             List<Piece> nearbyPieces = new ArrayList<>();
             for(Piece piece : Piece.getPieces()) {
-                if(piece.getY()-eyeLoc.getY()>soundDist||p.getEyeLocation().getY()-piece.getY()+piece.getSize()>soundDist) continue;
-                if(piece.getX()-loc.getX()>soundDist||loc.getX()-piece.getX()+(piece.getSize()*piece.getModelData().length)>soundDist) continue;
-                if(piece.getZ()-loc.getZ()>soundDist||loc.getZ()-piece.getZ()+(piece.getSize()*piece.getModelData().length)>soundDist) continue;
-                nearbyPieces.add(piece);
+//                if(piece.getY()-eyeLoc.getY()>soundDist||p.getEyeLocation().getY()-piece.getY()+piece.getSize()>soundDist) continue;
+//                if(piece.getX()-loc.getX()>soundDist||loc.getX()-piece.getX()+(piece.getSize()*piece.getModelData().length)>soundDist) continue;
+//                if(piece.getZ()-loc.getZ()>soundDist||loc.getZ()-piece.getZ()+(piece.getSize()*piece.getModelData().length)>soundDist) continue;
+//                nearbyPieces.add(piece);
+                double xDist = Math.abs(loc.getX()-piece.getCenterX()) - ((double) piece.getModelData().length/2 * piece.getSize());
+                double yDist = Math.abs(loc.getY()-piece.getCenterY()) - ((double) piece.getSize() /2);
+                double zDist = Math.abs(eyeLoc.getZ()-piece.getCenterZ()) - ((double) piece.getModelData().length/2 * piece.getSize());
+
+                if(xDist <= soundDist && zDist <= soundDist && yDist <= soundDist) nearbyPieces.add(piece);
             }
 
             for(Piece piece : nearbyPieces) {

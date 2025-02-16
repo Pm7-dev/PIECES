@@ -58,4 +58,5 @@ public class PieceColor {
         }
     }
     public Color getColor() {return currentColor;}
+    public boolean doesFading() {return doFading;}
 }

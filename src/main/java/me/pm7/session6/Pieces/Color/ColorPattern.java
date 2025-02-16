@@ -10,11 +10,13 @@ import java.util.List;
 public enum ColorPattern {
     RED(new PieceColor(false, 0, false, List.of(Color.RED))),
 
-    ELECTRIC_FLASH(new PieceColor(false, 1, false,
-            Arrays.asList(
-            Color.fromARGB(255, 249, 255, 66),
-            Color.fromARGB(255, 66, 113, 255)
-    ))),
+//    ELECTRIC_FLASH(new PieceColor(false, 2, false,
+//            Arrays.asList(
+//            Color.fromARGB(255, 249, 255, 66),
+//            Color.fromARGB(0, 0, 0, 0),
+//            Color.fromARGB(255, 66, 113, 255),
+//            Color.fromARGB(0, 0, 0, 0)
+//    ))),
 
     COTTON_CANDY(new PieceColor(true, 20, true,
             Arrays.asList(

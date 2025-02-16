@@ -82,11 +82,8 @@ public class Piece {
         new BukkitRunnable() {
             @Override
             public void run() {
-
-                tickColor();
-
                 if(spawnAnimationTicks > spawnTime) {
-                    //cancel();
+                    cancel();
                     return;
                 }
 
@@ -97,6 +94,7 @@ public class Piece {
                     face.setInterpolationDelay(0);
                     face.setTransformation(new Transformation(new Vector3f(-currentSize/2,-currentSize/2,currentSize/2),new AxisAngle4f(),new Vector3f(40*currentSize,2*currentSize,1),new AxisAngle4f()));
                 }
+
                 spawnAnimationTicks++;
             }
         }.runTaskTimer(plugin, 2L, 1L);
@@ -111,6 +109,15 @@ public class Piece {
                 faces.remove(uuid);
             }
             facesToRemove.clear();
+
+            // If the color isn't supposed to fade, don't let the client do smooth interpolation
+            if(!color.doesFading()) {
+                for(UUID uuid : faces) {
+                    TextDisplay e = (TextDisplay) Bukkit.getEntity(uuid);
+                    if(e == null) continue;
+                    e.setInterpolationDuration(0);
+                }
+            }
 
             //TODO: sounds
 
@@ -167,7 +174,10 @@ public class Piece {
 
     public int getX() {return x;}
     public int getZ() {return z;}
+    public double getCenterX() {return x + ((double) modelData.length /2) * size;}
+    public double getCenterZ() {return z + ((double) modelData.length /2) * size;}
     public double getY() {return y;}
+    public double getCenterY() {return y + (double) size /2;}
     public int getSize() {return size;}
     public boolean[][] getModelData() {return modelData;}
     public boolean isRunning() {return running;}
