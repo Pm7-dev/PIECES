@@ -1,0 +1,7 @@
+name: session6
+version: '1.0'
+main: me.pm7.session6.Session6
+api-version: '1.21'
+commands:
+  test:
+    description: owo
