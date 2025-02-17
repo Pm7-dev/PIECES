@@ -35,6 +35,7 @@ public class Piece {
     private final List<UUID> facesToRemove;
     private final PieceColor color;
     private boolean running;
+    private boolean remove = false;
     private int spawnAnimationTicks = 0; // counts how many ticks the piece has been spawning for
 
     public Piece(World world, int x, int z, int size, double speed, boolean[][] modelData, PieceColor color) {
@@ -162,8 +163,9 @@ public class Piece {
             face.teleport(face.getLocation().clone().subtract(0, speed/20, 0));
         }
 
-        if(y < -65-size) kill();
+        if(y < -65-size) remove = true;
     }
+    public boolean shouldRemove() {return remove;}
 
     public void tickColor() {
         color.tick();
@@ -192,26 +194,11 @@ public class Piece {
                 }
             }
         }
-        for(int z1=0;z1<modelData.length;z1++) {
-            for(int x1=0;x1<modelData.length;x1++) {
-                if(modelData[z1][x1]) {
-                    Location loc = new Location(world,x+(x1*size)+((double)size/2),y+((double)size/2), z+(z1*size)+((double)size/2));
-                    Collection<Entity> nearby = world.getNearbyEntities(loc, voiceDistance/2, voiceDistance/2, voiceDistance/2);
-                    for(Entity e : nearby) {
-                        if(!(e instanceof Player p)) continue;
-
-                    }
-                }
-            }
-        }
     }
 
     public int getX() {return x;}
     public int getZ() {return z;}
-    public double getCenterX() {return x + ((double) modelData.length /2) * size;}
-    public double getCenterZ() {return z + ((double) modelData.length /2) * size;}
     public double getY() {return y;}
-    public double getCenterY() {return y + (double) size /2;}
     public int getSize() {return size;}
     public World getWorld() {return world;}
     public boolean[][] getModelData() {return modelData;}

@@ -6,6 +6,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,12 +33,21 @@ public class PieceKeeper {
     private final Predicate<Entity> isPlayer = e -> e instanceof Player p && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE);
     private int tick;
     private void loop() {
+        List<Piece> remove = new ArrayList<>();
         for(Piece piece : Piece.getPieces()) {
             if(piece.isRunning()) {
                 piece.moveDown();
                 piece.tickColor();
                 if(tick==0) piece.playAmbience();
+
+                if(piece.shouldRemove()) remove.add(piece);
             }
+        }
+
+        // Remove pieces that are marked for removal
+        while(!remove.isEmpty()) {
+            remove.getFirst().kill();
+            remove.removeFirst();
         }
 
         // collision detection
