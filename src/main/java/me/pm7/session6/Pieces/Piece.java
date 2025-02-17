@@ -38,11 +38,11 @@ public class Piece {
     private boolean remove = false;
     private int spawnAnimationTicks = 0; // counts how many ticks the piece has been spawning for
 
-    public Piece(World world, int x, int z, int size, double speed, boolean[][] modelData, PieceColor color) {
+    public Piece(World world, int x, double y, int z, int size, double speed, boolean[][] modelData, PieceColor color) {
         this.world = world;
         this.x = x;
+        this.y = y;
         this.z = z;
-        this.y = PieceMaker.getSpawnY();
         this.size = size;
         this.speed = speed;
         this.color = color;

@@ -38,25 +38,21 @@ public class PieceColor {
             if(index + 1 >= colorSequence.size()) finalColor = colorSequence.getFirst();
             else finalColor = colorSequence.get(index + 1);
 
-            final int interpolatedAlpha;
-            final int interpolatedRed;
-            final int interpolatedGreen;
-            final int interpolatedBlue;
+            final float fraction = (float)tick/(float)fadeTicks;
+            final int interpolatedAlpha = interpolate(baseColor.getAlpha(), finalColor.getAlpha(), fraction, fadeEasing);
+            final int interpolatedRed = interpolate(baseColor.getRed(), finalColor.getRed(), fraction, fadeEasing);
+            final int interpolatedGreen = interpolate(baseColor.getGreen(), finalColor.getGreen(), fraction, fadeEasing);
+            final int interpolatedBlue = interpolate(baseColor.getBlue(), finalColor.getBlue(), fraction, fadeEasing);
 
-            if(fadeEasing) {
-                interpolatedAlpha = (int) (baseColor.getAlpha() + (finalColor.getAlpha()-baseColor.getAlpha()) * (-(Math.cos(Math.PI * ((double) tick/fadeTicks)) - 1) / 2));
-                interpolatedRed = (int) (baseColor.getRed() + (finalColor.getRed()-baseColor.getRed()) * (-(Math.cos(Math.PI * ((double) tick/fadeTicks)) - 1) / 2));
-                interpolatedGreen = (int) (baseColor.getGreen() + (finalColor.getGreen()-baseColor.getGreen()) * (-(Math.cos(Math.PI * ((double) tick/fadeTicks)) - 1) / 2));
-                interpolatedBlue = (int) (baseColor.getBlue() + (finalColor.getBlue()-baseColor.getBlue()) * (-(Math.cos(Math.PI * ((double) tick/fadeTicks)) - 1) / 2));
-            } else {
-                interpolatedAlpha = baseColor.getAlpha() + (finalColor.getAlpha()-baseColor.getAlpha() * (tick/fadeTicks)); // Might be some truncating errors here
-                interpolatedRed = baseColor.getRed() + (finalColor.getRed()-baseColor.getRed() * (tick/fadeTicks));
-                interpolatedGreen = baseColor.getGreen() + (finalColor.getGreen()-baseColor.getGreen() * (tick/fadeTicks));
-                interpolatedBlue = baseColor.getBlue() + (finalColor.getBlue()-baseColor.getBlue() * (tick/fadeTicks));
-            }
             currentColor = Color.fromARGB(interpolatedAlpha, interpolatedRed, interpolatedGreen, interpolatedBlue);
         }
     }
+
+    public int interpolate(double v1, double v2, float fraction, boolean smooth) {
+        if(smooth) return (int) (v1+(v2-v1)*(-(Math.cos(Math.PI*fraction)-1)/2)); // sinusoidal interpolation
+        else return (int) (v1+(v2-v1)*fraction); // linear interpolation
+    }
+
     public Color getColor() {return currentColor;}
     public boolean doesFading() {return doFading;}
 }

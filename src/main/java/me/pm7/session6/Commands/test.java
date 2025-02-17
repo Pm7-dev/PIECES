@@ -23,7 +23,7 @@ public class test implements CommandExecutor {
         Location loc = p.getLocation().getBlock().getLocation();
 
         if(args.length>0) {
-            new Piece(loc.getWorld(), loc.getBlockX(), loc.getBlockZ(), 20, 2, PieceType.getRandom().getModel(), PieceColorPattern.COTTON_CANDY.getColor());
+            new Piece(loc.getWorld(), loc.getBlockX(), 200, loc.getBlockZ(), 20, 2, PieceType.getRandom().getModel(), PieceColorPattern.COTTON_CANDY.getColor());
             return true;
         }
 
