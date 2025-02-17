@@ -83,8 +83,7 @@ public class Piece {
             @Override
             public void run() {
                 if(spawnAnimationTicks > spawnTime) {
-                    tickColor();
-                    //cancel();
+                    cancel();
                     return;
                 }
 
