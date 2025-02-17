@@ -3,22 +3,18 @@ package me.pm7.session6.Pieces;
 import me.pm7.session6.Pieces.Color.PieceColor;
 import me.pm7.session6.Session6;
 import me.pm7.session6.Utils.Direction;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Display;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.TextDisplay;
+import org.bukkit.*;
+import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class Piece {
     private static final Session6 plugin = Session6.getPlugin();
@@ -28,6 +24,7 @@ public class Piece {
 
     // constant(s)
     private static final int spawnTime = 55; // Defines how long it takes for the piece to scale up before dropping (in ticks)
+    private final double voiceDistance;
 
     private final int x, z, size;
     private final double speed;
@@ -51,11 +48,13 @@ public class Piece {
         this.modelData = modelData;
         this.faces = new ArrayList<>();
         this.facesToRemove = new ArrayList<>();
+        this.voiceDistance = 90;
 
         //Load all the chunks that this entity will be in
-        for(int cx = 0; cx < 1 + (x/16); cx++) {
-            for(int cz = 0; cz < 1 + (z/16); cz++) {
-                world.addPluginChunkTicket((x/16) + cx, (z/16) + cz, plugin);
+        for(int cx = x; cx < x+(modelData.length*size); cx+=16) {
+            for(int cz = z; cz < z+(modelData.length*size); cz+=16) {
+                Chunk chunk = world.getChunkAt(cx/16, cz/16);
+                if(!chunk.getPluginChunkTickets().contains(plugin)) chunk.addPluginChunkTicket(plugin);
             }
         }
 
@@ -83,7 +82,8 @@ public class Piece {
             @Override
             public void run() {
                 if(spawnAnimationTicks > spawnTime) {
-                    cancel();
+                    tickColor();
+                    //cancel();
                     return;
                 }
 
@@ -161,6 +161,8 @@ public class Piece {
             if(face==null) continue;
             face.teleport(face.getLocation().clone().subtract(0, speed/20, 0));
         }
+
+        if(y < -65-size) kill();
     }
 
     public void tickColor() {
@@ -172,6 +174,38 @@ public class Piece {
         }
     }
 
+    private final Predicate<Entity> isPlayer = p -> p instanceof Player;
+    public void playAmbience() {
+        for(int z1=0;z1<modelData.length;z1++) {
+            for(int x1=0;x1<modelData.length;x1++) {
+                if(modelData[z1][x1]) {
+                    Location loc = new Location(world,x+(x1*size)+((double) size /2),y+((double) size/2), z+(z1*size)+((double) size/2));
+                    for(Entity entity : world.getNearbyEntities(loc,voiceDistance/2,voiceDistance,voiceDistance/2, isPlayer)) {
+                        Player p = (Player) entity;
+                        Location pLoc = p.getEyeLocation();
+
+                        double distance = Math.sqrt(Math.pow(loc.getX()-pLoc.getX(),2) + Math.pow(loc.getY()-pLoc.getY(),2) + Math.pow(loc.getZ()-pLoc.getZ(),2));
+                        float volume = (float) (1.0f-(distance/voiceDistance));
+                        //float pitch = (float) ((Math.random()*0.30f-0.15f) + 1.0f);
+                        if(volume > 0) p.playSound(loc, "pieces:piece.ambience", volume*2, 1.0f); //TODO: figure out a good pitch
+                    }
+                }
+            }
+        }
+        for(int z1=0;z1<modelData.length;z1++) {
+            for(int x1=0;x1<modelData.length;x1++) {
+                if(modelData[z1][x1]) {
+                    Location loc = new Location(world,x+(x1*size)+((double)size/2),y+((double)size/2), z+(z1*size)+((double)size/2));
+                    Collection<Entity> nearby = world.getNearbyEntities(loc, voiceDistance/2, voiceDistance/2, voiceDistance/2);
+                    for(Entity e : nearby) {
+                        if(!(e instanceof Player p)) continue;
+
+                    }
+                }
+            }
+        }
+    }
+
     public int getX() {return x;}
     public int getZ() {return z;}
     public double getCenterX() {return x + ((double) modelData.length /2) * size;}
@@ -179,6 +213,7 @@ public class Piece {
     public double getY() {return y;}
     public double getCenterY() {return y + (double) size /2;}
     public int getSize() {return size;}
+    public World getWorld() {return world;}
     public boolean[][] getModelData() {return modelData;}
     public boolean isRunning() {return running;}
     public static List<Piece> getPieces() {return pieces;}

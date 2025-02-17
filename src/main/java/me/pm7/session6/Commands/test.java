@@ -1,6 +1,6 @@
 package me.pm7.session6.Commands;
 
-import me.pm7.session6.Pieces.Color.ColorPattern;
+import me.pm7.session6.Pieces.Color.PieceColorPattern;
 import me.pm7.session6.Pieces.Piece;
 import me.pm7.session6.Pieces.PieceType;
 import org.bukkit.Location;
@@ -16,12 +16,6 @@ import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import java.util.Locale;
-
-
-// TODO: /summon text_display ~-0.5 ~0.5 ~-2 {width:0f,billboard:"fixed",transformation:{left_rotation:[0f,0f,0f,1f],right_rotation:[0f,0f,0f,1f],translation:[0f,0f,0f],scale:[40f,2f,1f]},text:'{"text":"\\n"}',background:1694433280}
-
-
 public class test implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -29,7 +23,7 @@ public class test implements CommandExecutor {
         Location loc = p.getLocation().getBlock().getLocation();
 
         if(args.length>0) {
-            new Piece(loc.getWorld(), loc.getBlockX(), loc.getBlockZ(), 20, 2, PieceType.getRandom().getModel(), ColorPattern.COTTON_CANDY.getColor());
+            new Piece(loc.getWorld(), loc.getBlockX(), loc.getBlockZ(), 20, 2, PieceType.getRandom().getModel(), PieceColorPattern.COTTON_CANDY.getColor());
             return true;
         }
 

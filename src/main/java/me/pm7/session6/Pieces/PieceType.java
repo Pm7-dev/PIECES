@@ -118,10 +118,7 @@ public enum PieceType {
     private final boolean[][] model;
     public boolean[][] getModel() {return this.model;}
 
-    public static PieceType getRandom() {
-        PieceType[] values = PieceType.values();
-        return values[(int) (Math.random() * values.length)];
-    }
+    public static PieceType getRandom() {return values()[(int) (Math.random() * values().length)];}
 
     // holy inefficient rotation method!
     private boolean[][] rotateModel(boolean[][] model, int times90) {

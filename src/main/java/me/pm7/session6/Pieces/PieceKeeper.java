@@ -2,69 +2,70 @@ package me.pm7.session6.Pieces;
 
 import me.pm7.session6.Session6;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class PieceKeeper {
     private static final Session6 plugin = Session6.getPlugin();
-    private static final double soundDist = 4.0d;
 
     private final List<UUID> dead = new ArrayList<>();
     private Integer taskID = null;
 
     public void start() {
+        if(taskID !=null) return;
         taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::loop, 0L, 1L);
     }
-
     public void stop() {
+        if(taskID==null) return;
         Bukkit.getScheduler().cancelTask(taskID);
         taskID = null;
     }
 
+    private final Predicate<Entity> isPlayer = e -> e instanceof Player p && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE);
+    private int tick;
     private void loop() {
         for(Piece piece : Piece.getPieces()) {
             if(piece.isRunning()) {
                 piece.moveDown();
                 piece.tickColor();
+                if(tick==0) piece.playAmbience();
             }
         }
 
-        // collision detection & piece ambient sound possibility
-        for(Player p : Bukkit.getOnlinePlayers()) {
-            Location loc = p.getLocation();
-            Location eyeLoc = p.getEyeLocation();
+        // collision detection
+        for(Piece piece : Piece.getPieces()) {
+            if(!piece.isRunning()) continue;
 
-            // Gather a list of pieces that might be near the player based on some loose criteria
-            List<Piece> nearbyPieces = new ArrayList<>();
-            for(Piece piece : Piece.getPieces()) {
-//                if(piece.getY()-eyeLoc.getY()>soundDist||p.getEyeLocation().getY()-piece.getY()+piece.getSize()>soundDist) continue;
-//                if(piece.getX()-loc.getX()>soundDist||loc.getX()-piece.getX()+(piece.getSize()*piece.getModelData().length)>soundDist) continue;
-//                if(piece.getZ()-loc.getZ()>soundDist||loc.getZ()-piece.getZ()+(piece.getSize()*piece.getModelData().length)>soundDist) continue;
-//                nearbyPieces.add(piece);
-                double xDist = Math.abs(loc.getX()-piece.getCenterX()) - ((double) piece.getModelData().length/2 * piece.getSize());
-                double yDist = Math.abs(loc.getY()-piece.getCenterY()) - ((double) piece.getSize() /2);
-                double zDist = Math.abs(eyeLoc.getZ()-piece.getCenterZ()) - ((double) piece.getModelData().length/2 * piece.getSize());
+            double size = piece.getSize();
+            double x = piece.getX();
+            double z = piece.getZ();
+            double y = piece.getY();
 
-                if(xDist <= soundDist && zDist <= soundDist && yDist <= soundDist) nearbyPieces.add(piece);
-            }
-
-            for(Piece piece : nearbyPieces) {
-                //TODO: get center of piece and play sound assuming you get a sound
-
-                // If the bottom of the piece is between the player's head and feet, it's safe to be a collision
-                if(loc.getY()>=piece.getY()&&piece.getY()<=eyeLoc.getY()) continue; //TODO: fix, this is broken lol
-                for(int z=0; z<piece.getModelData().length; z++) {
-                    for(int x=0; x<piece.getModelData().length; x++) {
-                        if(piece.getModelData()[z][x]) {
-                            //if(loc.getX())
+            for(int z1=0;z1<piece.getModelData().length;z1++) {
+                for(int x1=0;x1<piece.getModelData().length;x1++) {
+                    if(piece.getModelData()[z1][x1]) {
+                        Location loc = new Location(piece.getWorld(),x+(x1*size)+(size/2),y+(size/2), z+(z1*size)+(size/2));
+                        for(Entity entity : piece.getWorld().getNearbyEntities(loc, size/2, size/2, size/2, isPlayer)) {
+                            Player p = (Player) entity;
+                            dead.add(p.getUniqueId());
+                            p.damage(99999);
                         }
                     }
                 }
             }
         }
+
+        tick++;
+        if(tick>=3) tick = 0;
     }
+
+    public List<UUID> getDead() {return dead;}
 }
