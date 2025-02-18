@@ -2,6 +2,7 @@ package me.pm7.session6;
 
 import me.pm7.session6.Commands.test;
 import me.pm7.session6.Pieces.PieceKeeper;
+import me.pm7.session6.Pieces.PieceMaker;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -12,6 +13,7 @@ public final class Session6 extends JavaPlugin {
 
     private static Session6 plugin;
     private static PieceKeeper pieceKeeper;
+    private static PieceMaker pieceMaker;
 
     @Override
     public void onEnable() {
@@ -30,6 +32,9 @@ public final class Session6 extends JavaPlugin {
         pieceKeeper = new PieceKeeper();
         pieceKeeper.start();
 
+        pieceMaker = new PieceMaker();
+        pieceMaker.start(); //TODO: REMOVE
+
     }
 
     @Override
@@ -38,4 +43,6 @@ public final class Session6 extends JavaPlugin {
     }
 
     public static Session6 getPlugin() {return plugin;}
+    public static PieceKeeper getPieceKeeper() {return pieceKeeper;}
+    public static PieceMaker getPieceMaker() {return pieceMaker;}
 }

@@ -37,7 +37,7 @@ public enum PieceColorPattern {
             Color.fromARGB(255, 245, 169, 184)
     ))),
 
-    UNICORN_PUKE(new PieceColor(true, 20, true, Arrays.asList(
+    UNICORN_PUKE(new PieceColor(true, 20, false, Arrays.asList(
             Color.fromARGB(255, 255, 66, 66),
             Color.fromARGB(255, 66, 255, 66),
             Color.fromARGB(255, 66, 255, 255),
@@ -130,5 +130,5 @@ public enum PieceColorPattern {
     private final PieceColor color;
     public PieceColor getColor() {return color;}
     PieceColorPattern(PieceColor color) {this.color = color;}
-    public PieceColorPattern getRandom() {return values()[(int) (Math.random()*values().length)];}
+    public static PieceColorPattern getRandom() {return values()[(int) (Math.random()*values().length)];}
 }

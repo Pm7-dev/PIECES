@@ -121,8 +121,10 @@ public enum PieceType {
     public static PieceType getRandom() {return values()[(int) (Math.random() * values().length)];}
 
     // holy inefficient rotation method!
-    private boolean[][] rotateModel(boolean[][] model, int times90) {
+    public static boolean[][] rotateModel(boolean[][] model, int times90) {
         times90%=4;
+        if(times90==0) return model;
+
         int size = model.length;
         boolean[][] rotated = new boolean[size][size];
         for (int x=0;x<size;x++) {for (int y=0;y<size;y++) {
@@ -133,7 +135,7 @@ public enum PieceType {
         else return rotateModel(rotated, times90-1);
     }
 
-    public boolean[][] mirrorModel(boolean[][] model, Mirror mirror) {
+    public static boolean[][] mirrorModel(boolean[][] model, Mirror mirror) {
         int size = model.length;
         return switch (mirror) {
             case NONE: {yield model;}
