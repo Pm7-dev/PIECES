@@ -34,7 +34,7 @@ public class PieceMaker {
         // TODO: get good defaults for all of these
         spawnHeight = 190;
 
-        minSize = 26;
+        minSize = 3;
         maxSize = 48;
 
         minSpeed = 20;
@@ -85,6 +85,9 @@ public class PieceMaker {
             // Get a list of player locations
             List<Location> pLocs = new ArrayList<>();
             for (Player p : Bukkit.getOnlinePlayers()) pLocs.add(p.getLocation());
+            if(pLocs.isEmpty()) { //exit early if no players are online
+                return null;
+            }
 
             // Find a spot to make the piece
             List<Chunk> chunks = new ArrayList<>();

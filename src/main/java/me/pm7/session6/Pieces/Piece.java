@@ -49,7 +49,7 @@ public class Piece {
         this.modelData = modelData;
         this.faces = new ArrayList<>();
         this.facesToRemove = new ArrayList<>();
-        this.voiceDistance = 8 * size;
+        this.voiceDistance = (2 * size) + 8;
 
         //Load all the chunks that this entity will be in
         for(int cx = x; cx < x+(modelData.length*size); cx+=16) {
@@ -181,17 +181,20 @@ public class Piece {
             for(int x1=0;x1<modelData.length;x1++) {
                 if(modelData[z1][x1]) {
                     Location loc = new Location(world,x+(x1*size)+((double)size/2),y,z+(z1*size)+((double)size/2));
-                    for(Entity entity : world.getNearbyEntities(loc,voiceDistance/2,voiceDistance,voiceDistance/2, isPlayer)) {
+                    for(Entity entity : world.getNearbyEntities(loc,voiceDistance/2,voiceDistance/2,voiceDistance/2, isPlayer)) {
                         Player p = (Player) entity;
                         Location pLoc = p.getEyeLocation();
+
+                        //
 
                         double distance = Math.sqrt(Math.pow(loc.getX()-pLoc.getX(),2) + Math.pow(loc.getY()-pLoc.getY(),2) + Math.pow(loc.getZ()-pLoc.getZ(),2));
                         distance -= (double) size/2;
                         if(distance < 0) distance = 0;
-                        float volume = (float) (1.0f-(distance/voiceDistance));
+                        float volume = (float) (1.0f-(distance/(voiceDistance/2)));
                         //float pitch = (float) ((Math.random()*0.30f-0.15f) + 1.0f);
-                        loc.setY(pLoc.getY());
-                        if(volume > 0) p.playSound(loc, "pieces:piece.ambience", volume*2, 1.0f); //TODO: figure out a good pitch
+                        if(pLoc.getY() >= loc.getY() && pLoc.getY() <= loc.getY()+size) loc.setY(pLoc.getY());
+                        else loc.setY(pLoc.getY()<loc.getY() ? y : y+size);
+                        if(volume > 0) p.playSound(loc, "pieces:piece.ambience", volume*2 + 1.2f, 0.8f); //TODO: figure out a good pitch/volume
                     }
                 }
             }
