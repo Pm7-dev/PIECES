@@ -1,12 +1,20 @@
 package me.pm7.session6;
 
 import me.pm7.session6.Commands.test;
+import me.pm7.session6.Pieces.Piece;
 import me.pm7.session6.Pieces.PieceKeeper;
 import me.pm7.session6.Pieces.PieceMaker;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public final class Session6 extends JavaPlugin {
@@ -18,7 +26,6 @@ public final class Session6 extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        // Plugin startup logic
         getCommand("test").setExecutor(new test());
 
         for(World world : Bukkit.getWorlds()) {
@@ -27,6 +34,16 @@ public final class Session6 extends JavaPlugin {
                     chunk.removePluginChunkTicket(this);
                 }
             }
+
+            // Kill any remaining piece faces
+            List<Entity> remove = new ArrayList<>();
+            for(Entity e : world.getEntities()) {
+                PersistentDataContainer c = e.getPersistentDataContainer();
+                if(c.has(Piece.getPieceID(), PersistentDataType.BOOLEAN) && Boolean.TRUE.equals(c.get(Piece.getPieceID(), PersistentDataType.BOOLEAN))) {
+                    remove.add(e);
+                }
+            }
+            for(Entity e : remove) e.remove();
         }
 
         pieceKeeper = new PieceKeeper();
@@ -39,7 +56,10 @@ public final class Session6 extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        pieceMaker.stop();
+        pieceKeeper.stop();
+        List<Piece> pieces = Piece.getPieces();
+        while (!pieces.isEmpty()) pieces.getFirst().kill();
     }
 
     public static Session6 getPlugin() {return plugin;}

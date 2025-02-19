@@ -111,9 +111,100 @@ public enum PieceType {
             { true, false,  true, false,  true},
             { true, false, false, false,  true},
             { true,  true,  true,  true,  true}
-    });
+    }),
 
-    PieceType(boolean[][] model) {this.model = model;}
+    CHECKER(new boolean[][] {
+            {false, true, false, true, false},
+            {false, false, true, false, false},
+            {false, true, false, true, false},
+            {false, false, true, false, false},
+            {false, true, false, true, false}
+    }),
+
+    A_10(new boolean[][] {
+            {true, true, true, true},
+            {true, false, true, false},
+            {true, true, true, true},
+            {false, false, false, false}
+    }),
+
+    COLON_3(new boolean[][] {
+            {false, false, false, true, true},
+            {false, true, false, false, true},
+            {false, false, false, true, false},
+            {false, true, false, false, true},
+            {false, false, false, true, true}
+    }),
+
+    I_9(new boolean[][]{
+            {false, true, true, true, false},
+            {false, false, true, false, false},
+            {false, false, true, false, false},
+            {false, false, true, false, false},
+            {false, true, true, true, false}
+    }),
+
+    LUKIN(new boolean[][] {
+            {false, true, true, true, false},
+            {true, false, true, false, true},
+            {false, true, true, true, false},
+            {false, false, false, false, false},
+            {false, false, false, false, false}
+
+    }),
+
+//    PIFFIN(new boolean[][] {
+//            {true, true, false, true, true},
+//            {true, false, false, false, true},
+//            {false, true, false, true, false},
+//            {true, false, false, false, true},
+//            {true, true, false, true, true}
+//    }),
+
+    DOGBONE(new boolean[][] {
+            {false, true, false, false, false},
+            {true, true, false, false, false},
+            {false, false, true, false, false},
+            {false, false, false, true, true},
+            {false, false, false, true, false},
+    }),
+
+    KO(new boolean[][] {
+            {false, false, false, true},
+            {true, false, true, false},
+            {false, true, true, true},
+            {true, true, true, false},
+    }),
+
+    SMILE(new boolean[][] {
+            {false, true, false, true, false},
+            {false, true, false, true, false},
+            {false, false, false, false, false},
+            {true, false, false, false, true},
+            {false, true, true, true, false},
+    }),
+
+    DOUBLE_SQUARE(new boolean[][] {
+            {true, true, false},
+            {true, true, true},
+            {false, true, true}
+    }),
+
+    ARROW(new boolean[][] {
+            {false, false, false, true},
+            {true, false, true, false},
+            {true, true, false, false},
+            {true, true, true, false},
+    }),
+
+    D_6(new boolean[][] {
+            {false, true, true},
+            {true, false, true},
+            {false, true, true},
+    })
+
+
+    ;PieceType(boolean[][] model) {this.model = model;}
 
     private final boolean[][] model;
     public boolean[][] getModel() {return this.model;}

@@ -16,7 +16,7 @@ import java.util.logging.Level;
 // You'd think I'd be satisfied with the first pun of "Piece Keeper," but no, I need more
 public class PieceMaker {
     private static final Session6 plugin = Session6.getPlugin();
-    private static final int maxPlayerDistanceFromSpawn = 96;
+    private static final int maxPlayerDistanceFromSpawn = 128;
 
     private int spawnHeight;
     private int minSize;
@@ -35,13 +35,13 @@ public class PieceMaker {
         spawnHeight = 190;
 
         minSize = 3;
-        maxSize = 48;
+        maxSize = 20;
 
-        minSpeed = 20;
-        maxSpeed = 35;
+        minSpeed = 12;
+        maxSpeed = 26;
 
         minSecondsBeforeSpawn = 1; // ESPECIALLY REWRITE THESE
-        maxSecondsBeforeSpawn = 3;
+        maxSecondsBeforeSpawn = 1;
 
 
         taskID = null;

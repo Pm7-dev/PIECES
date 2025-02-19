@@ -5,13 +5,14 @@ import me.pm7.session6.Session6;
 import me.pm7.session6.Utils.Direction;
 import org.bukkit.*;
 import org.bukkit.entity.*;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -24,10 +25,11 @@ public class Piece {
 
     // constant(s)
     private static final int spawnTime = 55; // Defines how long it takes for the piece to scale up before dropping (in ticks)
-    private final double voiceDistance;
+    private static final NamespacedKey pieceID = new NamespacedKey(plugin, "piece-face-entity");
 
     private final int x, z, size;
     private final double speed;
+    private final double voiceDistance;
     private final boolean[][] modelData;
     private final World world;
     private double y;
@@ -49,7 +51,7 @@ public class Piece {
         this.modelData = modelData;
         this.faces = new ArrayList<>();
         this.facesToRemove = new ArrayList<>();
-        this.voiceDistance = (2 * size) + 8;
+        this.voiceDistance = size + 10;
 
         //Load all the chunks that this entity will be in
         for(int cx = x; cx < x+(modelData.length*size); cx+=16) {
@@ -133,6 +135,7 @@ public class Piece {
         spawnLoc.setYaw(direction.getCardinal());
         spawnLoc.setPitch(pitch);
         TextDisplay face = (TextDisplay) world.spawnEntity(spawnLoc, EntityType.TEXT_DISPLAY);
+        face.getPersistentDataContainer().set(pieceID, PersistentDataType.BOOLEAN, true);
 
         face.setSeeThrough(false);
         face.setShadowed(false);
@@ -180,20 +183,20 @@ public class Piece {
         for(int z1=0;z1<modelData.length;z1++) {
             for(int x1=0;x1<modelData.length;x1++) {
                 if(modelData[z1][x1]) {
-                    Location loc = new Location(world,x+(x1*size)+((double)size/2),y,z+(z1*size)+((double)size/2));
-                    for(Entity entity : world.getNearbyEntities(loc,voiceDistance/2,voiceDistance/2,voiceDistance/2, isPlayer)) {
+                    Location loc = new Location(world,x+(x1*size)+((double)size/2),y-((double)size/2),z+(z1*size)+((double)size/2));
+                    for(Entity entity : world.getNearbyEntities(loc,voiceDistance,voiceDistance,voiceDistance, isPlayer)) {
                         Player p = (Player) entity;
                         Location pLoc = p.getEyeLocation();
 
-                        //
+                        if(pLoc.getY() >= loc.getY() && pLoc.getY() <= loc.getY()+size) loc.setY(pLoc.getY());
+                        else loc.setY(pLoc.getY()<loc.getY() ? y : y+size);
 
                         double distance = Math.sqrt(Math.pow(loc.getX()-pLoc.getX(),2) + Math.pow(loc.getY()-pLoc.getY(),2) + Math.pow(loc.getZ()-pLoc.getZ(),2));
                         distance -= (double) size/2;
                         if(distance < 0) distance = 0;
-                        float volume = (float) (1.0f-(distance/(voiceDistance/2)));
+                        float volume = (float) (1.0f-(distance/(voiceDistance)));
                         //float pitch = (float) ((Math.random()*0.30f-0.15f) + 1.0f);
-                        if(pLoc.getY() >= loc.getY() && pLoc.getY() <= loc.getY()+size) loc.setY(pLoc.getY());
-                        else loc.setY(pLoc.getY()<loc.getY() ? y : y+size);
+
                         if(volume > 0) p.playSound(loc, "pieces:piece.ambience", volume*2 + 1.2f, 0.8f); //TODO: figure out a good pitch/volume
                     }
                 }
@@ -209,15 +212,9 @@ public class Piece {
     public boolean[][] getModelData() {return modelData;}
     public boolean isRunning() {return running;}
     public static List<Piece> getPieces() {return pieces;}
+    public static NamespacedKey getPieceID() {return pieceID;}
 
     public void kill() {
-
-        // Remove the chunks that this piece keeps loaded
-        for(int cx = 0; cx < 1 + (x/16); cx++) {
-            for(int cz = 0; cz < 1 + (z/16); cz++) {
-                world.removePluginChunkTicket((x/16) + cx, (z/16) + cz, plugin);
-            }
-        }
 
         // This piece is no longer running
         running = false;
@@ -232,5 +229,24 @@ public class Piece {
         faces.clear();
         facesToRemove.clear();
 
+        if(!plugin.isEnabled()) return;
+
+        // Stop force loading the chunks that keep this piece loaded (as long as no other piece is occupying the chunk)
+        for(int cx = x; cx < x+(modelData.length*size); cx+=16) {
+            for(int cz = z; cz < z+(modelData.length*size); cz+=16) {
+                Chunk chunk = world.getChunkAt(cx/16, cz/16);
+
+                boolean remove = true;
+                if(!chunk.getPluginChunkTickets().contains(plugin)) {
+                    for(Entity e : chunk.getEntities()) {
+                        PersistentDataContainer c = e.getPersistentDataContainer();
+                        if(c.has(pieceID, PersistentDataType.BOOLEAN) && Boolean.TRUE.equals(c.get(pieceID, PersistentDataType.BOOLEAN))) {
+                            remove = false;
+                        }
+                    }
+                }
+                if(remove) chunk.addPluginChunkTicket(plugin);
+            }
+        }
     }
 }
