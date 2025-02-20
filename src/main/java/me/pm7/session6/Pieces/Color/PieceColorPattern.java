@@ -35,7 +35,9 @@ public enum PieceColorPattern {
     GLACIER,
     DARKENING_RED,
     SALMON,
-    MANGO;
+    MANGO,
+    PURPLE_SPREAD,
+    TRANSPARENT_BLORANGE;
 
     public PieceColor getColor() {
         return switch (this) {
@@ -149,11 +151,20 @@ public enum PieceColorPattern {
                     Color.fromARGB(255, 222, 254, 255)
             ));
 
-            case MANGO -> new PieceColor(true, 18, true, Arrays.asList(
+            case MANGO -> new PieceColor(true, 22, true, Arrays.asList(
                     Color.fromARGB(255, 97, 206, 37),
                     Color.fromARGB(255, 255, 247, 66),
-                    Color.fromARGB(255, 251, 76, 95),
-                    Color.fromARGB(255, 255, 247, 66)
+                    Color.fromARGB(255, 251, 76, 95)
+            ));
+
+            case PURPLE_SPREAD -> new PieceColor(true, 25, true, Arrays.asList(
+                    Color.fromARGB(255, 88, 45, 230),
+                    Color.fromARGB(255, 255, 68, 244)
+            ));
+
+            case TRANSPARENT_BLORANGE -> new PieceColor(true, 32, true, Arrays.asList(
+                    Color.fromARGB(180, 45, 126, 230),
+                    Color.fromARGB(180, 255, 102, 68)
             ));
         };
     }

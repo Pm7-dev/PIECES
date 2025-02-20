@@ -183,7 +183,7 @@ public class Piece {
         for(int z1=0;z1<modelData.length;z1++) {
             for(int x1=0;x1<modelData.length;x1++) {
                 if(modelData[z1][x1]) {
-                    Location loc = new Location(world,x+(x1*size)+((double)size/2),y-((double)size/2),z+(z1*size)+((double)size/2));
+                    Location loc = new Location(world,x+(x1*size)+((double)size/2),y-((double)size*2/3),z+(z1*size)+((double)size/2));
                     for(Entity entity : world.getNearbyEntities(loc,voiceDistance,voiceDistance,voiceDistance, isPlayer)) {
                         Player p = (Player) entity;
                         Location pLoc = p.getEyeLocation();

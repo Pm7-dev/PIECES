@@ -1,0 +1,29 @@
+package me.pm7.session6.Listener;
+
+import me.pm7.session6.Session6;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+
+public class DeathListener implements Listener {
+    private static final Session6 plugin = Session6.getPlugin();
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent e) {
+        Player p = e.getEntity();
+        if(plugin.getPieceKeeper().getDead().contains(p.getUniqueId())) {
+            e.setDeathMessage(p.getDisplayName() + " touched the Sky Thing™");
+            plugin.getPieceKeeper().getDead().remove(p.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent e) {
+        if(plugin.getPieceKeeper().isRunning()) {
+            Player p = e.getPlayer();
+            plugin.getPieceKeeper().setImmunity(p, 3600);
+        }
+    }
+}

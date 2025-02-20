@@ -1,6 +1,8 @@
 package me.pm7.session6;
 
 import me.pm7.session6.Commands.test;
+import me.pm7.session6.Listener.ConnectionListener;
+import me.pm7.session6.Listener.DeathListener;
 import me.pm7.session6.Pieces.Piece;
 import me.pm7.session6.Pieces.PieceKeeper;
 import me.pm7.session6.Pieces.PieceMaker;
@@ -14,7 +16,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 
 public final class Session6 extends JavaPlugin {
@@ -27,6 +31,8 @@ public final class Session6 extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         getCommand("test").setExecutor(new test());
+        getServer().getPluginManager().registerEvents(new DeathListener(), plugin);
+        getServer().getPluginManager().registerEvents(new ConnectionListener(), plugin);
 
         for(World world : Bukkit.getWorlds()) {
             if(world.getPluginChunkTickets().containsKey(this)) {
@@ -63,6 +69,6 @@ public final class Session6 extends JavaPlugin {
     }
 
     public static Session6 getPlugin() {return plugin;}
-    public static PieceKeeper getPieceKeeper() {return pieceKeeper;}
-    public static PieceMaker getPieceMaker() {return pieceMaker;}
+    public PieceKeeper getPieceKeeper() {return pieceKeeper;}
+    public PieceMaker getPieceMaker() {return pieceMaker;}
 }

@@ -1,22 +1,22 @@
 package me.pm7.session6.Pieces;
 
 import me.pm7.session6.Session6;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.units.qual.A;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class PieceKeeper {
     private static final Session6 plugin = Session6.getPlugin();
 
+    private final HashMap<UUID, Integer> pieceInvincibilityTicks = new HashMap<>();
     private final List<UUID> dead = new ArrayList<>();
     private Integer taskID = null;
 
@@ -29,6 +29,8 @@ public class PieceKeeper {
         Bukkit.getScheduler().cancelTask(taskID);
         taskID = null;
     }
+
+    public boolean isRunning() {return taskID != null;}
 
     private final Predicate<Entity> isPlayer = e -> e instanceof Player p && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE);
     private int tick;
@@ -50,7 +52,7 @@ public class PieceKeeper {
             remove.removeFirst();
         }
 
-        // collision detection
+        // Player collision detection
         for(Piece piece : Piece.getPieces()) {
             if(!piece.isRunning()) continue;
 
@@ -65,6 +67,11 @@ public class PieceKeeper {
                         Location loc = new Location(piece.getWorld(),x+(x1*size)+(size/2),y+(size/2), z+(z1*size)+(size/2));
                         for(Entity entity : piece.getWorld().getNearbyEntities(loc, size/2, size/2, size/2, isPlayer)) {
                             Player p = (Player) entity;
+
+                            if(pieceInvincibilityTicks.containsKey(p.getUniqueId())) {
+                                if(pieceInvincibilityTicks.get(p.getUniqueId()) > 0) continue;
+                            }
+
                             dead.add(p.getUniqueId());
                             p.damage(99999);
                         }
@@ -73,8 +80,34 @@ public class PieceKeeper {
             }
         }
 
+        // Tick down the player invincibility
+        for(Map.Entry<UUID, Integer> entry : pieceInvincibilityTicks.entrySet()) {
+            Player p = Bukkit.getPlayer(entry.getKey());
+            if(p == null) continue;
+            if(entry.getValue() >= 0) {
+
+                // Send hotbar message
+                if(entry.getValue()==0) p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(" "));
+                else {
+                    int remainingTicks = entry.getValue();
+                    int seconds = (int) Math.floor((double)remainingTicks/20);
+                    int minutes = (int) Math.floor((double)seconds/60);
+                    seconds %= 60;
+                    String stringSeconds = String.valueOf(seconds);
+                    if(stringSeconds.length() == 1) stringSeconds = "0" + stringSeconds;
+                    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GREEN + "Falling Block Invincibility: " + minutes + ":" + stringSeconds));
+                }
+
+                entry.setValue(entry.getValue()-1);
+            }
+        }
+
         tick++;
         if(tick>=3) tick = 0;
+    }
+
+    public void setImmunity(Player p, int ticks) {
+        pieceInvincibilityTicks.put(p.getUniqueId(), ticks);
     }
 
     public List<UUID> getDead() {return dead;}

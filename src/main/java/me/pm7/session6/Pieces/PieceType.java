@@ -201,6 +201,20 @@ public enum PieceType {
             {false, true, true},
             {true, false, true},
             {false, true, true},
+    }),
+
+    CIRCLE(new boolean[][] { // heavy quotes
+            {false, true, true, false},
+            {true, true, true, true},
+            {true, true, true, true},
+            {false, true, true, false},
+    }),
+
+    DERP(new boolean[][] {
+            {false, false, false, false},
+            {true, false, false, true},
+            {false, true, true, false},
+            {true, true, true ,true}
     })
 
 
