@@ -14,7 +14,7 @@ public class DeathListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
         if(plugin.getPieceKeeper().getDead().contains(p.getUniqueId())) {
-            e.setDeathMessage(p.getDisplayName() + " touched the Sky Thing™");
+            e.setDeathMessage(p.getDisplayName() + " was consumed by the Storm");
             plugin.getPieceKeeper().getDead().remove(p.getUniqueId());
         }
     }
@@ -23,7 +23,7 @@ public class DeathListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent e) {
         if(plugin.getPieceKeeper().isRunning()) {
             Player p = e.getPlayer();
-            plugin.getPieceKeeper().setImmunity(p, 3600);
+            plugin.getPieceKeeper().setImmunity(p, 2400);
         }
     }
 }

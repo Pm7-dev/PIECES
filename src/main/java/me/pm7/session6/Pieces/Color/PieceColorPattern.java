@@ -19,7 +19,7 @@ public enum PieceColorPattern {
     PURPLE,
     PINK,
 
-    // Cooler custom colors
+    // Cooler custom colors (gradients n' stuff)
     ELECTRIC_FLASH,
     COTTON_CANDY,
     UNICORN_PUKE,
@@ -37,7 +37,13 @@ public enum PieceColorPattern {
     SALMON,
     MANGO,
     PURPLE_SPREAD,
-    TRANSPARENT_BLORANGE;
+    TRANSPARENT_BLORANGE,
+    PURP_TO_RED,
+    SIERRA_MIST, //SODA!!!
+    KINDA_PRISMARINE,
+    OUT_OF_NAMES,
+    hOtGuY,
+    ;
 
     public PieceColor getColor() {
         return switch (this) {
@@ -140,7 +146,6 @@ public enum PieceColorPattern {
                     Color.fromARGB(255, 94, 241, 242)
             ));
 
-
             case DARKENING_RED -> new PieceColor(true, 80, true, Arrays.asList(
                     Color.fromARGB(255, 106, 23, 23),
                     Color.fromARGB(255, 238, 72, 72)
@@ -165,6 +170,35 @@ public enum PieceColorPattern {
             case TRANSPARENT_BLORANGE -> new PieceColor(true, 32, true, Arrays.asList(
                     Color.fromARGB(180, 45, 126, 230),
                     Color.fromARGB(180, 255, 102, 68)
+            ));
+
+            case PURP_TO_RED -> new PieceColor(true, 17, false, Arrays.asList(
+                    Color.fromARGB(255, 83, 83, 255),
+                    Color.fromARGB(255, 255, 83, 255),
+                    Color.fromARGB(255, 255, 83, 83)
+            ));
+
+            case SIERRA_MIST -> new PieceColor(true, 18, true, Arrays.asList(
+                    Color.fromARGB(180, 91, 241, 108),
+                    Color.fromARGB(210, 75, 87, 255)
+            ));
+
+            case KINDA_PRISMARINE -> new PieceColor(true, 55, true, Arrays.asList(
+                    Color.fromARGB(255, 16, 228, 166),
+                    Color.fromARGB(255, 75, 212, 251)
+            ));
+
+            case OUT_OF_NAMES -> new PieceColor(true, 20, true, Arrays.asList(
+                    Color.fromARGB(255, 38, 206, 170),
+                    Color.fromARGB(180, 255, 255, 255),
+                    Color.fromARGB(255, 80, 73, 204),
+                    Color.fromARGB(180, 255, 255, 255)
+            ));
+
+            case hOtGuY -> new PieceColor(true, 30, true, Arrays.asList(
+                    Color.fromARGB(255, 236, 205, 0),
+                    Color.fromARGB(255, 255, 255, 255),
+                    Color.fromARGB(255, 98, 174, 220)
             ));
         };
     }

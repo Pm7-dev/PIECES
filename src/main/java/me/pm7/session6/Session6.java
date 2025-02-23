@@ -1,5 +1,6 @@
 package me.pm7.session6;
 
+import me.pm7.session6.Commands.stormDifficulty;
 import me.pm7.session6.Commands.test;
 import me.pm7.session6.Listener.ConnectionListener;
 import me.pm7.session6.Listener.DeathListener;
@@ -13,12 +14,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 
 public final class Session6 extends JavaPlugin {
@@ -31,6 +29,8 @@ public final class Session6 extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         getCommand("test").setExecutor(new test());
+        getCommand("stormDifficulty").setExecutor(new stormDifficulty());
+        getCommand("stormDifficulty").setTabCompleter(new stormDifficulty());
         getServer().getPluginManager().registerEvents(new DeathListener(), plugin);
         getServer().getPluginManager().registerEvents(new ConnectionListener(), plugin);
 

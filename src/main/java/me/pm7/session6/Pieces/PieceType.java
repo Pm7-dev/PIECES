@@ -86,6 +86,13 @@ public enum PieceType {
             {false, false, false, false}
     }),
 
+    Y_10(new boolean[][]{ // This is closer to a Y anyways.
+            {true, false, false, true},
+            {true, true, true, true},
+            {false, true, true, false},
+            {false, true, true, false}
+    }),
+
     S_4(new boolean[][]{
             {false, false,  true, false},
             {false,  true, false, false},
@@ -128,13 +135,13 @@ public enum PieceType {
             {false, false, false, false}
     }),
 
-    COLON_3(new boolean[][] {
-            {false, false, false, true, true},
-            {false, true, false, false, true},
-            {false, false, false, true, false},
-            {false, true, false, false, true},
-            {false, false, false, true, true}
-    }),
+//    COLON_3(new boolean[][] {
+//            {false, false, false, true, true},
+//            {false, true, false, false, true},
+//            {false, false, false, true, false},
+//            {false, true, false, false, true},
+//            {false, false, false, true, true}
+//    }),
 
     I_9(new boolean[][]{
             {false, true, true, true, false},
@@ -169,13 +176,6 @@ public enum PieceType {
             {false, false, false, true, false},
     }),
 
-    KO(new boolean[][] {
-            {false, false, false, true},
-            {true, false, true, false},
-            {false, true, true, true},
-            {true, true, true, false},
-    }),
-
     SMILE(new boolean[][] {
             {false, true, false, true, false},
             {false, true, false, true, false},
@@ -197,12 +197,6 @@ public enum PieceType {
             {true, true, true, false},
     }),
 
-    D_6(new boolean[][] {
-            {false, true, true},
-            {true, false, true},
-            {false, true, true},
-    }),
-
     CIRCLE(new boolean[][] { // heavy quotes
             {false, true, true, false},
             {true, true, true, true},
@@ -210,11 +204,18 @@ public enum PieceType {
             {false, true, true, false},
     }),
 
-    DERP(new boolean[][] {
-            {false, false, false, false},
+    J_9(new boolean[][] {
+            {true, true, true, true},
+            {false, false, false, true},
             {true, false, false, true},
-            {false, true, true, false},
-            {true, true, true ,true}
+            {false, true, true, false}
+    }),
+
+    B_14(new boolean[][] { // idk but just the idea of having a very tight one is cool
+            {true, true, true, true},
+            {true, false, true, true},
+            {true, true, false, true},
+            {true, true, true, true},
     })
 
 

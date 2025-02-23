@@ -11,7 +11,7 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         if(plugin.getPieceKeeper().isRunning()) {
-            plugin.getPieceKeeper().setImmunity(e.getPlayer(), 200);
+            plugin.getPieceKeeper().setImmunity(e.getPlayer(), 240);
         }
     }
 }
