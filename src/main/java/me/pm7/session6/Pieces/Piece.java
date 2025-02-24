@@ -51,7 +51,7 @@ public class Piece {
         this.modelData = modelData;
         this.faces = new ArrayList<>();
         this.facesToRemove = new ArrayList<>();
-        this.voiceDistance = size*(5.0/6.0) + 8;
+        this.voiceDistance = size + 8;
 
         //Load all the chunks that this entity will be in
         for(int cx = x; cx < x+(modelData.length*size); cx+=16) {

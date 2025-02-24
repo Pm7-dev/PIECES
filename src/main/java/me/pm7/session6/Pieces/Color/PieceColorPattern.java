@@ -29,7 +29,6 @@ public enum PieceColorPattern {
     QUANTUM_TEAL,
     FADING_PINK,
     MTN_DEW_OR_SOMETHING,
-    DARKNESS_FADE,
     LIGHTNESS_STAIRS,
     LIGHTNESS_FADE,
     GLACIER,
@@ -43,9 +42,23 @@ public enum PieceColorPattern {
     KINDA_PRISMARINE,
     OUT_OF_NAMES,
     hOtGuY,
+    QUICKFLASH,
+
+
+
     ;
 
+    private static final boolean test = false;
     public PieceColor getColor() {
+
+        if(test) { // Used to test new potential piece colors, makes it a lot easier to see
+            return new PieceColor(false, 1, false, List.of(
+                    Color.fromARGB(160, 255, 255, 255),
+                    Color.fromARGB(160, 255, 215, 215)
+            ));
+        }
+
+
         return switch (this) {
             case RED -> new PieceColor(false, 0, false, List.of(Color.fromRGB(255, 81, 81)));
             case ORANGE -> new PieceColor(false, 0, false, List.of(Color.fromRGB(255, 164, 81)));
@@ -92,7 +105,7 @@ public enum PieceColorPattern {
                     Color.fromARGB(255, 247, 125, 243)
             ));
 
-            case QUANTUM_TEAL -> new PieceColor(false, 3, false, Arrays.asList(
+            case QUANTUM_TEAL -> new PieceColor(false, 2, false, Arrays.asList(
                     Color.fromARGB(255, 25, 255, 141),
                     Color.fromARGB(0, 0, 0, 0),
                     Color.fromARGB(0, 0, 0, 0)//,
@@ -107,13 +120,6 @@ public enum PieceColorPattern {
             case MTN_DEW_OR_SOMETHING -> new PieceColor(true, 22, true, Arrays.asList(
                     Color.fromARGB(255, 255, 243, 71),
                     Color.fromARGB(255, 16, 248, 242)
-            ));
-
-            case DARKNESS_FADE -> new PieceColor(true, 40, true, Arrays.asList(
-                    Color.fromARGB(255, 74, 74, 255),
-                    Color.fromARGB(255, 0, 0, 0),
-                    Color.fromARGB(255, 74, 255, 74),
-                    Color.fromARGB(255, 0, 0, 0)
             ));
 
             case LIGHTNESS_STAIRS -> new PieceColor(false, 4, false, Arrays.asList(
@@ -199,6 +205,12 @@ public enum PieceColorPattern {
                     Color.fromARGB(255, 236, 205, 0),
                     Color.fromARGB(255, 255, 255, 255),
                     Color.fromARGB(255, 98, 174, 220)
+            ));
+
+            // Hopefully this is easy enough on the eyes
+            case QUICKFLASH -> new PieceColor(false, 1, false, List.of(
+                    Color.fromARGB(160, 255, 255, 255),
+                    Color.fromARGB(160, 255, 215, 215)
             ));
         };
     }

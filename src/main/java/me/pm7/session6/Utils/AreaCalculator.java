@@ -9,7 +9,7 @@ import java.awt.Point;
 
 public class AreaCalculator {
     private static final int INACCURACY = 1; // improves performance at the cost of area accuracy (might be broken, works at 1
-    public static final int BOUNDING_BOX_SIZE = 84;
+    public static final int BOUNDING_BOX_SIZE = 64;
     private static final int HALF_SIZE = BOUNDING_BOX_SIZE/INACCURACY/2;
 
     public static int getTotalArea(List<Location> centers) {

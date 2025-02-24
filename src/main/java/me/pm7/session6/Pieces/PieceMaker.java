@@ -8,7 +8,6 @@ import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.entity.Player;
 
-import java.awt.geom.Area;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -17,23 +16,11 @@ public class PieceMaker {
     private static final Session6 plugin = Session6.getPlugin();
 
     private int difficulty = 0;
-    private int spawnHeight;
+    private final int spawnHeight;
     private double spawnCountMultiplier;
     private int size;
     private double speed;
     private int secondsBeforeSpawn;
-
-    public int getSpawnHeight() {return spawnHeight;}
-    public void setSpawnHeight(int spawnHeight) {this.spawnHeight = spawnHeight;}
-    public double getSpawnCountMultiplier() {return spawnCountMultiplier;}
-    public void setSpawnCountMultiplier(double spawnCountMultiplier) {this.spawnCountMultiplier = spawnCountMultiplier;}
-    public int getSize() {return size;}
-    public void setSize(int size) {this.size = size;}
-    public double getSpeed() {return speed;}
-    public void setSpeed(double speed) {this.speed = speed;}
-    public int getSecondsBeforeSpawn() {return secondsBeforeSpawn;}
-    public void setSecondsBeforeSpawn(int secondsBeforeSpawn) {this.secondsBeforeSpawn = secondsBeforeSpawn;}
-
     private int secondsBeforeNextSpawn;
     private final Random random;
     private Integer taskID;
@@ -137,7 +124,8 @@ public class PieceMaker {
             // Create one piece.
             int x = (int) (spawn.getX()-((double)(model.length*size)/2));
             int z = (int) (spawn.getZ()-((double)(model.length*size)/2));
-            return new Piece(spawn.getWorld(), x, spawnHeight, z, size, speed, model, color);
+            double y = random.nextDouble() + spawnHeight;
+            return new Piece(spawn.getWorld(), x, y, z, size, speed, model, color);
         }
 
         // If a spot couldn't be found after 50 tries, cancel this spawn to not pause the thread
@@ -163,33 +151,54 @@ public class PieceMaker {
 
         this.difficulty = difficulty;
 
+        //TODO: test and balance
         switch (this.difficulty) {
             default: {
                 spawnCountMultiplier = 1.0;
                 size = 20;
                 speed = 8;
-                secondsBeforeSpawn = 5;
+                secondsBeforeSpawn = 4;
                 break;
             }
             case 1: {
+                spawnCountMultiplier = 2.0;
+                size = 22;
+                speed = 10;
+                secondsBeforeSpawn = 3;
                 break;
             }
             case 2: {
+                spawnCountMultiplier = 2.0;
+                size = 24;
+                speed = 15;
+                secondsBeforeSpawn = 3;
                 break;
             }
             case 3: {
+                spawnCountMultiplier = 2.5;
+                size = 26;
+                speed = 15;
+                secondsBeforeSpawn = 2;
                 break;
             }
             case 4: {
+                spawnCountMultiplier = 2.5;
+                size = 28;
+                speed = 17;
+                secondsBeforeSpawn = 2;
                 break;
             }
             case 5: {
+                spawnCountMultiplier = 2.5;
+                size = 30;
+                speed = 20;
+                secondsBeforeSpawn = 2;
                 break;
             }
             case 6: { // DO NOT USE!! TESTING/FUN PURPOSES ONLY (mainly fun)
                 spawnCountMultiplier = 4.0;
                 size = 32;
-                speed = 12;
+                speed = 20;
                 secondsBeforeSpawn = 2;
             }
         }
