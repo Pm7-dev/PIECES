@@ -1,14 +1,15 @@
 me\pm7\session6\Pieces\Color\PieceColorPattern.class
+me\pm7\session6\Commands\stormdifficulty.class
 me\pm7\session6\Pieces\Piece$1.class
 me\pm7\session6\Utils\AreaCalculator.class
 me\pm7\session6\Pieces\Piece.class
-me\pm7\session6\Commands\stormDifficulty.class
 me\pm7\session6\Listener\ConnectionListener.class
 me\pm7\session6\Listener\DeathListener.class
 me\pm7\session6\Pieces\Color\PieceColor.class
 me\pm7\session6\Session6.class
 me\pm7\session6\Pieces\PieceKeeper.class
 me\pm7\session6\Pieces\PieceType$1.class
+me\pm7\session6\Commands\startwildcard.class
 me\pm7\session6\Pieces\PieceType.class
 me\pm7\session6\Utils\Direction.class
 me\pm7\session6\Commands\test.class

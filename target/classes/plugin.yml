@@ -5,5 +5,7 @@ api-version: '1.21'
 commands:
   test:
     description: owo
-  stormDifficulty:
+  stormdifficulty:
     description: for admin use ^w^
+  startwildcard:
+    description: for admin use :3

@@ -7,8 +7,9 @@ package me.pm7.session6.Pieces;
     more readable, but eh, whatever. It's not like this has to be read by a human outside of the acual piece modeling
     process.
  */
-
 import org.bukkit.block.structure.Mirror;
+
+import java.util.List;
 
 public enum PieceType {
     PLUS_5(new boolean[][]{
@@ -216,7 +217,9 @@ public enum PieceType {
             {true, false, true, true},
             {true, true, false, true},
             {true, true, true, true},
-    })
+    }),
+
+    JUST_ONE(new boolean[][] {{true}}) // hehe
 
 
     ;PieceType(boolean[][] model) {this.model = model;}
@@ -261,4 +264,7 @@ public enum PieceType {
             }
         };
     }
+
+    private static final List<PieceType> boring = List.of(PLUS_5, X_5, I_4, Z_4, N_6, T_5, P_5, W_5, L_5, O_4, DOUBLE_SQUARE);
+    public static PieceType getBoring() {return boring.get((int) (Math.random()*boring.size()));}
 }

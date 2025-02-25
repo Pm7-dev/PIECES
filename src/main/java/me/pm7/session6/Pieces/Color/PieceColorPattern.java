@@ -30,7 +30,7 @@ public enum PieceColorPattern {
     FADING_PINK,
     MTN_DEW_OR_SOMETHING,
     LIGHTNESS_STAIRS,
-    LIGHTNESS_FADE,
+//    LIGHTNESS_FADE,
     GLACIER,
     DARKENING_RED,
     SALMON,
@@ -43,7 +43,7 @@ public enum PieceColorPattern {
     OUT_OF_NAMES,
     hOtGuY,
     QUICKFLASH,
-
+    PIFFIN_VIEWER_SPECIAL,
 
 
     ;
@@ -134,18 +134,18 @@ public enum PieceColorPattern {
                     Color.fromARGB(255, 0, 0, 0)
             ));
 
-            case LIGHTNESS_FADE -> new PieceColor(true, 5, false, Arrays.asList(
-                    Color.fromARGB(255, 255, 255, 255),
-                    Color.fromARGB(128, 255, 255, 255),
-                    Color.fromARGB(0, 255, 255, 255),
-                    Color.fromARGB(0, 0, 0, 0),
-                    Color.fromARGB(128, 0, 0, 0),
-                    Color.fromARGB(255, 0, 0, 0),
-                    Color.fromARGB(128, 0, 0, 0),
-                    Color.fromARGB(0, 0, 0, 0),
-                    Color.fromARGB(0, 255, 255, 255),
-                    Color.fromARGB(128, 255, 255, 255)
-            ));
+//            case LIGHTNESS_FADE -> new PieceColor(true, 5, false, Arrays.asList(
+//                    Color.fromARGB(255, 255, 255, 255),
+//                    Color.fromARGB(128, 255, 255, 255),
+//                    Color.fromARGB(0, 255, 255, 255),
+//                    Color.fromARGB(0, 0, 0, 0),
+//                    Color.fromARGB(128, 0, 0, 0),
+//                    Color.fromARGB(255, 0, 0, 0),
+//                    Color.fromARGB(128, 0, 0, 0),
+//                    Color.fromARGB(0, 0, 0, 0),
+//                    Color.fromARGB(0, 255, 255, 255),
+//                    Color.fromARGB(128, 255, 255, 255)
+//            ));
 
             case GLACIER -> new PieceColor(true, 20, true, Arrays.asList(
                     Color.fromARGB(255, 187, 198, 236),
@@ -212,7 +212,27 @@ public enum PieceColorPattern {
                     Color.fromARGB(160, 255, 255, 255),
                     Color.fromARGB(160, 255, 215, 215)
             ));
+
+            /*
+                This color was compiled exclusively by hex color suggestions from Piffin viewers. I know having your name
+                immortalized in code doesn't mean much, and I'll try to get your names somewhere else, but thank you all.
+
+                Especially thank you Trap for being the only person who managed to get their hex color live during the
+                piffin stream
+             */
+            case PIFFIN_VIEWER_SPECIAL -> new PieceColor(true, 20, true, List.of(
+                    Color.fromARGB(255, 235, 97, 35),   // From Trap
+                    Color.fromARGB(255, 194, 14, 0),    // From DemonicReaps
+                    Color.fromARGB(255, 255, 136, 26),  // From Magma (magmanugget)
+                    Color.fromARGB(255, 7, 70, 133),    // From ATV (atvstudios)
+                    Color.fromARGB(255, 194, 120, 255), // From d<3 (lolstoney)
+                    Color.fromARGB(255, 66, 200, 245)   // From millionbucks1
+            ));
         };
     }
     public static PieceColorPattern getRandom() {return values()[(int) (Math.random()*values().length)];}
+
+
+    private static final List<PieceColorPattern> boringColors = List.of(RED, ORANGE, YELLOW, GREEN, TEAL, LIGHT_BLUE, BLUE, PURPLE, PINK);
+    public static PieceColorPattern getRandomBoring() {return boringColors.get((int) (Math.random() * boringColors.size()));}
 }

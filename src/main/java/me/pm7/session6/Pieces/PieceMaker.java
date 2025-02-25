@@ -33,7 +33,6 @@ public class PieceMaker {
         speed = 8;
         secondsBeforeSpawn = 5;
 
-
         taskID = null;
         this.random = new Random();
         this.secondsBeforeNextSpawn = secondsBeforeSpawn;
@@ -50,9 +49,27 @@ public class PieceMaker {
         taskID = null;
     }
 
+    private int boringTimer = 0; // Counts up to Funky Mode
     private void loop() {
+        if(boringTimer <= 160) boringTimer++;
+        if(boringTimer == 156) serverMessageAndSound("3","pieces:funk.funk_loading", false);
+        if(boringTimer == 157) serverMessageAndSound("2","pieces:funk.funk_loading", false);
+        if(boringTimer == 158) serverMessageAndSound("1","pieces:funk.funk_loading", false);
+        if(boringTimer == 160) {
+            serverMessageAndSound("Funky mode activated!","pieces:funk.funk_activate", true);
+        }
+
         tickPieceSpawn();
         tickDifficulty();
+    }
+
+    private void serverMessageAndSound(String message, String sound, boolean hold) { //Plays a sound to the entire server
+        for(Player p : Bukkit.getOnlinePlayers()) {
+            Location soundLoc = p.getLocation().clone().add(0, 500, 0);
+            p.playSound(soundLoc, sound, 99999, 1);
+            if(hold) p.sendTitle("", ChatColor.GREEN + message, 0, 50, 20);
+            else p.sendTitle("", ChatColor.GREEN + message, 0, 0, 25);
+        }
     }
 
     private void tickPieceSpawn() {
@@ -89,13 +106,18 @@ public class PieceMaker {
         for(int i=0; i<50; i++) {
 
             // Generate the data of the piece we are making
-            PieceType type = PieceType.getRandom();
+            PieceType type;
+            if(boringTimer < 160) type = PieceType.getBoring();
+            else type = PieceType.getRandom();
             boolean[][] model = type.getModel();
             model = PieceType.rotateModel(model, random.nextInt(4));
             model = PieceType.mirrorModel(model, Mirror.values()[random.nextInt(Mirror.values().length)]);
             int size = random.nextInt(this.size/2, this.size);
             double speed = random.nextDouble(-5.0, 5.0) + this.speed;
-            PieceColor color = PieceColorPattern.getRandom().getColor();
+
+            PieceColor color; // COLOR !!
+            if(boringTimer < 160) color = PieceColorPattern.getRandomBoring().getColor();
+            else color = PieceColorPattern.getRandom().getColor();
 
             // Find a spot to make the piece
             List<Chunk> chunks = new ArrayList<>();
@@ -154,10 +176,10 @@ public class PieceMaker {
         //TODO: test and balance
         switch (this.difficulty) {
             default: {
-                spawnCountMultiplier = 1.0;
+                spawnCountMultiplier = 1.5;
                 size = 20;
                 speed = 8;
-                secondsBeforeSpawn = 4;
+                secondsBeforeSpawn = 3;
                 break;
             }
             case 1: {
