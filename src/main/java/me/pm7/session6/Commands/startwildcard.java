@@ -40,6 +40,7 @@ public class startwildcard extends BukkitRunnable implements CommandExecutor {
 
             // Actually start the thing
             plugin.getPieceMaker().start();
+            plugin.start(); // used for invincibility bits
 
             this.cancel();
             return;

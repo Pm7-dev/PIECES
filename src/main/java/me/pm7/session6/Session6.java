@@ -1,5 +1,6 @@
 package me.pm7.session6;
 
+import me.pm7.session6.Commands.thatonething;
 import me.pm7.session6.Commands.startwildcard;
 import me.pm7.session6.Commands.stormdifficulty;
 import me.pm7.session6.Commands.test;
@@ -33,6 +34,7 @@ public final class Session6 extends JavaPlugin {
         getCommand("stormdifficulty").setExecutor(new stormdifficulty());
         getCommand("stormdifficulty").setTabCompleter(new stormdifficulty());
         getCommand("startwildcard").setExecutor(new startwildcard());
+        getCommand("thatonething").setExecutor(new thatonething());
         getServer().getPluginManager().registerEvents(new DeathListener(), plugin);
         getServer().getPluginManager().registerEvents(new ConnectionListener(), plugin);
 
@@ -71,4 +73,8 @@ public final class Session6 extends JavaPlugin {
     public static Session6 getPlugin() {return plugin;}
     public PieceKeeper getPieceKeeper() {return pieceKeeper;}
     public PieceMaker getPieceMaker() {return pieceMaker;}
+
+    private static boolean started = false;
+    public boolean isStarted() {return started;}
+    public void start() {started = true;}
 }

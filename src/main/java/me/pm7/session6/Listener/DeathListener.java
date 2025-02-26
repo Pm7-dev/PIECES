@@ -21,7 +21,7 @@ public class DeathListener implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
-        if(plugin.getPieceKeeper().isRunning()) {
+        if(plugin.isStarted()) {
             Player p = e.getPlayer();
             plugin.getPieceKeeper().setImmunity(p, 2400);
         }

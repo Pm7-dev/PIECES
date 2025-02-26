@@ -226,7 +226,8 @@ public enum PieceColorPattern {
                     Color.fromARGB(255, 255, 136, 26),  // From Magma (magmanugget)
                     Color.fromARGB(255, 7, 70, 133),    // From ATV (atvstudios)
                     Color.fromARGB(255, 194, 120, 255), // From d<3 (lolstoney)
-                    Color.fromARGB(255, 66, 200, 245)   // From millionbucks1
+                    Color.fromARGB(255, 66, 200, 245),  // From millionbucks1
+                    Color.fromARGB(255, 64, 54, 158)    // Freom LGWaffle
             ));
         };
     }

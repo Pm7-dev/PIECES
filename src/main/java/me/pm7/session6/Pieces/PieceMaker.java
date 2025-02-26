@@ -4,6 +4,10 @@ import me.pm7.session6.Pieces.Color.PieceColor;
 import me.pm7.session6.Pieces.Color.PieceColorPattern;
 import me.pm7.session6.Session6;
 import me.pm7.session6.Utils.AreaCalculator;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.entity.Player;
@@ -24,6 +28,8 @@ public class PieceMaker {
     private int secondsBeforeNextSpawn;
     private final Random random;
     private Integer taskID;
+
+    private boolean funky = false;
 
     public PieceMaker() {
         spawnHeight = 190; //190
@@ -50,13 +56,35 @@ public class PieceMaker {
     }
 
     private int boringTimer = 0; // Counts up to Funky Mode
+    private static final int FUNKY_TIME = 180;
     private void loop() {
-        if(boringTimer <= 160) boringTimer++;
-        if(boringTimer == 156) serverMessageAndSound("3","pieces:funk.funk_loading", false);
-        if(boringTimer == 157) serverMessageAndSound("2","pieces:funk.funk_loading", false);
-        if(boringTimer == 158) serverMessageAndSound("1","pieces:funk.funk_loading", false);
-        if(boringTimer == 160) {
+
+        // This became such a mess super quickly lol
+        if(boringTimer <= FUNKY_TIME + 5) boringTimer++;
+        if(boringTimer == FUNKY_TIME - 4) {
+            serverMessageAndSound("3","pieces:funk.funk_loading", false);
+            for(Player p : Bukkit.getOnlinePlayers()) p.closeInventory();
+        }
+        if(boringTimer == FUNKY_TIME - 3) serverMessageAndSound("2","pieces:funk.funk_loading", false);
+        if(boringTimer == FUNKY_TIME - 2) serverMessageAndSound("1","pieces:funk.funk_loading", false);
+        if(boringTimer == FUNKY_TIME) {
+            funky = true;
             serverMessageAndSound("Funky mode activated!","pieces:funk.funk_activate", true);
+        }
+        if(boringTimer == FUNKY_TIME + 4) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                BaseComponent[] component = new ComponentBuilder()
+                        .append("[Funky Mode]: Confused? ").color(ChatColor.GOLD.asBungee())
+                        .append("Click to check our FAQ!").color(ChatColor.GOLD.asBungee()).underlined(true).bold(true)
+                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/thatonething"))
+                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to see the Funky Mode FAQ!").color(ChatColor.GREEN.asBungee()).create()))
+                        .create();
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    p.spigot().sendMessage(component);
+                    Location soundLoc = p.getLocation().clone().add(0, 500, 0);
+                    p.playSound(soundLoc, "pieces:funk.faq", 99999, 1);
+                }
+            }, 10L);
         }
 
         tickPieceSpawn();
@@ -107,7 +135,7 @@ public class PieceMaker {
 
             // Generate the data of the piece we are making
             PieceType type;
-            if(boringTimer < 160) type = PieceType.getBoring();
+            if(boringTimer < 20) type = PieceType.getBoring();
             else type = PieceType.getRandom();
             boolean[][] model = type.getModel();
             model = PieceType.rotateModel(model, random.nextInt(4));
@@ -116,7 +144,7 @@ public class PieceMaker {
             double speed = random.nextDouble(-5.0, 5.0) + this.speed;
 
             PieceColor color; // COLOR !!
-            if(boringTimer < 160) color = PieceColorPattern.getRandomBoring().getColor();
+            if(boringTimer < 20) color = PieceColorPattern.getRandomBoring().getColor();
             else color = PieceColorPattern.getRandom().getColor();
 
             // Find a spot to make the piece
@@ -154,6 +182,8 @@ public class PieceMaker {
         plugin.getLogger().log(Level.WARNING, "Piece spawn spot could not be found after 50 tries :(");
         return null;
     }
+
+    public boolean isFunky() {return funky;}
 
     public int getDifficulty() {return difficulty;}
     public void setDifficulty(int difficulty) {
