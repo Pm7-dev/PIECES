@@ -43,7 +43,11 @@ public enum PieceColorPattern {
     OUT_OF_NAMES,
     hOtGuY,
     QUICKFLASH,
-    PIFFIN_VIEWER_SPECIAL,
+
+    // !!
+    PIFFIN_VIEWER_EXTRAVAGANZA_1,
+    PIFFIN_VIEWER_EXTRAVAGANZA_2,
+    PIFFIN_VIEWER_EXTRAVAGANZA_3,
 
 
     ;
@@ -214,20 +218,36 @@ public enum PieceColorPattern {
             ));
 
             /*
-                This color was compiled exclusively by hex color suggestions from Piffin viewers. I know having your name
-                immortalized in code doesn't mean much, and I'll try to get your names somewhere else, but thank you all.
+                These next few colors were compiled exclusively from hex color suggestions by Piffin viewers. I know
+                having your name immortalized in code doesn't mean much, and I'll try to get your names somewhere else,
+                but thank you all for providing!.
 
                 Especially thank you Trap for being the only person who managed to get their hex color live during the
-                piffin stream
+                24/02/25 piffin stream :D
              */
-            case PIFFIN_VIEWER_SPECIAL -> new PieceColor(true, 20, true, List.of(
-                    Color.fromARGB(255, 235, 97, 35),   // From Trap
-                    Color.fromARGB(255, 194, 14, 0),    // From DemonicReaps
-                    Color.fromARGB(255, 255, 136, 26),  // From Magma (magmanugget)
-                    Color.fromARGB(255, 7, 70, 133),    // From ATV (atvstudios)
-                    Color.fromARGB(255, 194, 120, 255), // From d<3 (lolstoney)
-                    Color.fromARGB(255, 66, 200, 245),  // From millionbucks1
-                    Color.fromARGB(255, 64, 54, 158)    // Freom LGWaffle
+
+            // Noticed a pretty blue/orange pattern that could be made
+            case PIFFIN_VIEWER_EXTRAVAGANZA_1 -> new PieceColor(true, 24, true, List.of(
+                    Color.fromARGB(255, 235, 97, 35),  // From Trap
+                    Color.fromARGB(255, 30, 129, 176), // From Enter Name Here
+                    Color.fromARGB(255, 255, 136, 26), // From Magma (magmanugget)
+                    Color.fromARGB(255, 66, 200, 245)  // From millionbucks1
+            ));
+
+            // I really like these colors :3
+            case PIFFIN_VIEWER_EXTRAVAGANZA_2 -> new PieceColor(true, 24, true, List.of(
+                    Color.fromARGB(255, 132, 37, 147),   // From Dedede (dedede2)
+                    Color.fromARGB(255, 194, 120, 255),  // From d<3 (lolstoney)
+                    Color.fromARGB(255, 255, 71, 169),   // From LizardLyd
+                    Color.fromARGB(255, 240, 26, 97),    // From LizardLyd
+                    Color.fromARGB(255, 255, 71, 169)    // From LizardLyd
+            ));
+
+            // Kinda like colors of nature or something... also contains Raven's suggestion
+            case PIFFIN_VIEWER_EXTRAVAGANZA_3 -> new PieceColor(true, 24, true, List.of(
+                    Color.fromARGB(255, 7, 70, 133),    // From ATV
+                    Color.fromARGB(255, 49, 97, 36),    // From Oliver
+                    Color.fromARGB(255, 255, 255, 255)  // From Raven
             ));
         };
     }

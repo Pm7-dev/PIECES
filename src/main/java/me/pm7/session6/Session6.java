@@ -9,6 +9,7 @@ import me.pm7.session6.Listener.DeathListener;
 import me.pm7.session6.Pieces.Piece;
 import me.pm7.session6.Pieces.PieceKeeper;
 import me.pm7.session6.Pieces.PieceMaker;
+import me.pm7.session6.Utils.AnimationController;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -26,6 +27,7 @@ public final class Session6 extends JavaPlugin {
     private static Session6 plugin;
     private static PieceKeeper pieceKeeper;
     private static PieceMaker pieceMaker;
+    private static AnimationController animationController;
 
     @Override
     public void onEnable() {
@@ -55,6 +57,9 @@ public final class Session6 extends JavaPlugin {
             }
             for(Entity e : remove) e.remove();
         }
+
+        animationController = new AnimationController();
+        animationController.start();
 
         pieceKeeper = new PieceKeeper();
         pieceKeeper.start();

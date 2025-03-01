@@ -213,6 +213,7 @@ public class Piece {
     public boolean isRunning() {return running;}
     public static List<Piece> getPieces() {return pieces;}
     public static NamespacedKey getPieceID() {return pieceID;}
+    public double getSpeed() {return speed;}
 
     public void kill() {
 
