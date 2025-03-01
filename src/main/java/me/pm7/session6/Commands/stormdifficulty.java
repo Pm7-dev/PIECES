@@ -20,6 +20,7 @@ public class stormdifficulty implements CommandExecutor, TabExecutor {
 
         if(!p.isOp()) {
             sender.sendMessage(ChatColor.RED + "not 4 u >:3");
+            return true;
         }
 
         if(args.length == 0) {

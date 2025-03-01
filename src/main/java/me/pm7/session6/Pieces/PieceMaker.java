@@ -20,7 +20,7 @@ public class PieceMaker {
     private static final Session6 plugin = Session6.getPlugin();
 
     private int difficulty = 0;
-    private final int spawnHeight;
+    private int spawnHeight;
     private double spawnCountMultiplier;
     private int size;
     private double speed;
@@ -135,7 +135,7 @@ public class PieceMaker {
 
             // Generate the data of the piece we are making
             PieceType type;
-            if(boringTimer < 20) type = PieceType.getBoring();
+            if(!funky) type = PieceType.getBoring();
             else type = PieceType.getRandom();
             boolean[][] model = type.getModel();
             model = PieceType.rotateModel(model, random.nextInt(4));
@@ -144,7 +144,7 @@ public class PieceMaker {
             double speed = random.nextDouble(-5.0, 5.0) + this.speed;
 
             PieceColor color; // COLOR !!
-            if(boringTimer < 20) color = PieceColorPattern.getRandomBoring().getColor();
+            if(!funky) color = PieceColorPattern.getRandomBoring().getColor();
             else color = PieceColorPattern.getRandom().getColor();
 
             // Find a spot to make the piece
@@ -254,5 +254,9 @@ public class PieceMaker {
                 secondsBeforeSpawn = 2;
             }
         }
+    }
+
+    public void setSpawnHeight(int newSpawnHeight) {
+        this.spawnHeight = newSpawnHeight;
     }
 }

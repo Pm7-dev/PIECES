@@ -58,15 +58,22 @@ public class AnimationController implements Listener {
             if(lowestPiece != null) {
                 double distance = lowestPiece.getY()-loc.getY();
                 Location soundLoc = loc.clone().add(0, 500, 0);
-                float volume = (float) ((distance/45.0f * -0.4f) + 1.4f);
+                float pitch = (float) ((distance/(3.2*lowestPiece.getSpeed()*3) * -0.3) + 1.2f); //*3 for 3 sections of sound?
 
-                int pulseSection = (int) Math.floor(distance/(lowestPiece.getSpeed() * 3.2));
-                int ticksBetweenPulses = (int) Math.pow(2, pulseSection + 1);
-                if (tick % ticksBetweenPulses == 0) {
-                    clearQueue(p.getUniqueId());
-                    for (int i = 0; i < 32; i+=5) addFrame(p.getUniqueId(), "warning_overlay/" + i);
-                    addFrame(p.getUniqueId(), "warning_overlay/blank");
-                    p.playSound(soundLoc, "pieces:warning", 9999, volume);
+                int pulseSection = (int) Math.floor(distance/(lowestPiece.getSpeed() * 3.2)); //3.2
+                if(pulseSection < 3) {
+                    int ticksBetweenPulses;
+                    if(distance <= lowestPiece.getSpeed() * 1.4) { // Override when it gets *really* close for a stressful effect
+                        ticksBetweenPulses = 2;
+                        pitch += 0.05f;
+                    }
+                    else ticksBetweenPulses = (int) Math.pow(2, pulseSection + 2);
+                    if (tick % ticksBetweenPulses == 0) {
+                        clearQueue(p.getUniqueId());
+                        for (int i = 0; i < 32; i += 5) addFrame(p.getUniqueId(), "warning_overlay/" + i);
+                        addFrame(p.getUniqueId(), "warning_overlay/blank");
+                        p.playSound(soundLoc, "pieces:warning", 9999, pitch);
+                    }
                 }
             }
             animate(helmet, p.getUniqueId());

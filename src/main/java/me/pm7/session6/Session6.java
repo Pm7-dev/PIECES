@@ -1,9 +1,6 @@
 package me.pm7.session6;
 
-import me.pm7.session6.Commands.thatonething;
-import me.pm7.session6.Commands.startwildcard;
-import me.pm7.session6.Commands.stormdifficulty;
-import me.pm7.session6.Commands.test;
+import me.pm7.session6.Commands.*;
 import me.pm7.session6.Listener.ConnectionListener;
 import me.pm7.session6.Listener.DeathListener;
 import me.pm7.session6.Pieces.Piece;
@@ -33,6 +30,7 @@ public final class Session6 extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         getCommand("test").setExecutor(new test());
+        getCommand("raisetheroof").setExecutor(new raisetheroof());
         getCommand("stormdifficulty").setExecutor(new stormdifficulty());
         getCommand("stormdifficulty").setTabCompleter(new stormdifficulty());
         getCommand("startwildcard").setExecutor(new startwildcard());
