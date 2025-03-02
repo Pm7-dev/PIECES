@@ -168,13 +168,49 @@ public class PieceMaker {
             }
             if (!nearby) continue;
 
-            // Make sure the piece is not colliding with any other existing pieces upon spawning
-            // TODO: Write this plz
-
-            // Create one piece.
+            // Get spawn location data
             int x = (int) (spawn.getX()-((double)(model.length*size)/2));
             int z = (int) (spawn.getZ()-((double)(model.length*size)/2));
-            double y = random.nextDouble() + spawnHeight;
+            double y = spawnHeight;
+
+            // Gather a list of pieces that might collide with this piece if it spawns in the planned location
+            List<Piece> potentialCollisions = new ArrayList<>();
+            for(Piece piece : Piece.getPieces()) {
+                if(piece.getY() + piece.getSize() >= y) continue;
+                int totalLength = model.length * size;
+                int pieceTotalLength = piece.getModelData().length * piece.getSize();
+                if((x<=piece.getX() && x+totalLength>piece.getX()) || (x>=piece.getX() && x<piece.getX()+pieceTotalLength)) {
+                    if((z<=piece.getZ() && z+totalLength>piece.getZ()) || (z>=piece.getZ() && z<piece.getZ()+pieceTotalLength)) {
+                        potentialCollisions.add(piece);
+                    }
+                }
+            }
+
+            // Check for a more precise collision between the collision candidates
+            boolean collision = false;
+            for(Piece pC : potentialCollisions) {
+                boolean[][] pcModel = pC.getModelData();
+                for(int pcX=0; pcX<pcModel.length; pcX++) {
+                    for(int pcZ=0; pcZ<pcModel.length; pcZ++) {
+                        if(!pcModel[pcZ][pcX]) continue;
+                        for(int sX=0; sX<model.length; sX++) {
+                            for(int sZ=0; sZ<model.length; sZ++) { // 5 for loops deep, wowzers
+                                if(!pcModel[pcZ][pcX]) continue;
+
+                                // These two if statements might be my least favorite ever.
+                                if(x+(sX*size)<=pC.getX()+(pcX*pC.getSize()) && x+((sX+1)*size)>pC.getX()+(pcX*pC.getSize()) || (x+(sX*size)>=pC.getX()+(pcX*pC.getSize()) && x+(sX*size)<pC.getX()+((pcX+1)*pC.getSize()))) {
+                                    if(z+(sZ*size)<=pC.getZ()+(pcZ*pC.getSize()) && z+((sZ+1)*size)>pC.getZ()+(pcZ*pC.getSize()) || (z+(sZ*size)>=pC.getZ()+(pcZ*pC.getSize()) && z+(sZ*size)<pC.getZ()+((pcZ+1)*pC.getSize()))) {
+                                        collision = true;
+                                        break;
+                                    }
+                                }
+                            }if(collision) break;
+                        }if(collision) break;
+                    }if(collision) break;
+                }if(collision) break;
+            }if(collision) continue; // break;ing the pattern
+
+
             return new Piece(spawn.getWorld(), x, y, z, size, speed, model, color);
         }
 
