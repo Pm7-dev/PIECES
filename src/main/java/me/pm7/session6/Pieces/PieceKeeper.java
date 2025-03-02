@@ -37,25 +37,12 @@ public class PieceKeeper {
     private void loop() {
         List<Piece> remove = new ArrayList<>();
         for(Piece piece : Piece.getPieces()) {
-            if(piece.isRunning()) {
-                piece.moveDown();
-                piece.tickColor();
-                if(tick==0) piece.playAmbience();
-
-                if(piece.shouldRemove()) remove.add(piece);
-            }
-        }
-
-        // Remove pieces that are marked for removal
-        while(!remove.isEmpty()) {
-            remove.getFirst().kill();
-            remove.removeFirst();
-        }
-
-        // Player collision detection
-        for(Piece piece : Piece.getPieces()) {
             if(!piece.isRunning()) continue;
+            piece.moveDown();
+            piece.tickColor();
+            if(tick==0) piece.playAmbience();
 
+            // Player collision detection
             double size = piece.getSize();
             double x = piece.getX();
             double z = piece.getZ();
@@ -65,6 +52,8 @@ public class PieceKeeper {
                 for(int x1=0;x1<piece.getModelData().length;x1++) {
                     if(piece.getModelData()[z1][x1]) {
                         Location loc = new Location(piece.getWorld(),x+(x1*size)+(size/2),y+(size/2), z+(z1*size)+(size/2));
+
+                        //TODO: optimize this if it gets too laggy
                         for(Entity entity : piece.getWorld().getNearbyEntities(loc, size/2, size/2, size/2, isPlayer)) {
                             Player p = (Player) entity;
 
@@ -78,6 +67,14 @@ public class PieceKeeper {
                     }
                 }
             }
+
+            if(piece.shouldRemove()) remove.add(piece);
+        }
+
+        // Remove pieces that are marked for removal
+        while(!remove.isEmpty()) {
+            remove.getFirst().kill();
+            remove.removeFirst();
         }
 
         // Tick down the player invincibility

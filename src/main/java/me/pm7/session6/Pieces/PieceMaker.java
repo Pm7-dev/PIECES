@@ -13,7 +13,6 @@ import org.bukkit.block.structure.Mirror;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.logging.Level;
 
 // You'd think I'd be satisfied with the first pun of "Piece Keeper," but no, I need more
 public class PieceMaker {
@@ -61,12 +60,12 @@ public class PieceMaker {
 
         // This became such a mess super quickly lol
         if(boringTimer <= FUNKY_TIME + 5) boringTimer++;
-        if(boringTimer == FUNKY_TIME - 4) {
+        if(boringTimer == FUNKY_TIME - 3) {
             serverMessageAndSound("3","pieces:funk.funk_loading", false);
             for(Player p : Bukkit.getOnlinePlayers()) p.closeInventory();
         }
-        if(boringTimer == FUNKY_TIME - 3) serverMessageAndSound("2","pieces:funk.funk_loading", false);
-        if(boringTimer == FUNKY_TIME - 2) serverMessageAndSound("1","pieces:funk.funk_loading", false);
+        if(boringTimer == FUNKY_TIME - 2) serverMessageAndSound("2","pieces:funk.funk_loading", false);
+        if(boringTimer == FUNKY_TIME - 1) serverMessageAndSound("1","pieces:funk.funk_loading", false);
         if(boringTimer == FUNKY_TIME) {
             funky = true;
             serverMessageAndSound("Funky mode activated!","pieces:funk.funk_activate", true);
@@ -113,7 +112,7 @@ public class PieceMaker {
             double spawnCount = area/Math.pow(AreaCalculator.BOUNDING_BOX_SIZE, 2);
             int finalSpawnCount = (int) (spawnCount * spawnCountMultiplier);
             for(int i=0; i<finalSpawnCount; i++) {
-                Piece piece = createRandomPiece(pLocs);
+                Piece piece = createRandomPiece();
                 if (piece != null) secondsBeforeNextSpawn = secondsBeforeSpawn;
             }
         }
@@ -130,8 +129,8 @@ public class PieceMaker {
         secondsBeforeNextDifficultyShift--;
     }
 
-    private Piece createRandomPiece(List<Location> pLocs) {
-        for(int i=0; i<50; i++) {
+    private Piece createRandomPiece() {
+        for(int i=0; i<30; i++) {
 
             // Generate the data of the piece we are making
             PieceType type;
@@ -147,26 +146,33 @@ public class PieceMaker {
             if(!funky) color = PieceColorPattern.getRandomBoring().getColor();
             else color = PieceColorPattern.getRandom().getColor();
 
-            // Find a spot to make the piece
-            List<Chunk> chunks = new ArrayList<>();
-            for (World w : Bukkit.getWorlds()) Collections.addAll(chunks, w.getLoadedChunks());
-            Chunk chunk = chunks.get(random.nextInt(chunks.size()));
-            int xShift = random.nextInt(17);
-            int zShift = random.nextInt(17);
-            Location spawn = new Location(chunk.getWorld(), chunk.getX() * 16 + xShift, 0, chunk.getZ() * 16 + zShift);
+            // Wow this method really was stupid
+//            // Find a spot to make the piece
+//            List<Chunk> chunks = new ArrayList<>();
+//            for (World w : Bukkit.getWorlds()) Collections.addAll(chunks, w.getLoadedChunks());
+//            Chunk chunk = chunks.get(random.nextInt(chunks.size()));
+//            int xShift = random.nextInt(16);
+//            int zShift = random.nextInt(16);
+//            Location spawn = new Location(chunk.getWorld(), chunk.getX() * 16 + xShift, 0, chunk.getZ() * 16 + zShift);
+//
+//            // Make sure the spot is somewhat close to some player
+//            boolean nearby = false;
+//            for (Location pLoc : pLocs) {
+//                if (pLoc.getWorld() != spawn.getWorld()) continue;
+//                if (Math.abs(pLoc.getX() - spawn.getX()) - ((double) (model.length * size) / 2) <= AreaCalculator.BOUNDING_BOX_SIZE) {
+//                    if (Math.abs(pLoc.getZ() - spawn.getZ()) - ((double) (model.length * size) / 2) <= AreaCalculator.BOUNDING_BOX_SIZE) {
+//                        nearby = true;
+//                        break;
+//                    }
+//                }
+//            }
+//            if (!nearby) continue;
 
-            // Make sure the spot is somewhat close to some player
-            boolean nearby = false;
-            for (Location pLoc : pLocs) {
-                if (pLoc.getWorld() != spawn.getWorld()) continue;
-                if (Math.abs(pLoc.getX() - spawn.getX()) - ((double) (model.length * size) / 2) <= AreaCalculator.BOUNDING_BOX_SIZE) {
-                    if (Math.abs(pLoc.getZ() - spawn.getZ()) - ((double) (model.length * size) / 2) <= AreaCalculator.BOUNDING_BOX_SIZE) {
-                        nearby = true;
-                        break;
-                    }
-                }
-            }
-            if (!nearby) continue;
+            List<Player> plrs = (List<Player>) Bukkit.getOnlinePlayers();
+            Player rand = plrs.get(random.nextInt(plrs.size()));
+            int lx = rand.getLocation().getBlockX() + (random.nextInt(AreaCalculator.BOUNDING_BOX_SIZE) - (AreaCalculator.BOUNDING_BOX_SIZE/2));
+            int lz = rand.getLocation().getBlockZ() + (random.nextInt(AreaCalculator.BOUNDING_BOX_SIZE) - (AreaCalculator.BOUNDING_BOX_SIZE/2));
+            Location spawn = new Location(rand.getWorld(), lx, 0, lz);
 
             // Get spawn location data
             int x = (int) (spawn.getX()-((double)(model.length*size)/2));
@@ -176,7 +182,7 @@ public class PieceMaker {
             // Gather a list of pieces that might collide with this piece if it spawns in the planned location
             List<Piece> potentialCollisions = new ArrayList<>();
             for(Piece piece : Piece.getPieces()) {
-                if(piece.getY() + piece.getSize() >= y) continue;
+                if(piece.isRunning()) continue; // only run for pieces that are also spawning
                 int totalLength = model.length * size;
                 int pieceTotalLength = piece.getModelData().length * piece.getSize();
                 if((x<=piece.getX() && x+totalLength>piece.getX()) || (x>=piece.getX() && x<piece.getX()+pieceTotalLength)) {
@@ -190,12 +196,14 @@ public class PieceMaker {
             boolean collision = false;
             for(Piece pC : potentialCollisions) {
                 boolean[][] pcModel = pC.getModelData();
+
                 for(int pcX=0; pcX<pcModel.length; pcX++) {
                     for(int pcZ=0; pcZ<pcModel.length; pcZ++) {
                         if(!pcModel[pcZ][pcX]) continue;
+
                         for(int sX=0; sX<model.length; sX++) {
                             for(int sZ=0; sZ<model.length; sZ++) { // 5 for loops deep, wowzers
-                                if(!pcModel[pcZ][pcX]) continue;
+                                if(!model[sZ][sX]) continue;
 
                                 // These two if statements might be my least favorite ever.
                                 if(x+(sX*size)<=pC.getX()+(pcX*pC.getSize()) && x+((sX+1)*size)>pC.getX()+(pcX*pC.getSize()) || (x+(sX*size)>=pC.getX()+(pcX*pC.getSize()) && x+(sX*size)<pC.getX()+((pcX+1)*pC.getSize()))) {
@@ -214,8 +222,7 @@ public class PieceMaker {
             return new Piece(spawn.getWorld(), x, y, z, size, speed, model, color);
         }
 
-        // If a spot couldn't be found after 50 tries, cancel this spawn to not pause the thread
-        plugin.getLogger().log(Level.WARNING, "Piece spawn spot could not be found after 50 tries :(");
+        // If a spot couldn't be found after 30 tries, cancel this spawn to not pause the thread
         return null;
     }
 
@@ -284,10 +291,10 @@ public class PieceMaker {
                 break;
             }
             case 6: { // DO NOT USE!! TESTING/FUN PURPOSES ONLY (mainly fun)
-                spawnCountMultiplier = 4.0;
-                size = 32;
-                speed = 20;
-                secondsBeforeSpawn = 2;
+                spawnCountMultiplier = 500.0;
+                size = 5;
+                speed = 35;
+                secondsBeforeSpawn = 1;
             }
         }
     }
