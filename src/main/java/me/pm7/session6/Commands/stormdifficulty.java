@@ -1,5 +1,6 @@
 package me.pm7.session6.Commands;
 
+import me.pm7.session6.Pieces.SpawnerDifficulty;
 import me.pm7.session6.Session6;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -43,28 +44,19 @@ public class stormdifficulty implements CommandExecutor, TabExecutor {
                 newDiff = Integer.parseInt(args[1]);
             }
             catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED + "You must have a number lol");
+                //TODO: UNDO UNDO
+
+                // sender.sendMessage(ChatColor.RED + "You must have a number lol");
+
+                plugin.getPieceMaker().setDifficulty(SpawnerDifficulty.valueOf(args[1]));
                 return true;
             }
 
-            if(newDiff >= 0 && newDiff <= 5) {
-                plugin.getPieceMaker().setDifficulty(newDiff);
-                return true;
+            if(newDiff >= 1 && newDiff <= 6) {
+                plugin.getPieceMaker().setDifficulty(SpawnerDifficulty.fromInt(newDiff));
             }
-            else if (newDiff == 6) {
-                if(args.length < 3) {
-                    sender.sendMessage(ChatColor.RED + "Death. Are you prepared? add 'confirm' for yes.");
-                    return true;
-                }
-
-                if(args[2].equalsIgnoreCase("confirm")) {
-                    sender.sendMessage(ChatColor.RED + "Death.");
-                    plugin.getPieceMaker().setDifficulty(newDiff);
-                    return true;
-                }
-            } else {
+            else {
                 sender.sendMessage(ChatColor.RED + "There is no difficulty for that number.");
-                return true;
             }
         }
         return true;

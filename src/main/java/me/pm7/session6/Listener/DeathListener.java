@@ -14,7 +14,7 @@ public class DeathListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
         if(plugin.getPieceKeeper().getDead().contains(p.getUniqueId())) {
-            e.setDeathMessage(p.getDisplayName() + " was consumed by the Storm");
+            e.setDeathMessage(p.getDisplayName() + " was under the weather");
             plugin.getPieceKeeper().getDead().remove(p.getUniqueId());
         }
     }

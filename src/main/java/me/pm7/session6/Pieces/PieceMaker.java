@@ -11,36 +11,32 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.entity.Player;
+import org.bukkit.spawner.Spawner;
 
 import java.util.*;
+import java.util.logging.Level;
 
 // You'd think I'd be satisfied with the first pun of "Piece Keeper," but no, I need more
 public class PieceMaker {
     private static final Session6 plugin = Session6.getPlugin();
 
-    private int difficulty = 0;
     private int spawnHeight;
-    private double spawnCountMultiplier;
-    private int size;
-    private double speed;
-    private int secondsBeforeSpawn;
-    private int secondsBeforeNextSpawn;
-    private final Random random;
-    private Integer taskID;
-
+    private SpawnerDifficulty difficulty;
+    private SpawnerDifficulty previousDifficulty;
     private boolean funky = false;
+    private Integer taskID;
+    private int spawnTick; // used to keep track of the time before the next group of pieces spawn
+    private final Random random;
 
     public PieceMaker() {
         spawnHeight = 190; //190
 
-        spawnCountMultiplier = 1.0;
-        size = 20;
-        speed = 8;
-        secondsBeforeSpawn = 5;
+        this.difficulty = SpawnerDifficulty.LEVEL_1;
+        this.previousDifficulty = null;
 
         taskID = null;
+        this.spawnTick = difficulty.getSecondsBetweenSpawns();
         this.random = new Random();
-        this.secondsBeforeNextSpawn = secondsBeforeSpawn;
     }
 
     public void start() {
@@ -100,7 +96,7 @@ public class PieceMaker {
     }
 
     private void tickPieceSpawn() {
-        if(secondsBeforeNextSpawn <= 0) {
+        if(spawnTick <= 0) {
 
             List<Location> pLocs = new ArrayList<>();
             for (Player p : Bukkit.getOnlinePlayers()) {
@@ -110,21 +106,37 @@ public class PieceMaker {
 
             double area = AreaCalculator.getTotalArea(pLocs);
             double spawnCount = area/Math.pow(AreaCalculator.BOUNDING_BOX_SIZE, 2);
-            int finalSpawnCount = (int) (spawnCount * spawnCountMultiplier);
+            int finalSpawnCount = (int) (spawnCount * difficulty.getSpawnMultiplier());
             for(int i=0; i<finalSpawnCount; i++) {
                 Piece piece = createRandomPiece();
-                if (piece != null) secondsBeforeNextSpawn = secondsBeforeSpawn;
+                if (piece != null) spawnTick = difficulty.getSecondsBetweenSpawns();
             }
         }
-        secondsBeforeNextSpawn--;
+        spawnTick--;
     }
 
-    private final int secondsBeforeDifficultyShift = 1080;
+    private final int secondsBeforeDifficultyShift = 2200;
     private int secondsBeforeNextDifficultyShift = secondsBeforeDifficultyShift;
     private void tickDifficulty() {
         if(secondsBeforeNextDifficultyShift <= 0) {
-            if(difficulty >= 5) return;
-            setDifficulty(difficulty + 1);
+            secondsBeforeNextDifficultyShift = secondsBeforeDifficultyShift;
+
+            int current = getDifficulty();
+            if(current == -1) return;
+            if(current >= 6) return;
+
+            SpawnerDifficulty newDifficulty = SpawnerDifficulty.fromInt(current + 1);
+            if(newDifficulty == null) {
+                plugin.getLogger().log(Level.WARNING, "ERROR! Next difficulty is null!");
+                return;
+            }
+
+            // If a difficulty tick happens during an anomaly, set the stashed difficulty to the upgraded difficulty
+            if(difficulty.getDifficultyNumber() != null) {
+                setDifficulty(SpawnerDifficulty.fromInt(current + 1));
+            } else {
+                previousDifficulty = SpawnerDifficulty.fromInt(current + 1);
+            }
         }
         secondsBeforeNextDifficultyShift--;
     }
@@ -139,34 +151,12 @@ public class PieceMaker {
             boolean[][] model = type.getModel();
             model = PieceType.rotateModel(model, random.nextInt(4));
             model = PieceType.mirrorModel(model, Mirror.values()[random.nextInt(Mirror.values().length)]);
-            int size = random.nextInt(this.size/2, this.size);
-            double speed = random.nextDouble(-5.0, 5.0) + this.speed;
+            int size = difficulty.getRandomSize();
+            double speed = difficulty.getRandomSpeed();
 
             PieceColor color; // COLOR !!
             if(!funky) color = PieceColorPattern.getRandomBoring().getColor();
             else color = PieceColorPattern.getRandom().getColor();
-
-            // Wow this method really was stupid
-//            // Find a spot to make the piece
-//            List<Chunk> chunks = new ArrayList<>();
-//            for (World w : Bukkit.getWorlds()) Collections.addAll(chunks, w.getLoadedChunks());
-//            Chunk chunk = chunks.get(random.nextInt(chunks.size()));
-//            int xShift = random.nextInt(16);
-//            int zShift = random.nextInt(16);
-//            Location spawn = new Location(chunk.getWorld(), chunk.getX() * 16 + xShift, 0, chunk.getZ() * 16 + zShift);
-//
-//            // Make sure the spot is somewhat close to some player
-//            boolean nearby = false;
-//            for (Location pLoc : pLocs) {
-//                if (pLoc.getWorld() != spawn.getWorld()) continue;
-//                if (Math.abs(pLoc.getX() - spawn.getX()) - ((double) (model.length * size) / 2) <= AreaCalculator.BOUNDING_BOX_SIZE) {
-//                    if (Math.abs(pLoc.getZ() - spawn.getZ()) - ((double) (model.length * size) / 2) <= AreaCalculator.BOUNDING_BOX_SIZE) {
-//                        nearby = true;
-//                        break;
-//                    }
-//                }
-//            }
-//            if (!nearby) continue;
 
             List<Player> plrs = (List<Player>) Bukkit.getOnlinePlayers();
             Player rand = plrs.get(random.nextInt(plrs.size()));
@@ -228,76 +218,14 @@ public class PieceMaker {
 
     public boolean isFunky() {return funky;}
 
-    public int getDifficulty() {return difficulty;}
-    public void setDifficulty(int difficulty) {
-        secondsBeforeNextDifficultyShift = secondsBeforeDifficultyShift;
-
-        if(difficulty > this.difficulty) {
-            Bukkit.broadcastMessage(ChatColor.RED + "The storm is worsening...");
-            for(Player p : Bukkit.getOnlinePlayers()) {//TODO: sound
-                p.getWorld().playSound(p.getLocation().clone().add(0, 500, 0), "insert_sound", 9999 ,1);
-            }
-        } else if (difficulty < this.difficulty) {
-            Bukkit.broadcastMessage(ChatColor.GREEN + "The storm seems to have eased a little...");
-            for(Player p : Bukkit.getOnlinePlayers()) {//TODO: sound
-                p.getWorld().playSound(p.getLocation().clone().add(0, 500, 0), "insert_sound", 9999 ,1);
-            }
-        } else return;
-
-        this.difficulty = difficulty;
-
-        //TODO: test and balance
-        switch (this.difficulty) {
-            default: {
-                spawnCountMultiplier = 1.5;
-                size = 20;
-                speed = 8;
-                secondsBeforeSpawn = 3;
-                break;
-            }
-            case 1: {
-                spawnCountMultiplier = 2.0;
-                size = 22;
-                speed = 10;
-                secondsBeforeSpawn = 3;
-                break;
-            }
-            case 2: {
-                spawnCountMultiplier = 2.0;
-                size = 24;
-                speed = 15;
-                secondsBeforeSpawn = 3;
-                break;
-            }
-            case 3: {
-                spawnCountMultiplier = 2.5;
-                size = 26;
-                speed = 15;
-                secondsBeforeSpawn = 2;
-                break;
-            }
-            case 4: {
-                spawnCountMultiplier = 2.5;
-                size = 28;
-                speed = 17;
-                secondsBeforeSpawn = 2;
-                break;
-            }
-            case 5: {
-                spawnCountMultiplier = 2.5;
-                size = 30;
-                speed = 20;
-                secondsBeforeSpawn = 2;
-                break;
-            }
-            case 6: { // DO NOT USE!! TESTING/FUN PURPOSES ONLY (mainly fun)
-                spawnCountMultiplier = 500.0;
-                size = 5;
-                speed = 35;
-                secondsBeforeSpawn = 1;
-            }
+    public int getDifficulty() {
+        if(difficulty.getDifficultyNumber() == null) {
+            if(previousDifficulty.getDifficultyNumber() == null) return -1;
+            return previousDifficulty.getDifficultyNumber();
         }
+        return difficulty.getDifficultyNumber();
     }
+    public void setDifficulty(SpawnerDifficulty difficulty) {this.difficulty = difficulty;}
 
     public void setSpawnHeight(int newSpawnHeight) {
         this.spawnHeight = newSpawnHeight;

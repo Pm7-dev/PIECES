@@ -9,7 +9,7 @@ import java.awt.Point;
 // This was initially going to be a much larger class that was more efficient, but I got lazy and did this stupid approach
 
 public class AreaCalculator {
-    private static final int INACCURACY = 1; // improves performance at the cost of area accuracy (might be broken, works at 1
+    private static final int INACCURACY = 1; // improves performance at the cost of area accuracy (might be broken, works at 1)
     public static final int BOUNDING_BOX_SIZE = 160;
     private static final int HALF_SIZE = BOUNDING_BOX_SIZE/INACCURACY/2;
 
