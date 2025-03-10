@@ -4,6 +4,7 @@ import me.pm7.session6.Pieces.Color.PieceColor;
 import me.pm7.session6.Pieces.Color.PieceColorPattern;
 import me.pm7.session6.Session6;
 import me.pm7.session6.Utils.AreaCalculator;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -117,6 +118,9 @@ public class PieceMaker {
 
     private final int secondsBeforeDifficultyShift = 2200;
     private int secondsBeforeNextDifficultyShift = secondsBeforeDifficultyShift;
+    private final int secondsBeforeAnomaly = 1100;
+    private int secondsBeforeNextAnomaly = secondsBeforeAnomaly;
+    private int anomalyCount = 0;
     private void tickDifficulty() {
         if(secondsBeforeNextDifficultyShift <= 0) {
             secondsBeforeNextDifficultyShift = secondsBeforeDifficultyShift;
@@ -138,7 +142,44 @@ public class PieceMaker {
                 previousDifficulty = SpawnerDifficulty.fromInt(current + 1);
             }
         }
+
+        if(secondsBeforeNextAnomaly <= 0) {
+            anomalyCount++;
+            secondsBeforeNextAnomaly = secondsBeforeAnomaly;
+            this.previousDifficulty = difficulty;
+            final SpawnerDifficulty anomaly;
+            switch (anomalyCount) {
+                case 1:
+                case 3: {
+                    anomaly = SpawnerDifficulty.ANOMALY_SPEED;
+                    break;
+                }
+                case 2:
+                case 4: {
+                    anomaly = SpawnerDifficulty.ANOMALY_SCALE;
+                    break;
+                }
+                default: {
+                    anomaly = SpawnerDifficulty.ANOMALY_TOTAL_CHAOS;
+                    break;
+                }
+            }
+            for(Player p : Bukkit.getOnlinePlayers()) {
+                //TODO: SOUND!!!!
+                p.sendTitle(ChatColor.RED + "", ChatColor.RED + "Storm Anomaly detected!", 0, 8, 24);
+                p.sendMessage(ChatColor.RED + "Anomaly Type: " + anomaly.getName() + ". Get ready!");
+            }
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                difficulty = anomaly;
+                long time = random.nextInt(30*20, (45*20) + 1);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    difficulty = previousDifficulty;
+                }, time);
+            }, 200L);
+        }
         secondsBeforeNextDifficultyShift--;
+        secondsBeforeNextAnomaly--;
     }
 
     private Piece createRandomPiece() {

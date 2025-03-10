@@ -9,7 +9,8 @@ public enum SpawnerDifficulty {
             10,
             15,
             6,
-            8
+            8,
+            null
             ),
     LEVEL_2(2,
             3,
@@ -17,7 +18,8 @@ public enum SpawnerDifficulty {
             12,
             18,
             7,
-            10
+            10,
+            null
     ),
     LEVEL_3(3,
             3,
@@ -25,7 +27,8 @@ public enum SpawnerDifficulty {
             15,
             20,
             8,
-            12
+            12,
+            null
     ),
     LEVEL_4(4,
             3,
@@ -33,7 +36,8 @@ public enum SpawnerDifficulty {
             16,
             22,
             8,
-            15
+            15,
+            null
     ),
     LEVEL_5(5,
             3,
@@ -41,7 +45,8 @@ public enum SpawnerDifficulty {
             19,
             26,
             12,
-            17
+            17,
+            null
     ),
     LEVEL_6(6,
             2,
@@ -49,49 +54,37 @@ public enum SpawnerDifficulty {
             18,
             24,
             8,
-            13
+            13,
+            null
     ),
 
     // Special difficulty settings during anomalies
     ANOMALY_SPEED(null,
-            4,
+            3,
             2.0,
-            8,
             12,
-            18,
-            20
-    ),
-    ANOMALY_COUNT(null,
-            4,
-            5.0,
-            10,
-            12,
-            5,
-            9
-    ),
-    ANOMALY_FREQUENCY(null,
-            1,
-            2.0,
-            8,
-            11,
-            5,
-            10
+            16,
+            22,
+            26,
+            "Speed"
     ),
     ANOMALY_SCALE(null,
-            4,
-            1.0,
+            5,
+            1.5,
             30,
-            45,
+            40,
             7,
-            10
+            10,
+            "Scale"
     ),
     ANOMALY_TOTAL_CHAOS(6,
             2,
-            3.0,
-            24,
-            32,
-            11,
-            16
+            2.0,
+            26,
+            34,
+            20,
+            26,
+            "Total Chaos"
     );
 
     private static final Random random = new Random();
@@ -102,8 +95,9 @@ public enum SpawnerDifficulty {
     private final int maxSize;
     private final double minSpeed;
     private final double maxSpeed;
+    private final String name;
 
-    SpawnerDifficulty(Integer difficulty, int secondsBetweenSpawns, double spawnMultiplier, int minSize, int maxSize, double minSpeed, double maxSpeed) {
+    SpawnerDifficulty(Integer difficulty, int secondsBetweenSpawns, double spawnMultiplier, int minSize, int maxSize, double minSpeed, double maxSpeed, String name) {
         this.difficultyNumber = difficulty;
         this.secondsBetweenSpawns = secondsBetweenSpawns;
         this.spawnMultiplier = spawnMultiplier;
@@ -111,6 +105,7 @@ public enum SpawnerDifficulty {
         this.maxSize = maxSize;
         this.minSpeed = minSpeed;
         this.maxSpeed = maxSpeed;
+        this.name = name;
     }
 
     // Could definitely have been a String.valueOf() sorta thing
@@ -134,6 +129,7 @@ public enum SpawnerDifficulty {
     public int getMaxSize() {return maxSize;}
     public double getMinSpeed() {return minSpeed;}
     public double getMaxSpeed() {return maxSpeed;}
+    public String getName() {return name;}
 
     // !!
     public int getRandomSize() {return random.nextInt(getMinSize(), getMaxSize() + 1);}
