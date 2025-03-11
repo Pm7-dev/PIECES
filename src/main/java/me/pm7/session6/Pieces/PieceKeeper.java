@@ -19,15 +19,25 @@ public class PieceKeeper {
     private final HashMap<UUID, Integer> pieceInvincibilityTicks = new HashMap<>();
     private final List<UUID> dead = new ArrayList<>();
     private Integer taskID = null;
+    private int endAnimationTick = 0;
+    private boolean endingAnimation = false;
 
     public void start() {
         if(taskID !=null) return;
+        endAnimationTick = 0;
+        endingAnimation = false;
         taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::loop, 0L, 1L);
     }
     public void stop() {
         if(taskID==null) return;
-        Bukkit.getScheduler().cancelTask(taskID);
-        taskID = null;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            endingAnimation = true;
+            plugin.getAnimationController().stop();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                Bukkit.getScheduler().cancelTask(taskID);
+                taskID = null;
+            }, 205L); //55 for the slowing down, and an extra 150 for the flashing/disappearing
+        }, 60L);
     }
 
     public boolean isRunning() {return taskID != null;}
@@ -35,12 +45,18 @@ public class PieceKeeper {
     private final Predicate<Entity> isPlayer = e -> e instanceof Player p && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE);
     private int tick;
     private void loop() {
+        if(endingAnimation) endAnimationTick++;
+
         List<Piece> remove = new ArrayList<>();
         for(Piece piece : Piece.getPieces()) {
             if(!piece.isRunning()) continue;
             piece.moveDown();
-            piece.tickColor();
             if(tick==0) piece.playAmbience();
+
+            // Color animation/player collisions can stop after the slowing down has finished
+            if(endAnimationTick > 55) continue;
+
+            piece.tickColor();
 
             // Player collision detection
             double size = piece.getSize();
@@ -108,4 +124,6 @@ public class PieceKeeper {
     }
 
     public List<UUID> getDead() {return dead;}
+
+    public int getEndAnimationTick() {return endAnimationTick;}
 }

@@ -13,3 +13,5 @@ commands:
     description: honestly idk man
   raisetheroof:
     description: for admin use >w<
+  stopwildcard:
+    description: for admin use UwU

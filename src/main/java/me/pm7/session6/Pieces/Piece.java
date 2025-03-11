@@ -14,6 +14,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -39,6 +40,7 @@ public class Piece {
     private boolean running;
     private boolean remove = false;
     private int spawnAnimationTicks = 0; // counts how many ticks the piece has been spawning for
+    private final Random random;
 
     public Piece(World world, int x, double y, int z, int size, double speed, boolean[][] modelData, PieceColor color) {
         this.world = world;
@@ -52,6 +54,7 @@ public class Piece {
         this.faces = new ArrayList<>();
         this.facesToRemove = new ArrayList<>();
         this.voiceDistance = size + 8;
+        this.random = new Random();
 
         //Load all the chunks that this entity will be in
         for(int cx = x; cx < x+(modelData.length*size); cx+=16) {
@@ -158,11 +161,25 @@ public class Piece {
 
     // Moves every face down lol
     public void moveDown() {
-        y-=speed/20;
+        // Multiplier used during the ending animation
+        int endAnimationTick = plugin.getPieceKeeper().getEndAnimationTick();
+        double multiplier = 1 - Math.sqrt(1 - Math.pow(((double) endAnimationTick/55) - 1, 2));
+        if(!Double.isFinite(multiplier)) multiplier = 0;
+
+        y-=(speed/20) * multiplier;
         for(UUID uuid : faces) {
             TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
             if(face==null) continue;
-            face.teleport(face.getLocation().clone().subtract(0, speed/20, 0));
+            if(endAnimationTick <= 55) {
+                face.teleport(face.getLocation().clone().subtract(0, (speed/20) * multiplier, 0));
+            } else if(endAnimationTick <= 155) {
+                face.setDefaultBackground(random.nextBoolean());
+            } else if(endAnimationTick <= 204) {
+                face.setDefaultBackground(random.nextBoolean());
+                if(random.nextInt(23)==0) face.remove();
+            } else {
+                face.remove();
+            }
         }
 
         if(y < -65-size) remove = true;
@@ -188,6 +205,10 @@ public class Piece {
                         Player p = (Player) entity;
                         Location pLoc = p.getEyeLocation();
 
+                        if(plugin.getPieceKeeper().getEndAnimationTick() > 55) {
+                            p.stopSound("pieces:piece.ambience");
+                        }
+
                         if(pLoc.getY() > y+size) continue;
 
                         if(pLoc.getY() >= loc.getY() && pLoc.getY() <= loc.getY()+size) loc.setY(pLoc.getY());
@@ -199,7 +220,11 @@ public class Piece {
                         float volume = (float) (1.0f-(distance/(voiceDistance)));
                         //float pitch = (float) ((Math.random()*0.30f-0.15f) + 1.0f);
 
-                        if(volume > 0) p.playSound(loc, "pieces:piece.ambience", volume*2 + 1.2f, 0.8f); //TODO: figure out a good pitch/volume
+                        if(plugin.getPieceKeeper().getEndAnimationTick() > 55) {
+                            if(volume > 0) p.playSound(loc, "pieces:piece.broken", volume*2 + 1.2f, random.nextFloat()*0.5f + 0.5f);
+                            continue;
+                        }
+                        if(volume > 0) p.playSound(loc, "pieces:piece.ambience", volume*2 + 1.2f, 0.8f);
                     }
                 }
             }

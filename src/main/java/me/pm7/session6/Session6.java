@@ -35,6 +35,7 @@ public final class Session6 extends JavaPlugin {
         getCommand("stormdifficulty").setTabCompleter(new stormdifficulty());
         getCommand("startwildcard").setExecutor(new startwildcard());
         getCommand("thatonething").setExecutor(new thatonething());
+        getCommand("stopwildcard").setExecutor(new stopwildcard());
         getServer().getPluginManager().registerEvents(new DeathListener(), plugin);
         getServer().getPluginManager().registerEvents(new ConnectionListener(), plugin);
 
@@ -68,7 +69,6 @@ public final class Session6 extends JavaPlugin {
     @Override
     public void onDisable() {
         pieceMaker.stop();
-        pieceKeeper.stop();
         List<Piece> pieces = Piece.getPieces();
         while (!pieces.isEmpty()) pieces.getFirst().kill();
     }
@@ -76,6 +76,7 @@ public final class Session6 extends JavaPlugin {
     public static Session6 getPlugin() {return plugin;}
     public PieceKeeper getPieceKeeper() {return pieceKeeper;}
     public PieceMaker getPieceMaker() {return pieceMaker;}
+    public AnimationController getAnimationController() {return animationController;}
 
     private static boolean started = false;
     public boolean isStarted() {return started;}
