@@ -36,8 +36,8 @@ public class PieceKeeper {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 Bukkit.getScheduler().cancelTask(taskID);
                 taskID = null;
-            }, 205L); //55 for the slowing down, and an extra 150 for the flashing/disappearing
-        }, 60L);
+            }, 70L + 150L); //70 for the slowing down, and an extra 150 for the flashing/disappearing
+        }, 60L); // Wait 60 ticks to make sure any pieces still spawning correctly finish
     }
 
     public boolean isRunning() {return taskID != null;}

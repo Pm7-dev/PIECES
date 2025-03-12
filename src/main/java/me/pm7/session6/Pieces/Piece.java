@@ -124,8 +124,6 @@ public class Piece {
                 }
             }
 
-            //TODO: sounds
-
             // running! yay
             this.running = true;
         }, spawnTime + 5);
@@ -163,20 +161,20 @@ public class Piece {
     public void moveDown() {
         // Multiplier used during the ending animation
         int endAnimationTick = plugin.getPieceKeeper().getEndAnimationTick();
-        double multiplier = 1 - Math.sqrt(1 - Math.pow(((double) endAnimationTick/55) - 1, 2));
+        double multiplier = 1 - Math.sqrt(1 - Math.pow(((double) endAnimationTick/70) - 1, 2));
         if(!Double.isFinite(multiplier)) multiplier = 0;
 
         y-=(speed/20) * multiplier;
         for(UUID uuid : faces) {
             TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
             if(face==null) continue;
-            if(endAnimationTick <= 55) {
+            if(endAnimationTick <= 70) {
                 face.teleport(face.getLocation().clone().subtract(0, (speed/20) * multiplier, 0));
-            } else if(endAnimationTick <= 155) {
-                face.setDefaultBackground(random.nextBoolean());
-            } else if(endAnimationTick <= 204) {
-                face.setDefaultBackground(random.nextBoolean());
-                if(random.nextInt(23)==0) face.remove();
+            } else if(endAnimationTick <= 175) {
+                face.setDefaultBackground((random.nextInt(0, 3) == 0) == face.isDefaultBackground());
+            } else if(endAnimationTick <= 218) {
+                face.setDefaultBackground((random.nextInt(0, 3) == 0) == face.isDefaultBackground());
+                if(random.nextInt(20)==0) face.remove();
             } else {
                 face.remove();
             }
@@ -197,17 +195,14 @@ public class Piece {
 
     private final Predicate<Entity> isPlayer = p -> p instanceof Player;
     public void playAmbience() {
+        int endAnimationTick = plugin.getPieceKeeper().getEndAnimationTick();
         for(int z1=0;z1<modelData.length;z1++) {
             for(int x1=0;x1<modelData.length;x1++) {
                 if(modelData[z1][x1]) {
-                    Location loc = new Location(world,x+(x1*size)+((double)size/2),y,z+(z1*size)+((double)size/2));
+                    Location loc = new Location(world, x + (x1 * size) + ((double) size / 2), y, z + (z1 * size) + ((double) size / 2));
                     for(Entity entity : world.getNearbyEntities(loc,voiceDistance,voiceDistance,voiceDistance, isPlayer)) {
                         Player p = (Player) entity;
                         Location pLoc = p.getEyeLocation();
-
-                        if(plugin.getPieceKeeper().getEndAnimationTick() > 55) {
-                            p.stopSound("pieces:piece.ambience");
-                        }
 
                         if(pLoc.getY() > y+size) continue;
 
@@ -218,13 +213,14 @@ public class Piece {
                         distance -= (double) size/2;
                         if(distance < 0) distance = 0;
                         float volume = (float) (1.0f-(distance/(voiceDistance)));
-                        //float pitch = (float) ((Math.random()*0.30f-0.15f) + 1.0f);
 
-                        if(plugin.getPieceKeeper().getEndAnimationTick() > 55) {
-                            if(volume > 0) p.playSound(loc, "pieces:piece.broken", volume*2 + 1.2f, random.nextFloat()*0.5f + 0.5f);
-                            continue;
+                        if(volume > 0) {
+                            if(endAnimationTick >= 70) {
+                                if(endAnimationTick < 73) {p.playSound(loc, "pieces:piece.broken_intro", volume * 2 + 1.2f, 0.9f);}
+                                p.playSound(loc, "pieces:piece.broken", endAnimationTick <= 175 ? volume * 2 + 1.2f : (volume * 2 + 1.2f)*(1.0f-((endAnimationTick-175)/45f)), 0.9f);
+                                //p.playSound(loc, "pieces:piece.bloop", volume * 2 + 1.2f, (random.nextFloat() * 1.2f) + 0.8f); this sounds so funny lol
+                            } else p.playSound(loc, "pieces:piece.ambience", (volume * 2 + 1.2f) * (1.0f-(endAnimationTick/68f)), 0.8f);
                         }
-                        if(volume > 0) p.playSound(loc, "pieces:piece.ambience", volume*2 + 1.2f, 0.8f);
                     }
                 }
             }
