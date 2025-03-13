@@ -58,6 +58,7 @@ public final class Session6 extends JavaPlugin {
         }
 
         animationController = new AnimationController();
+        getServer().getPluginManager().registerEvents(animationController, plugin);
         animationController.start();
 
         pieceKeeper = new PieceKeeper();

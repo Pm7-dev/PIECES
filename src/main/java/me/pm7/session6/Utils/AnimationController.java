@@ -7,18 +7,19 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.inventory.meta.components.EquippableComponent;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class AnimationController implements Listener {
     private static final Session6 plugin = Session6.getPlugin();
@@ -154,10 +155,40 @@ public class AnimationController implements Listener {
         frameQueues.get(uuid).add(frame);
     }
 
+//    @EventHandler
+//    public void onInvChange(InventoryClickEvent e) {
+//        ItemStack helmet = e.getWhoClicked().getInventory().getHelmet();
+//        if(helmet == null || !helmet.getItemMeta().getPersistentDataContainer().has(acKey)) e.setCancelled(true);
+//    }
+
     @EventHandler
     public void onInvChange(InventoryClickEvent e) {
         ItemStack helmet = e.getWhoClicked().getInventory().getHelmet();
-        if(helmet == null || !helmet.getItemMeta().getPersistentDataContainer().has(acKey)) e.setCancelled(true);
+        if(helmet != null && helmet.equals(e.getCurrentItem())) {
+            e.setCancelled(true);
+        }
+    }
+
+    private static final List<Material> helmets = Arrays.asList(
+            Material.CHAINMAIL_HELMET,
+            Material.DIAMOND_HELMET,
+            Material.GOLDEN_HELMET,
+            Material.IRON_HELMET,
+            Material.LEATHER_HELMET,
+            Material.NETHERITE_HELMET,
+            Material.TURTLE_HELMET
+    );
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e) {
+        if(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR) {
+            Material mat = e.getPlayer().getInventory().getItemInMainHand().getType();
+            if(helmets.contains(mat)) {
+                e.setCancelled(true);
+                return;
+            }
+            mat = e.getPlayer().getInventory().getItemInOffHand().getType();
+            if(helmets.contains(mat)) e.setCancelled(true);
+        }
     }
 
     private ItemStack createControllerItem() {
@@ -178,7 +209,7 @@ public class AnimationController implements Listener {
         meta.setEquippable(eq);
 
         CustomModelDataComponent cmdc = meta.getCustomModelDataComponent();
-        cmdc.setStrings(List.of("animationcontroller"));
+        cmdc.setStrings(List.of("animation_controller"));
         meta.setCustomModelDataComponent(cmdc);
 
         item.setItemMeta(meta);

@@ -165,8 +165,8 @@ public class PieceMaker {
                 }
             }
             for(Player p : Bukkit.getOnlinePlayers()) {
-                //TODO: SOUND!!!!
-                p.sendTitle(ChatColor.RED + "", ChatColor.RED + "Storm Anomaly detected!", 0, 8, 24);
+                p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:anomaly", 999999, 1);
+                p.sendTitle(ChatColor.RED + "", ChatColor.RED + "Storm Anomaly detected!", 0, 5, 45);
                 p.sendMessage(ChatColor.RED + "Anomaly Type: " + anomaly.getName() + ". Get ready!");
             }
 
