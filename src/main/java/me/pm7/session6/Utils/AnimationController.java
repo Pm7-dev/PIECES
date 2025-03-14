@@ -50,30 +50,31 @@ public class AnimationController implements Listener {
             ItemStack helmet = p.getInventory().getHelmet();
             if(helmet == null || !helmet.getItemMeta().getPersistentDataContainer().has(acKey)) {
                 p.getInventory().setHelmet(createControllerItem());
-                return;
+                continue;
             }
 
-            Location loc = p.getEyeLocation();
-            Piece lowestPiece = getLowestPiece(loc);
+            HashMap<UUID, Piece> playersUnderPieces = Piece.getPlayersUnderPieces();
+            if(playersUnderPieces.containsKey(p.getUniqueId())) {
+                Piece lowestPiece = playersUnderPieces.get(p.getUniqueId());
+                if (lowestPiece != null) {
+                    Location loc = p.getLocation();
+                    double distance = lowestPiece.getY() - loc.getY();
+                    Location soundLoc = loc.clone().add(0, 500, 0);
+                    float pitch = (float) ((distance / (3.2 * lowestPiece.getSpeed() * 3) * -0.3) + 1.2f); //*3 for 3 sections of sound?
 
-            if(lowestPiece != null) {
-                double distance = lowestPiece.getY()-loc.getY();
-                Location soundLoc = loc.clone().add(0, 500, 0);
-                float pitch = (float) ((distance/(3.2*lowestPiece.getSpeed()*3) * -0.3) + 1.2f); //*3 for 3 sections of sound?
-
-                int pulseSection = (int) Math.floor(distance/(lowestPiece.getSpeed() * 3.2)); //3.2
-                if(pulseSection < 3) {
-                    int ticksBetweenPulses;
-                    if(distance <= lowestPiece.getSpeed() * 1.4) { // Override when it gets *really* close for a stressful effect
-                        ticksBetweenPulses = 2;
-                        pitch += 0.05f;
-                    }
-                    else ticksBetweenPulses = (int) Math.pow(2, pulseSection + 2);
-                    if (tick % ticksBetweenPulses == 0) {
-                        clearQueue(p.getUniqueId());
-                        for (int i = 0; i < 32; i += 5) addFrame(p.getUniqueId(), "warning_overlay/" + i);
-                        addFrame(p.getUniqueId(), "warning_overlay/blank");
-                        p.playSound(soundLoc, "pieces:warning", 9999, pitch);
+                    int pulseSection = (int) Math.floor(distance / (lowestPiece.getSpeed() * 3.2)); //3.2
+                    if (pulseSection < 3) {
+                        int ticksBetweenPulses;
+                        if (distance <= lowestPiece.getSpeed() * 1.4) { // Override when it gets *really* close for a stressful effect
+                            ticksBetweenPulses = 2;
+                            pitch += 0.05f;
+                        } else ticksBetweenPulses = (int) Math.pow(2, pulseSection + 2);
+                        if (tick % ticksBetweenPulses == 0) {
+                            clearQueue(p.getUniqueId());
+                            for (int i = 0; i < 32; i += 5) addFrame(p.getUniqueId(), "warning_overlay/" + i);
+                            addFrame(p.getUniqueId(), "warning_overlay/blank");
+                            p.playSound(soundLoc, "pieces:warning", 9999, pitch);
+                        }
                     }
                 }
             }
@@ -82,47 +83,6 @@ public class AnimationController implements Listener {
 
         tick++;
         if(tick >= 32) tick = 0;
-    }
-
-    private static Piece getLowestPiece(Location loc) {
-        Piece lowestPiece = null;
-        double lowestDistance = 99999999;
-        for(Piece piece : Piece.getPieces()) {
-            if(!piece.isRunning()) continue;
-            if(piece.getY() <= loc.getY()) continue;
-            double px = loc.getX();
-            double pz = loc.getZ();
-            int bxMin = piece.getX();
-            int bzMin = piece.getZ();
-            int bxMax = bxMin + (piece.getModelData().length * piece.getSize());
-            int bzMax = bzMin + (piece.getModelData().length * piece.getSize());
-
-            // if we pass a basic box boundary inspection, then we can start checking the piece's individual blocks
-            if(px>=bxMin-0.3 && px<bxMax+0.3 && pz>=bzMin-0.3 && pz<bzMax+0.3) {
-                boolean found = false;
-                for(int z=0; z < piece.getModelData().length; z++) {
-                    for(int x=0; x < piece.getModelData().length; x++) {
-                        if(!piece.getModelData()[z][x]) continue;
-
-                        int ix = bxMin + (x * piece.getSize());
-                        int iz = bzMin + (z * piece.getSize());
-
-                        // If player is within a block of the current block, we found a spot and can break.
-                        if(px>=ix-0.3 && px<ix+0.3+piece.getSize() && pz>=iz-0.3 && pz<iz+0.3+piece.getSize()) {
-                            found = true;
-                            double difference = piece.getY()- loc.getY();
-                            if(Math.min(lowestDistance, difference) == difference) {
-                                lowestDistance = difference;
-                                lowestPiece = piece;
-                            }
-                            break;
-                        }
-                    }
-                    if(found) break;
-                }
-            }
-        }
-        return lowestPiece;
     }
 
     private final HashMap<UUID, List<String>> frameQueues = new HashMap<>();

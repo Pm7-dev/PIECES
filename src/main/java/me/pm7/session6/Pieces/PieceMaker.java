@@ -213,11 +213,13 @@ public class PieceMaker {
             // Gather a list of pieces that might collide with this piece if it spawns in the planned location
             List<Piece> potentialCollisions = new ArrayList<>();
             for(Piece piece : Piece.getPieces()) {
+                int checkX = (int) (piece.getX() - 0.5);
+                int checkZ = (int) (piece.getZ() - 0.5);
                 if(piece.isRunning()) continue; // only run for pieces that are also spawning
                 int totalLength = model.length * size;
                 int pieceTotalLength = piece.getModelData().length * piece.getSize();
-                if((x<=piece.getX() && x+totalLength>piece.getX()) || (x>=piece.getX() && x<piece.getX()+pieceTotalLength)) {
-                    if((z<=piece.getZ() && z+totalLength>piece.getZ()) || (z>=piece.getZ() && z<piece.getZ()+pieceTotalLength)) {
+                if((x<=checkX && x+totalLength>checkX) || (x>=checkX && x<checkX+pieceTotalLength)) {
+                    if((z<=checkZ && z+totalLength>checkZ) || (z>=checkZ && z<checkZ+pieceTotalLength)) {
                         potentialCollisions.add(piece);
                     }
                 }

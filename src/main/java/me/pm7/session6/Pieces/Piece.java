@@ -12,10 +12,7 @@ import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class Piece {
@@ -24,16 +21,22 @@ public class Piece {
     // Keeps track of the pieces that exist
     private static final List<Piece> pieces = new ArrayList<>();
 
+    // Keeps track of the players that are currently underneath pieces
+    private static final HashMap<UUID, Piece> playersUnderPieces = new HashMap<>();
+
+    // Keeps track of the players that should be dead
+    private static final List<UUID> dead = new ArrayList<>();
+
     // constant(s)
     private static final int spawnTime = 55; // Defines how long it takes for the piece to scale up before dropping (in ticks)
     private static final NamespacedKey pieceID = new NamespacedKey(plugin, "piece-face-entity");
 
-    private final int x, z, size;
-    private final double speed;
+    private final int size;
+    private final double x, z, speed;
+    private double y;
     private final double voiceDistance;
     private final boolean[][] modelData;
     private final World world;
-    private double y;
     private final List<UUID> faces;
     private final List<UUID> facesToRemove;
     private final PieceColor color;
@@ -44,9 +47,9 @@ public class Piece {
 
     public Piece(World world, int x, double y, int z, int size, double speed, boolean[][] modelData, PieceColor color) {
         this.world = world;
-        this.x = x;
+        this.x = x + 0.5d;
         this.y = y;
-        this.z = z;
+        this.z = z + 0.5d;
         this.size = size;
         this.speed = speed;
         this.color = color;
@@ -57,9 +60,9 @@ public class Piece {
         this.random = new Random();
 
         //Load all the chunks that this entity will be in
-        for(int cx = x; cx < x+(modelData.length*size); cx+=16) {
-            for(int cz = z; cz < z+(modelData.length*size); cz+=16) {
-                Chunk chunk = world.getChunkAt(cx/16, cz/16);
+        for(double cx = x; cx < x+(modelData.length*size); cx+=16) {
+            for(double cz = z; cz < z+(modelData.length*size); cz+=16) {
+                Chunk chunk = world.getChunkAt((int) (cx/16), (int) (cz/16));
                 if(!chunk.getPluginChunkTickets().contains(plugin)) chunk.addPluginChunkTicket(plugin);
             }
         }
@@ -70,14 +73,14 @@ public class Piece {
                 if(modelData[i][j]) { //REMEMBER it is Z and THEN X
 
                     // If this is an edge of the model, spawn a face normally, otherwise spawn a face that will be removed later
-                    spawnFace(x+(j*size), z+(i*size), Direction.POSITIVE_Z, 0, i + 1 != modelData.length && modelData[i + 1][j]);
-                    spawnFace(x+(j*size), z+(i*size), Direction.NEGATIVE_Z, 0, i - 1 != -1 && modelData[i - 1][j]);
-                    spawnFace(x+(j*size), z+(i*size), Direction.POSITIVE_X, 0, j + 1 != modelData.length && modelData[i][j + 1]);
-                    spawnFace(x+(j*size), z+(i*size), Direction.NEGATIVE_X, 0, j - 1 != -1 && modelData[i][j - 1]);
+                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.POSITIVE_Z, 0, i + 1 != modelData.length && modelData[i + 1][j]);
+                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.NEGATIVE_Z, 0, i - 1 != -1 && modelData[i - 1][j]);
+                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.POSITIVE_X, 0, j + 1 != modelData.length && modelData[i][j + 1]);
+                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.NEGATIVE_X, 0, j - 1 != -1 && modelData[i][j - 1]);
 
                     // Spawn the up/down face for each block
-                    spawnFace(x+(j*size), z+(i*size), Direction.POSITIVE_X, 90, false);
-                    spawnFace(x+(j*size), z+(i*size), Direction.POSITIVE_X, -90, false);
+                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.POSITIVE_X, 90, false);
+                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.POSITIVE_X, -90, false);
                 }
             }
         }
@@ -131,7 +134,7 @@ public class Piece {
         pieces.add(this);
     }
 
-    private void spawnFace(int x, int z, Direction direction, float pitch, boolean remove) {
+    private void spawnFace(double x, double z, Direction direction, float pitch, boolean remove) {
         Location spawnLoc = new Location(world, x+((double)size/2), y+((double)size/2), z+((double)size/2));
         spawnLoc.setYaw(direction.getCardinal());
         spawnLoc.setPitch(pitch);
@@ -158,12 +161,15 @@ public class Piece {
     }
 
     // Moves every face down lol
+    int soundTick = 0;
     public void moveDown() {
-        // Multiplier used during the ending animation
+
+        // Multiplier used during the ending animation (will just be 1 the rest of the time)
         int endAnimationTick = plugin.getPieceKeeper().getEndAnimationTick();
         double multiplier = 1 - Math.sqrt(1 - Math.pow(((double) endAnimationTick/70) - 1, 2));
         if(!Double.isFinite(multiplier)) multiplier = 0;
 
+        // Code that moves the piece down (also plays the ending animation flashing)
         y-=(speed/20) * multiplier;
         for(UUID uuid : faces) {
             TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
@@ -180,7 +186,123 @@ public class Piece {
             }
         }
 
+        // If the piece is fully below the world, remove it
         if(y < -65-size) remove = true;
+
+        // Check for collisions of all kinds! (Ambience sound, warning detection, and kill hitbox detection)
+        double halfSize = (modelData.length * size)/2d;
+        double centerX = x + halfSize;
+        double centerZ = z + halfSize;
+        for(Player p : Bukkit.getOnlinePlayers()) {
+
+            // Quickly check the current "piece on top of this player" for removal because that can happen
+            if(playersUnderPieces.containsKey(p.getUniqueId())) {
+                Piece piece = playersUnderPieces.get(p.getUniqueId());
+                if(p.getEyeLocation().getY() > piece.getY()) {
+                    playersUnderPieces.remove(p.getUniqueId());
+                }
+            }
+
+            if(!p.getWorld().getUID().equals(getWorld().getUID())) continue;
+
+            double footY = p.getLocation().getY(); // If the player is fully above this piece, stop calculations
+            if(footY > y + size) continue;
+
+            UUID uuid = p.getUniqueId();
+            Location head = p.getEyeLocation();
+            double pX = head.getX();
+            double pZ = head.getZ();
+            double headY = head.getY();
+            double hitboxBuffer = p.getBoundingBox().getWidthX()/2;
+
+            double centerDistX = Math.abs(centerX-pX);
+            double centerDistZ = Math.abs(centerZ-pZ);
+
+            // If the player is completely out of range of this piece, stop running code
+            if(centerDistX > voiceDistance + halfSize|| centerDistZ > voiceDistance + halfSize) {
+                if(playersUnderPieces.containsKey(uuid)) {
+                    if(playersUnderPieces.get(uuid).equals(this)) {
+                        playersUnderPieces.remove(uuid);
+                    }
+                }
+                continue;
+            }
+
+            double yDist = y-headY;
+            boolean playerIsUnder = false;
+            for(int row = 0; row < modelData.length; row++) {
+                for(int col = 0; col < modelData[row].length; col++) {
+                    if(!modelData[row][col]) continue;
+                    double mX = x+(size/2d) + (col*size);
+                    double mZ = z+(size/2d) + (row*size);
+
+                    double xDist = mX-pX;
+                    double zDist = mZ-pZ;
+
+                    // If the player's ears are close to the block, play the ambience
+                    if(soundTick == 0) {
+                        if (Math.abs(yDist) - (size / 2d) < voiceDistance && Math.abs(xDist) - (size / 2d) < voiceDistance && Math.abs(zDist) - (size / 2d) < voiceDistance) {
+                            double distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(zDist, 2));
+                            distance -= (double) size / 2;
+                            if (distance < 0) distance = 0;
+                            float volume = (float) (1.0f - (distance / (voiceDistance)));
+
+                            if (volume > 0) {
+                                Location soundLoc = new Location(getWorld(), mX, y, mZ);
+                                if (endAnimationTick >= 70) {
+                                    if (endAnimationTick < 73) {
+                                        p.playSound(soundLoc, "pieces:piece.broken_intro", volume * 2 + 1.2f, 0.9f);
+                                    }
+                                    p.playSound(soundLoc, "pieces:piece.broken", endAnimationTick <= 175 ? volume * 2 + 1.2f : (volume * 2 + 1.2f) * (1.0f - ((endAnimationTick - 175) / 45f)), 0.9f);
+                                    //p.playSound(loc, "pieces:piece.bloop", volume * 2 + 1.2f, (random.nextFloat() * 1.2f) + 0.8f); this sounds so funny lol
+                                } else p.playSound(soundLoc, "pieces:piece.ambience", (volume * 2 + 1.2f) * (1.0f - (endAnimationTick / 68f)), 0.8f);
+                            }
+                        }
+                    }
+
+                    // If the player is directly under a piece, add them to the list of people to alert
+                    if(yDist > 0 && Math.abs(xDist) <= (size/2d) + hitboxBuffer && Math.abs(zDist) <= (size/2d) + hitboxBuffer) {
+                        playerIsUnder = true;
+                        if(playersUnderPieces.containsKey(uuid)) {
+                            if(!playersUnderPieces.get(uuid).equals(this)) {
+                                double currentY = playersUnderPieces.get(uuid).getY();
+                                if(currentY > y) {
+                                    playersUnderPieces.put(uuid, this);
+                                }
+                            }
+                        } else {
+                            playersUnderPieces.put(uuid, this);
+                        }
+                    }
+
+                    // If the player is touching a piece, it's time for death!
+                    if(endAnimationTick > 55) continue; // Don't run if the end animation is running
+                    if(Math.abs(xDist) < (size/2d) + hitboxBuffer && Math.abs(zDist) < (size/2d) + hitboxBuffer) {
+                        if((footY >= y && footY <= y + size) || (headY >= y && headY <= y + size)) {
+
+                            HashMap<UUID, Integer> pieceInvincibilityTicks = PieceKeeper.getPieceInvincibilityTicks();
+                            if(pieceInvincibilityTicks.containsKey(p.getUniqueId())) {
+                                if(pieceInvincibilityTicks.get(p.getUniqueId()) > 0) continue;
+                            }
+
+                            dead.add(p.getUniqueId());
+                            p.damage(99999);
+                            continue;
+                        }
+                    }
+                    dead.remove(p.getUniqueId());
+                }
+            }
+
+            if(!playerIsUnder && playersUnderPieces.containsKey(uuid)) {
+                if(playersUnderPieces.get(uuid).equals(this)) {
+                    playersUnderPieces.remove(uuid);
+                }
+            }
+        }
+
+        soundTick++;
+        if(soundTick >= 3) soundTick = 0;
     }
     public boolean shouldRemove() {return remove;}
 
@@ -193,42 +315,8 @@ public class Piece {
         }
     }
 
-    private final Predicate<Entity> isPlayer = p -> p instanceof Player;
-    public void playAmbience() {
-        int endAnimationTick = plugin.getPieceKeeper().getEndAnimationTick();
-        for(int z1=0;z1<modelData.length;z1++) {
-            for(int x1=0;x1<modelData.length;x1++) {
-                if(modelData[z1][x1]) {
-                    Location loc = new Location(world, x + (x1 * size) + ((double) size / 2), y, z + (z1 * size) + ((double) size / 2));
-                    for(Entity entity : world.getNearbyEntities(loc,voiceDistance,voiceDistance,voiceDistance, isPlayer)) {
-                        Player p = (Player) entity;
-                        Location pLoc = p.getEyeLocation();
-
-                        if(pLoc.getY() > y+size) continue;
-
-                        if(pLoc.getY() >= loc.getY() && pLoc.getY() <= loc.getY()+size) loc.setY(pLoc.getY());
-                        else loc.setY(pLoc.getY()<loc.getY() ? y : y+size);
-
-                        double distance = Math.sqrt(Math.pow(loc.getX()-pLoc.getX(),2) + Math.pow(loc.getY()-pLoc.getY(),2) + Math.pow(loc.getZ()-pLoc.getZ(),2));
-                        distance -= (double) size/2;
-                        if(distance < 0) distance = 0;
-                        float volume = (float) (1.0f-(distance/(voiceDistance)));
-
-                        if(volume > 0) {
-                            if(endAnimationTick >= 70) {
-                                if(endAnimationTick < 73) {p.playSound(loc, "pieces:piece.broken_intro", volume * 2 + 1.2f, 0.9f);}
-                                p.playSound(loc, "pieces:piece.broken", endAnimationTick <= 175 ? volume * 2 + 1.2f : (volume * 2 + 1.2f)*(1.0f-((endAnimationTick-175)/45f)), 0.9f);
-                                //p.playSound(loc, "pieces:piece.bloop", volume * 2 + 1.2f, (random.nextFloat() * 1.2f) + 0.8f); this sounds so funny lol
-                            } else p.playSound(loc, "pieces:piece.ambience", (volume * 2 + 1.2f) * (1.0f-(endAnimationTick/68f)), 0.8f);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public int getX() {return x;}
-    public int getZ() {return z;}
+    public double getX() {return x;}
+    public double getZ() {return z;}
     public double getY() {return y;}
     public int getSize() {return size;}
     public World getWorld() {return world;}
@@ -237,6 +325,9 @@ public class Piece {
     public static List<Piece> getPieces() {return pieces;}
     public static NamespacedKey getPieceID() {return pieceID;}
     public double getSpeed() {return speed;}
+
+    public static List<UUID> getDead() {return dead;}
+    public static HashMap<UUID, Piece> getPlayersUnderPieces() {return playersUnderPieces;}
 
     public void kill() {
 
@@ -256,9 +347,9 @@ public class Piece {
         if(!plugin.isEnabled()) return;
 
         // Stop force loading the chunks that keep this piece loaded (as long as no other piece is occupying the chunk)
-        for(int cx = x; cx < x+(modelData.length*size); cx+=16) {
-            for(int cz = z; cz < z+(modelData.length*size); cz+=16) {
-                Chunk chunk = world.getChunkAt(cx/16, cz/16);
+        for(double cx = x; cx < x+(modelData.length*size); cx+=16) {
+            for(double cz = z; cz < z+(modelData.length*size); cz+=16) {
+                Chunk chunk = world.getChunkAt((int) (cx/16), (int) (cz/16));
 
                 boolean remove = true;
                 if(!chunk.getPluginChunkTickets().contains(plugin)) {

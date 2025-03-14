@@ -16,8 +16,7 @@ import java.util.function.Predicate;
 public class PieceKeeper {
     private static final Session6 plugin = Session6.getPlugin();
 
-    private final HashMap<UUID, Integer> pieceInvincibilityTicks = new HashMap<>();
-    private final List<UUID> dead = new ArrayList<>();
+    private static final HashMap<UUID, Integer> pieceInvincibilityTicks = new HashMap<>();
     private Integer taskID = null;
     private int endAnimationTick = 0;
     private boolean endingAnimation = false;
@@ -51,39 +50,11 @@ public class PieceKeeper {
         for(Piece piece : Piece.getPieces()) {
             if(!piece.isRunning()) continue;
             piece.moveDown();
-            if(tick==0) piece.playAmbience();
 
             // Color animation/player collisions can stop after the slowing down has finished
             if(endAnimationTick > 55) continue;
 
             piece.tickColor();
-
-            // Player collision detection
-            double size = piece.getSize();
-            double x = piece.getX();
-            double z = piece.getZ();
-            double y = piece.getY();
-
-            for(int z1=0;z1<piece.getModelData().length;z1++) {
-                for(int x1=0;x1<piece.getModelData().length;x1++) {
-                    if(piece.getModelData()[z1][x1]) {
-                        Location loc = new Location(piece.getWorld(),x+(x1*size)+(size/2),y+(size/2), z+(z1*size)+(size/2));
-
-                        //TODO: optimize this if it gets too laggy
-                        for(Entity entity : piece.getWorld().getNearbyEntities(loc, size/2, size/2, size/2, isPlayer)) {
-                            Player p = (Player) entity;
-
-                            if(pieceInvincibilityTicks.containsKey(p.getUniqueId())) {
-                                if(pieceInvincibilityTicks.get(p.getUniqueId()) > 0) continue;
-                            }
-
-                            dead.add(p.getUniqueId());
-                            p.damage(99999);
-                        }
-                    }
-                }
-            }
-
             if(piece.shouldRemove()) remove.add(piece);
         }
 
@@ -123,7 +94,9 @@ public class PieceKeeper {
         pieceInvincibilityTicks.put(p.getUniqueId(), ticks);
     }
 
-    public List<UUID> getDead() {return dead;}
+    public static HashMap<UUID, Integer> getPieceInvincibilityTicks() {
+        return pieceInvincibilityTicks;
+    }
 
     public int getEndAnimationTick() {return endAnimationTick;}
 }

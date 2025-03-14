@@ -1,5 +1,6 @@
 package me.pm7.session6.Listener;
 
+import me.pm7.session6.Pieces.Piece;
 import me.pm7.session6.Session6;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,9 +14,9 @@ public class DeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
-        if(plugin.getPieceKeeper().getDead().contains(p.getUniqueId())) {
+        if(Piece.getDead().contains(p.getUniqueId())) {
             e.setDeathMessage(p.getDisplayName() + " felt under the weather");
-            plugin.getPieceKeeper().getDead().remove(p.getUniqueId());
+            Piece.getDead().remove(p.getUniqueId());
         }
     }
 
