@@ -1,6 +1,7 @@
 package me.pm7.session6.Listener;
 
 import me.pm7.session6.Session6;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -11,7 +12,9 @@ public class ConnectionListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         if(plugin.isStarted()) {
-            plugin.getPieceKeeper().setImmunity(e.getPlayer(), 240);
+            Player p = e.getPlayer();
+            plugin.getPieceKeeper().setImmunity(p, 240);
+            plugin.getAnimationController().clearQueue(p.getUniqueId());
         }
     }
 }

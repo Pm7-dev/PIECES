@@ -34,13 +34,12 @@ public class AnimationController implements Listener {
         if(taskID==null) return;
         Bukkit.getScheduler().cancelTask(taskID);
         taskID = null;
-
-        /* got lazy. TODO: system that removes animation controllers from head
         for(Player p : Bukkit.getOnlinePlayers()) {
-            p.getInventory()
+            ItemStack helmet = p.getInventory().getHelmet();
+            if(helmet == null || !helmet.getItemMeta().getPersistentDataContainer().has(acKey)) {
+                p.getInventory().setHelmet(new ItemStack(Material.AIR));
+            }
         }
-
-         */
     }
     public boolean isRunning() {return taskID != null;}
 
@@ -107,7 +106,7 @@ public class AnimationController implements Listener {
         frameQueue.removeFirst();
     }
 
-    private void clearQueue(UUID uuid) {
+    public void clearQueue(UUID uuid) {
         frameQueues.get(uuid).clear();
     }
 

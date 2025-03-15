@@ -3,6 +3,7 @@ package me.pm7.session6.Commands;
 import me.pm7.session6.Session6;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -45,27 +46,27 @@ public class startwildcard extends BukkitRunnable implements CommandExecutor {
             this.cancel();
             return;
         }
-
         for (Player player : Bukkit.getOnlinePlayers()) {
+            Location soundLoc = player.getLocation().clone().add(0, 500, 0);
             switch (titleNumber) {
                 case 0 -> {
                     player.sendTitle("§a.", "", 0, 100, 0);
-                    player.playSound(player.getLocation(), Sound.ITEM_LODESTONE_COMPASS_LOCK, 1f, 1f);
+                    player.playSound(soundLoc, Sound.ITEM_LODESTONE_COMPASS_LOCK, 99999f, 1f);
                 }
                 case 1 -> {
                     player.sendTitle("§a. §e.", "", 0, 100, 0);
-                    player.playSound(player.getLocation(), Sound.ITEM_LODESTONE_COMPASS_LOCK, 1f, 1f);
+                    player.playSound(soundLoc, Sound.ITEM_LODESTONE_COMPASS_LOCK, 99999f, 1f);
                 }
                 case 2 -> {
                     player.sendTitle("§a. §e. §c.", "", 0, 100, 0);
-                    player.playSound(player.getLocation(), Sound.ITEM_LODESTONE_COMPASS_LOCK, 1f, 1f);
+                    player.playSound(soundLoc, Sound.ITEM_LODESTONE_COMPASS_LOCK, 99999f, 1f);
                     delay = 25;
                 }
                 case 3 -> {
                     player.sendTitle("§6§kA wildcard is active!", "", 0, 50, 20);
-                    player.playSound(player.getLocation(), Sound.BLOCK_TRIAL_SPAWNER_OMINOUS_ACTIVATE, 1f, 1f);
-                    player.playSound(player.getLocation(), Sound.BLOCK_VAULT_OPEN_SHUTTER, 1f, 1f);
-                    player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 1f, 1f);
+                    player.playSound(soundLoc, Sound.BLOCK_TRIAL_SPAWNER_OMINOUS_ACTIVATE, 99999f, 1f);
+                    player.playSound(soundLoc, Sound.BLOCK_VAULT_OPEN_SHUTTER, 99999f, 1f);
+                    player.playSound(soundLoc, Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 99999f, 1f);
                     delay = 8;
                 }
                 case 4 -> player.sendTitle("§6§k§lA wi§r§6§ll§r§6§l§kdcard is §r§6§la§r§6§l§kctive!", "", 0, 50, 20);
