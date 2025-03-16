@@ -77,7 +77,7 @@ public enum SpawnerDifficulty {
             10,
             "Scale"
     ),
-    ANOMALY_TOTAL_CHAOS(6,
+    ANOMALY_TOTAL_CHAOS(null,
             2,
             2.0,
             26,
@@ -85,6 +85,18 @@ public enum SpawnerDifficulty {
             20,
             26,
             "Total Chaos"
+    ),
+
+
+
+    LAG_TEST(null,
+            2,
+            100.0,
+            2,
+            7,
+            8,
+            15,
+            "Test for lag stuff"
     );
 
     private static final Random random = new Random();

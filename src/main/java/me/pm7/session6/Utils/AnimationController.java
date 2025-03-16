@@ -55,25 +55,30 @@ public class AnimationController implements Listener {
             HashMap<UUID, Piece> playersUnderPieces = Piece.getPlayersUnderPieces();
             if(playersUnderPieces.containsKey(p.getUniqueId())) {
                 Piece lowestPiece = playersUnderPieces.get(p.getUniqueId());
-                if (lowestPiece != null) {
-                    Location loc = p.getLocation();
-                    double distance = lowestPiece.getY() - loc.getY();
-                    Location soundLoc = loc.clone().add(0, 500, 0);
-                    float pitch = (float) ((distance / (3.2 * lowestPiece.getSpeed() * 3) * -0.3) + 1.2f); //*3 for 3 sections of sound?
+                if (lowestPiece == null) {continue;}
+                Location loc = p.getLocation();
+                double distance = lowestPiece.getY() - loc.getY();
 
-                    int pulseSection = (int) Math.floor(distance / (lowestPiece.getSpeed() * 3.2)); //3.2
-                    if (pulseSection < 3) {
-                        int ticksBetweenPulses;
-                        if (distance <= lowestPiece.getSpeed() * 1.4) { // Override when it gets *really* close for a stressful effect
-                            ticksBetweenPulses = 2;
-                            pitch += 0.05f;
-                        } else ticksBetweenPulses = (int) Math.pow(2, pulseSection + 2);
-                        if (tick % ticksBetweenPulses == 0) {
-                            clearQueue(p.getUniqueId());
-                            for (int i = 0; i < 32; i += 5) addFrame(p.getUniqueId(), "warning_overlay/" + i);
-                            addFrame(p.getUniqueId(), "warning_overlay/blank");
-                            p.playSound(soundLoc, "pieces:warning", 9999, pitch);
-                        }
+                if(distance < 0) {
+                    playersUnderPieces.remove(p.getUniqueId());
+                    continue;
+                }
+
+                Location soundLoc = loc.clone().add(0, 500, 0);
+                float pitch = (float) ((distance / (3.2 * lowestPiece.getSpeed() * 3) * -0.3) + 1.2f); //*3 for 3 sections of sound?
+
+                int pulseSection = (int) Math.floor(distance / (lowestPiece.getSpeed() * 3.2)); //3.2
+                if (pulseSection < 3) {
+                    int ticksBetweenPulses;
+                    if (distance <= lowestPiece.getSpeed() * 1.4) { // Override when it gets *really* close for a stressful effect
+                        ticksBetweenPulses = 2;
+                        pitch += 0.05f;
+                    } else ticksBetweenPulses = (int) Math.pow(2, pulseSection + 2);
+                    if (tick % ticksBetweenPulses == 0) {
+                        clearQueue(p.getUniqueId());
+                        for (int i = 0; i < 32; i += 5) addFrame(p.getUniqueId(), "warning_overlay/" + i);
+                        addFrame(p.getUniqueId(), "warning_overlay/blank");
+                        p.playSound(soundLoc, "pieces:warning", 9999, pitch);
                     }
                 }
             }
@@ -113,12 +118,6 @@ public class AnimationController implements Listener {
     private void addFrame(UUID uuid, String frame) {
         frameQueues.get(uuid).add(frame);
     }
-
-//    @EventHandler
-//    public void onInvChange(InventoryClickEvent e) {
-//        ItemStack helmet = e.getWhoClicked().getInventory().getHelmet();
-//        if(helmet == null || !helmet.getItemMeta().getPersistentDataContainer().has(acKey)) e.setCancelled(true);
-//    }
 
     @EventHandler
     public void onInvChange(InventoryClickEvent e) {

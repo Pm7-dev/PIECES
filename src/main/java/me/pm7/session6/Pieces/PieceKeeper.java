@@ -41,7 +41,6 @@ public class PieceKeeper {
 
     public boolean isRunning() {return taskID != null;}
 
-    private final Predicate<Entity> isPlayer = e -> e instanceof Player p && (p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE);
     private int tick;
     private void loop() {
         if(endingAnimation) endAnimationTick++;
@@ -64,7 +63,7 @@ public class PieceKeeper {
             remove.removeFirst();
         }
 
-        // Tick down the player invincibility
+        // Tick down player invincibility
         for(Map.Entry<UUID, Integer> entry : pieceInvincibilityTicks.entrySet()) {
             Player p = Bukkit.getPlayer(entry.getKey());
             if(p == null) continue;

@@ -27,9 +27,10 @@ public class Piece {
     // Keeps track of the players that should be dead
     private static final List<UUID> dead = new ArrayList<>();
 
-    // constant(s)
+    // constants
     private static final int spawnTime = 55; // Defines how long it takes for the piece to scale up before dropping (in ticks)
     private static final NamespacedKey pieceID = new NamespacedKey(plugin, "piece-face-entity");
+    private static final int TELEPORT_DURATION = 19;
 
     private final int size;
     private final double x, z, speed;
@@ -110,7 +111,7 @@ public class Piece {
         // Start the piece after all the animations are done
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 
-            // Remove all the inner faces
+            // Remove the inner faces
             for(UUID uuid : facesToRemove) {
                 Entity e = Bukkit.getEntity(uuid);
                 if(e != null) e.remove();
@@ -154,7 +155,7 @@ public class Piece {
         face.setTransformation(new Transformation(new Vector3f(0,0,0),new AxisAngle4f(),new Vector3f(0,0,1),new AxisAngle4f()));
         face.setInterpolationDelay(0);
         face.setInterpolationDuration(1);
-        face.setTeleportDuration(1);
+        face.setTeleportDuration(TELEPORT_DURATION);
 
         faces.add(face.getUniqueId());
         if(remove) facesToRemove.add(face.getUniqueId());
@@ -162,6 +163,7 @@ public class Piece {
 
     // Moves every face down lol
     int soundTick = 0;
+    int teleportTick = 0;
     public void moveDown() {
 
         // Multiplier used during the ending animation (will just be 1 the rest of the time)
@@ -170,21 +172,33 @@ public class Piece {
         if(!Double.isFinite(multiplier)) multiplier = 0;
 
         // Code that moves the piece down (also plays the ending animation flashing)
-        y-=(speed/20) * multiplier;
-        for(UUID uuid : faces) {
-            TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
-            if(face==null) continue;
-            if(endAnimationTick <= 70) {
-                face.teleport(face.getLocation().clone().subtract(0, (speed/20) * multiplier, 0));
-            } else if(endAnimationTick <= 175) {
-                face.setDefaultBackground((random.nextInt(0, 3) == 0) == face.isDefaultBackground());
-            } else if(endAnimationTick <= 218) {
-                face.setDefaultBackground((random.nextInt(0, 3) == 0) == face.isDefaultBackground());
-                if(random.nextInt(20)==0) face.remove();
-            } else {
-                face.remove();
+        double movementPerTick = (speed/20) * multiplier;
+        if(teleportTick == 0 || endAnimationTick != 0) {
+            for (UUID uuid : faces) {
+                TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
+                if (face == null) continue;
+
+                if(endAnimationTick==1) {
+                    face.setTeleportDuration(1);
+                }
+
+                if (endAnimationTick <= 70) {
+                    Location tpLoc = face.getLocation().clone();
+                    tpLoc.setY(y - (movementPerTick * TELEPORT_DURATION) + (size/2d));
+                    face.teleport(tpLoc);
+                } else if (endAnimationTick <= 175) {
+                    face.setDefaultBackground((random.nextInt(0, 3) == 0) == face.isDefaultBackground());
+                } else if (endAnimationTick <= 218) {
+                    face.setDefaultBackground((random.nextInt(0, 3) == 0) == face.isDefaultBackground());
+                    if (random.nextInt(20) == 0) face.remove();
+                } else {
+                    face.remove();
+                }
             }
         }
+        y-=movementPerTick;
+        teleportTick++;
+        if(teleportTick==TELEPORT_DURATION) teleportTick = 0;
 
         // If the piece is fully below the world, remove it
         if(y < -65-size) remove = true;
@@ -194,14 +208,6 @@ public class Piece {
         double centerX = x + halfSize;
         double centerZ = z + halfSize;
         for(Player p : Bukkit.getOnlinePlayers()) {
-
-            // Quickly check the current "piece on top of this player" for removal because that can happen
-            if(playersUnderPieces.containsKey(p.getUniqueId())) {
-                Piece piece = playersUnderPieces.get(p.getUniqueId());
-                if(p.getEyeLocation().getY() > piece.getY()) {
-                    playersUnderPieces.remove(p.getUniqueId());
-                }
-            }
 
             if(!p.getWorld().getUID().equals(getWorld().getUID())) continue;
 

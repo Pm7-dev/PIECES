@@ -109,11 +109,9 @@ public enum PieceColorPattern {
                     Color.fromARGB(255, 247, 125, 243)
             ));
 
-            case QUANTUM_TEAL -> new PieceColor(false, 2, false, Arrays.asList(
+            case QUANTUM_TEAL -> new PieceColor(false, 3, false, Arrays.asList(
                     Color.fromARGB(255, 25, 255, 141),
-                    Color.fromARGB(0, 0, 0, 0),
-                    Color.fromARGB(0, 0, 0, 0)//,
-                    //Color.fromARGB(0, 0, 0, 0)
+                    Color.fromARGB(0, 0, 0, 0)
             ));
 
             case FADING_PINK -> new PieceColor(true, 15, true, Arrays.asList(
@@ -207,7 +205,7 @@ public enum PieceColorPattern {
 
             case hOtGuY -> new PieceColor(true, 30, true, Arrays.asList(
                     Color.fromARGB(255, 236, 205, 0),
-                    Color.fromARGB(255, 255, 255, 255),
+                    //Color.fromARGB(255, 255, 255, 255),
                     Color.fromARGB(255, 98, 174, 220)
             ));
 
