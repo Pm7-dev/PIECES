@@ -167,16 +167,31 @@ public class PieceMaker {
             for(Player p : Bukkit.getOnlinePlayers()) {
                 p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:anomaly", 999999, 1);
                 p.sendTitle(ChatColor.RED + "", ChatColor.RED + "Storm Anomaly detected!", 0, 5, 45);
-                p.sendMessage(ChatColor.RED + "Anomaly Type: " + anomaly.getName() + ". Get ready!");
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                Bukkit.broadcastMessage(ChatColor.RED + "[Storm Watch]: The incoming anomaly has been designated type \"" + anomaly.getName() + "\" Be prepared.");
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:storm_watch_notif", 999999, 1);
+                }
+            }, 80L);
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 difficulty = anomaly;
-                long time = random.nextInt(30*20, (45*20) + 1);
+
+                // Reset the difficulty after a randomized time between 45 and 66 seconds
+                long time = random.nextInt(45, 66);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                     difficulty = previousDifficulty;
-                }, time);
-            }, 200L);
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                        Bukkit.broadcastMessage(ChatColor.RED + "[Storm Watch]: The storm appears to be easing up");
+                        for(Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:storm_watch_notif", 999999, 1);
+                        }
+                    }, 65L);
+                }, time * 20);
+            }, 240L);
         }
         secondsBeforeNextDifficultyShift--;
         secondsBeforeNextAnomaly--;

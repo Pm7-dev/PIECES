@@ -62,29 +62,29 @@ public enum SpawnerDifficulty {
     ANOMALY_SPEED(null,
             3,
             2.0,
-            12,
-            16,
-            22,
-            26,
-            "Speed"
+            13,
+            18,
+            25,
+            32,
+            "SPEED"
     ),
     ANOMALY_SCALE(null,
             5,
             1.5,
-            30,
+            32,
             40,
             7,
             10,
-            "Scale"
+            "SCALE"
     ),
     ANOMALY_TOTAL_CHAOS(null,
-            2,
-            2.0,
-            26,
-            34,
+            3,
+            2.25,
+            30,
+            36,
             20,
             26,
-            "Total Chaos"
+            "TOTAL CHAOS"
     ),
 
 

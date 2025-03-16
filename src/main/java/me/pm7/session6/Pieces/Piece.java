@@ -30,7 +30,7 @@ public class Piece {
     // constants
     private static final int spawnTime = 55; // Defines how long it takes for the piece to scale up before dropping (in ticks)
     private static final NamespacedKey pieceID = new NamespacedKey(plugin, "piece-face-entity");
-    private static final int TELEPORT_DURATION = 19;
+    private static final int TELEPORT_DURATION = 10; // Higher numbers are slightly more efficient, but cause greater client desync
 
     private final int size;
     private final double x, z, speed;
