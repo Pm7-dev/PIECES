@@ -32,18 +32,21 @@ public class AnimationController implements Listener {
     }
     public void stop() {
         if(taskID==null) return;
-        Bukkit.getScheduler().cancelTask(taskID);
-        taskID = null;
-        for(Player p : Bukkit.getOnlinePlayers()) {
-            ItemStack helmet = p.getInventory().getHelmet();
-            if(helmet == null || !helmet.getItemMeta().getPersistentDataContainer().has(acKey)) {
-                p.getInventory().setHelmet(new ItemStack(Material.AIR));
+        this.stopping = true;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            Bukkit.getScheduler().cancelTask(taskID);
+            taskID = null;
+            for(Player p : Bukkit.getOnlinePlayers()) {
+                ItemStack helmet = p.getInventory().getHelmet();
+                if(helmet.getItemMeta().getPersistentDataContainer().has(acKey)) {
+                    p.getInventory().setHelmet(new ItemStack(Material.AIR));
+                }
             }
-        }
+        }, 20L);
     }
-    public boolean isRunning() {return taskID != null;}
 
-    int tick = 0;
+    private int tick = 0;
+    private boolean stopping = false;
     private void animationLoop() {
         for(Player p : Bukkit.getOnlinePlayers()) {
             ItemStack helmet = p.getInventory().getHelmet();
@@ -55,30 +58,31 @@ public class AnimationController implements Listener {
             HashMap<UUID, Piece> playersUnderPieces = Piece.getPlayersUnderPieces();
             if(playersUnderPieces.containsKey(p.getUniqueId())) {
                 Piece lowestPiece = playersUnderPieces.get(p.getUniqueId());
-                if (lowestPiece == null) {continue;}
-                Location loc = p.getLocation();
-                double distance = lowestPiece.getY() - loc.getY();
+                if (lowestPiece != null && !stopping) {
+                    Location loc = p.getLocation();
+                    double distance = lowestPiece.getY() - loc.getY();
 
-                if(distance < 0) {
-                    playersUnderPieces.remove(p.getUniqueId());
-                    continue;
-                }
+                    if (distance < 0) {
+                        playersUnderPieces.remove(p.getUniqueId());
+                        continue;
+                    }
 
-                Location soundLoc = loc.clone().add(0, 500, 0);
-                float pitch = (float) ((distance / (3.2 * lowestPiece.getSpeed() * 3) * -0.3) + 1.2f); //*3 for 3 sections of sound?
+                    Location soundLoc = loc.clone().add(0, 500, 0);
+                    float pitch = (float) ((distance / (3.2 * lowestPiece.getSpeed() * 3) * -0.3) + 1.2f); //*3 for 3 sections of sound?
 
-                int pulseSection = (int) Math.floor(distance / (lowestPiece.getSpeed() * 3.2)); //3.2
-                if (pulseSection < 3) {
-                    int ticksBetweenPulses;
-                    if (distance <= lowestPiece.getSpeed() * 1.4) { // Override when it gets *really* close for a stressful effect
-                        ticksBetweenPulses = 2;
-                        pitch += 0.05f;
-                    } else ticksBetweenPulses = (int) Math.pow(2, pulseSection + 2);
-                    if (tick % ticksBetweenPulses == 0) {
-                        clearQueue(p.getUniqueId());
-                        for (int i = 0; i < 32; i += 5) addFrame(p.getUniqueId(), "warning_overlay/" + i);
-                        addFrame(p.getUniqueId(), "warning_overlay/blank");
-                        p.playSound(soundLoc, "pieces:warning", 9999, pitch);
+                    int pulseSection = (int) Math.floor(distance / (lowestPiece.getSpeed() * 3.2)); //3.2
+                    if (pulseSection < 3) {
+                        int ticksBetweenPulses;
+                        if (distance <= lowestPiece.getSpeed() * 1.4) { // Override when it gets *really* close for a stressful effect
+                            ticksBetweenPulses = 2;
+                            pitch += 0.05f;
+                        } else ticksBetweenPulses = (int) Math.pow(2, pulseSection + 2);
+                        if (tick % ticksBetweenPulses == 0) {
+                            clearQueue(p.getUniqueId());
+                            for (int i = 0; i < 32; i += 5) addFrame(p.getUniqueId(), "warning_overlay/" + i);
+                            addFrame(p.getUniqueId(), "warning_overlay/blank");
+                            p.playSound(soundLoc, "pieces:warning", 9999, pitch);
+                        }
                     }
                 }
             }

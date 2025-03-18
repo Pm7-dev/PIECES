@@ -56,6 +56,12 @@ public enum PieceType {
             { true, false, false}
     }),
 
+    N_5(new boolean[][] {
+            {false,  true, false},
+            { true,  true,  true},
+            { true, false,  true}
+    }),
+
     P_5(new boolean[][] {
             { true,  true, false},
             { true,  true, false},
@@ -205,18 +211,11 @@ public enum PieceType {
             {false, true, true, false},
     }),
 
-    J_9(new boolean[][] {
-            {true, true, true, true},
-            {false, false, false, true},
-            {true, false, false, true},
-            {false, true, true, false}
-    }),
-
     B_14(new boolean[][] { // idk but just the idea of having a very tight one is cool
-            {true, true, true, true},
+            {false, true, true, true},
             {true, false, true, true},
             {true, true, false, true},
-            {true, true, true, true},
+            {true, true, true, false},
     }),
 
     JUST_ONE(new boolean[][] {{true}}) // hehe

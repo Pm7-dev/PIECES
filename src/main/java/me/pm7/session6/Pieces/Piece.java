@@ -45,6 +45,7 @@ public class Piece {
     private boolean remove = false;
     private int spawnAnimationTicks = 0; // counts how many ticks the piece has been spawning for
     private final Random random;
+    private final HashMap<UUID, Integer> endAnimationDestroyTick;
 
     public Piece(World world, int x, double y, int z, int size, double speed, boolean[][] modelData, PieceColor color) {
         this.world = world;
@@ -57,8 +58,9 @@ public class Piece {
         this.modelData = modelData;
         this.faces = new ArrayList<>();
         this.facesToRemove = new ArrayList<>();
-        this.voiceDistance = size + 8;
+        this.voiceDistance = (size * 1.2) + 8;
         this.random = new Random();
+        this.endAnimationDestroyTick = new HashMap<>();
 
         //Load all the chunks that this entity will be in
         for(double cx = x; cx < x+(modelData.length*size); cx+=16) {
@@ -119,13 +121,12 @@ public class Piece {
             }
             facesToRemove.clear();
 
-            // If the color isn't supposed to fade, don't let the client do smooth interpolation
-            if(!color.doesFading()) {
-                for(UUID uuid : faces) {
-                    TextDisplay e = (TextDisplay) Bukkit.getEntity(uuid);
-                    if(e == null) continue;
-                    e.setInterpolationDuration(0);
-                }
+            for(UUID uuid : faces) {
+                TextDisplay e = (TextDisplay) Bukkit.getEntity(uuid);
+                if(e == null) continue;
+                e.setInterpolationDelay(0);
+                if(color.doesFading()) e.setInterpolationDuration(color.getFadeTicks());
+                else e.setInterpolationDuration(0);
             }
 
             // running! yay
@@ -153,12 +154,14 @@ public class Piece {
 
         face.setViewRange(999999999);
         face.setTransformation(new Transformation(new Vector3f(0,0,0),new AxisAngle4f(),new Vector3f(0,0,1),new AxisAngle4f()));
-        face.setInterpolationDelay(0);
+        face.setInterpolationDelay(0); // 1?
         face.setInterpolationDuration(1);
         face.setTeleportDuration(TELEPORT_DURATION);
 
         faces.add(face.getUniqueId());
         if(remove) facesToRemove.add(face.getUniqueId());
+        else endAnimationDestroyTick.put(face.getUniqueId(), random.nextInt(176, 218));
+
     }
 
     // Moves every face down lol
@@ -178,21 +181,25 @@ public class Piece {
                 TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
                 if (face == null) continue;
 
-                if(endAnimationTick==1) {
+                if(endAnimationTick>0) {
                     face.setTeleportDuration(1);
                 }
 
                 if (endAnimationTick <= 70) {
                     Location tpLoc = face.getLocation().clone();
-                    tpLoc.setY(y - (movementPerTick * TELEPORT_DURATION) + (size/2d));
+                    if(endAnimationTick==0) tpLoc.setY(y - (movementPerTick * TELEPORT_DURATION) + (size/2d));
+                    else tpLoc.setY(y - (movementPerTick) + (size/2d));
                     face.teleport(tpLoc);
-                } else if (endAnimationTick <= 175) {
-                    face.setDefaultBackground((random.nextInt(0, 3) == 0) == face.isDefaultBackground());
                 } else if (endAnimationTick <= 218) {
                     face.setDefaultBackground((random.nextInt(0, 3) == 0) == face.isDefaultBackground());
-                    if (random.nextInt(20) == 0) face.remove();
+                    if(endAnimationTick > 175) {
+                        if(endAnimationTick >= endAnimationDestroyTick.get(uuid)) {
+                            face.remove();
+                        }
+                    }
                 } else {
-                    face.remove();
+                    this.kill();
+                    return;
                 }
             }
         }
@@ -254,7 +261,7 @@ public class Piece {
                             float volume = (float) (1.0f - (distance / (voiceDistance)));
 
                             if (volume > 0) {
-                                Location soundLoc = new Location(getWorld(), mX, y, mZ);
+                                Location soundLoc = new Location(getWorld(), mX, y + (size * 0.25), mZ);
                                 if (endAnimationTick >= 70) {
                                     if (endAnimationTick < 73) {
                                         p.playSound(soundLoc, "pieces:piece.broken_intro", volume * 2 + 1.2f, 0.9f);
@@ -317,7 +324,11 @@ public class Piece {
         for(UUID uuid : faces) {
             TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
             if(face==null) continue;
-            face.setBackgroundColor(color.getColor());
+            if(!face.getBackgroundColor().equals(color.getColor())) {
+                System.out.println("turning!");
+                face.setInterpolationDelay(0);
+                face.setBackgroundColor(color.getColor());
+            }
         }
     }
 

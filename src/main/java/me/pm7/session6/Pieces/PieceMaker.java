@@ -91,7 +91,7 @@ public class PieceMaker {
         for(Player p : Bukkit.getOnlinePlayers()) {
             Location soundLoc = p.getLocation().clone().add(0, 500, 0);
             p.playSound(soundLoc, sound, 99999, 1);
-            if(hold) p.sendTitle("", ChatColor.GREEN + message, 0, 50, 20);
+            if(hold) p.sendTitle("", ChatColor.GREEN + message, 0, 30, 20);
             else p.sendTitle("", ChatColor.GREEN + message, 0, 0, 25);
         }
     }
