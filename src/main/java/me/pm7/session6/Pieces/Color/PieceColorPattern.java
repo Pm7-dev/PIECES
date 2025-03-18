@@ -220,7 +220,7 @@ public enum PieceColorPattern {
                     Color.fromARGB(255, 98, 174, 220)
             ));
 
-            // Hopefully this is easy enough on the eyes TODO: TEST
+            // Hopefully this is easy enough on the eyes
             case QUICKFLASH -> new PieceColor(false, 1, List.of(
                     Color.fromARGB(255, 255, 255, 255),
                     Color.fromARGB(255, 255, 215, 215)

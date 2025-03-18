@@ -44,11 +44,8 @@ public class stormdifficulty implements CommandExecutor, TabExecutor {
                 newDiff = Integer.parseInt(args[1]);
             }
             catch (NumberFormatException e) {
-                //TODO: UNDO UNDO
-
-                // sender.sendMessage(ChatColor.RED + "You must have a number lol");
-
-                plugin.getPieceMaker().setDifficulty(SpawnerDifficulty.valueOf(args[1]));
+                sender.sendMessage(ChatColor.RED + "You must have a number lol");
+                //plugin.getPieceMaker().setDifficulty(SpawnerDifficulty.valueOf(args[1]));
                 return true;
             }
 
