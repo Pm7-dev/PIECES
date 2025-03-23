@@ -211,11 +211,18 @@ public enum PieceType {
             {false, true, true, false},
     }),
 
-    B_14(new boolean[][] { // idk but just the idea of having a very tight one is cool
+    INVERSE_SLASH(new boolean[][] {
             {false, true, true, true},
             {true, false, true, true},
             {true, true, false, true},
             {true, true, true, false},
+    }),
+
+    SLASH(new boolean[][] {
+            { true, false, false, false},
+            {false,  true, false, false},
+            {false, false,  true, false},
+            {false, false, false,  true},
     }),
 
     JUST_ONE(new boolean[][] {{true}}) // hehe

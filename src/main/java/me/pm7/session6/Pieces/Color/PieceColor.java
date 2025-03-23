@@ -11,8 +11,8 @@ public class PieceColor {
     private final int fadeTicks;
 
     public PieceColor(boolean doFading, int fadeTicks, List<Color> colorSequence) {
-        this.currentColor = colorSequence.getFirst();
         this.colorSequence = colorSequence;
+        this.currentColor = colorSequence.getFirst();
         this.doFading = doFading;
         this.fadeTicks = fadeTicks;
     }

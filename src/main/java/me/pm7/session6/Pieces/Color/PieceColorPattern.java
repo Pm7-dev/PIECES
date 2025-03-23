@@ -288,13 +288,14 @@ public enum PieceColorPattern {
                 These next few colors were compiled exclusively from hex color suggestions by Piffin viewers. I know
                 having your name immortalized in code doesn't mean much, and I'll try to get your names somewhere else,
                 but thank you all for providing!
+                22/03/25 - Found a good spot to plop you guys!!
 
                 Especially thank you Trap for being the only person who managed to get their hex color live during the
                 24/02/25 piffin stream :D
              */
 
             // Noticed a pretty blue/orange pattern that could be made
-            case PIFFIN_VIEWER_EXTRAVAGANZA_1 -> new PieceColor(true, 24, List.of(
+            case PIFFIN_VIEWER_EXTRAVAGANZA_1 -> new PieceColor(true, 18, List.of(
                     Color.fromARGB(255, 235, 97, 35),  // From Trap
                     Color.fromARGB(255, 30, 129, 176), // From Enter Name Here
                     Color.fromARGB(255, 255, 136, 26), // From Magma (magmanugget)
@@ -302,7 +303,7 @@ public enum PieceColorPattern {
             ));
 
             // I really like these colors :3
-            case PIFFIN_VIEWER_EXTRAVAGANZA_2 -> new PieceColor(true, 24, List.of(
+            case PIFFIN_VIEWER_EXTRAVAGANZA_2 -> new PieceColor(true, 18, List.of(
                     Color.fromARGB(255, 132, 37, 147),   // From Dedede (dedede2)
                     Color.fromARGB(255, 194, 120, 255),  // From d<3 (lolstoney)
                     Color.fromARGB(255, 255, 71, 169),   // From LizardLyd
@@ -311,7 +312,7 @@ public enum PieceColorPattern {
             ));
 
             // Kinda like colors of nature or something... also contains Raven's suggestion
-            case PIFFIN_VIEWER_EXTRAVAGANZA_3 -> new PieceColor(true, 24, List.of(
+            case PIFFIN_VIEWER_EXTRAVAGANZA_3 -> new PieceColor(true, 18, List.of(
                     Color.fromARGB(255, 7, 70, 133),    // From ATV
                     Color.fromARGB(255, 49, 97, 36),    // From Oliver
                     Color.fromARGB(255, 255, 255, 255)  // From Raven

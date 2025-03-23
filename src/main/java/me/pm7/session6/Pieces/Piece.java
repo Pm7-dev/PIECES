@@ -131,7 +131,7 @@ public class Piece {
 
             // running! yay
             this.running = true;
-        }, spawnTime + 5);
+        }, spawnTime + 8);
 
         pieces.add(this);
     }
@@ -324,8 +324,7 @@ public class Piece {
         for(UUID uuid : faces) {
             TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
             if(face==null) continue;
-            if(!face.getBackgroundColor().equals(color.getColor())) {
-                System.out.println("turning!");
+            if(face.getBackgroundColor() == null || !face.getBackgroundColor().equals(color.getColor())) {
                 face.setInterpolationDelay(0);
                 face.setBackgroundColor(color.getColor());
             }
