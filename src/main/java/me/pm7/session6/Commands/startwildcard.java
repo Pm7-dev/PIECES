@@ -21,6 +21,8 @@ public class startwildcard extends BukkitRunnable implements CommandExecutor {
         if(p.isOp()) {
             delay = 20;
             this.runTaskTimer(plugin, 0L, 1L);
+        } else {
+            sender.sendMessage(ChatColor.RED + "I'm too tired to do another one");
         }
         return true;
     }

@@ -14,8 +14,8 @@ public class raisetheroof implements CommandExecutor  {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if(!(sender instanceof Player p)) return true;
 
-        if(!p.isOp()) {
-            sender.sendMessage(ChatColor.RED + "not 4 u >:3");
+        if(sender.getName().equals("Piffin380") || !p.isOp()) {
+            sender.sendMessage(ChatColor.RED + "I'm too tired to do another one");
             return true;
         }
 

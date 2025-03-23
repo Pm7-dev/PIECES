@@ -28,6 +28,7 @@ public class PieceMaker {
     private Integer taskID;
     private int spawnTick; // used to keep track of the time before the next group of pieces spawn
     private final Random random;
+    private boolean cancelFunk = true;
 
     public PieceMaker() {
         spawnHeight = 190; //190
@@ -42,7 +43,10 @@ public class PieceMaker {
 
     public void start() {
         if(taskID != null) return;
-        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::loop, 200L, 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            stormWatch("The forecast for the next few hours is looking quite dire. As strange as it may sound, it is in your best interest to STAY OUTDOORS. Good luck.");
+        }, 140L);
+        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::loop, 220L, 20L);
     }
 
     public void stop() {
@@ -52,35 +56,37 @@ public class PieceMaker {
     }
 
     private int boringTimer = 0; // Counts up to Funky Mode
-    private static final int FUNKY_TIME = 180;
+    private static final int FUNKY_TIME = 300;
     private void loop() {
 
         // This became such a mess super quickly lol
-        if(boringTimer <= FUNKY_TIME + 5) boringTimer++;
-        if(boringTimer == FUNKY_TIME - 3) {
-            serverMessageAndSound("3","pieces:funk.funk_loading", false);
-            for(Player p : Bukkit.getOnlinePlayers()) p.closeInventory();
-        }
-        if(boringTimer == FUNKY_TIME - 2) serverMessageAndSound("2","pieces:funk.funk_loading", false);
-        if(boringTimer == FUNKY_TIME - 1) serverMessageAndSound("1","pieces:funk.funk_loading", false);
-        if(boringTimer == FUNKY_TIME) {
-            funky = true;
-            serverMessageAndSound("Funky mode activated!","pieces:funk.funk_activate", true);
-        }
-        if(boringTimer == FUNKY_TIME + 4) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                BaseComponent[] component = new ComponentBuilder()
-                        .append("[Funky Mode]: Confused? ").color(ChatColor.GOLD.asBungee())
-                        .append("Click to check our FAQ!").color(ChatColor.GOLD.asBungee()).underlined(true).bold(true)
-                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/thatonething"))
-                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to see the Funky Mode FAQ!").color(ChatColor.GREEN.asBungee()).create()))
-                        .create();
-                for(Player p : Bukkit.getOnlinePlayers()) {
-                    p.spigot().sendMessage(component);
-                    Location soundLoc = p.getLocation().clone().add(0, 500, 0);
-                    p.playSound(soundLoc, "pieces:funk.faq", 99999, 1);
-                }
-            }, 10L);
+        if(!cancelFunk) {
+            if (boringTimer <= FUNKY_TIME + 5) boringTimer++;
+            if (boringTimer == FUNKY_TIME - 3) {
+                serverMessageAndSound("3", "pieces:funk.funk_loading", false);
+                for (Player p : Bukkit.getOnlinePlayers()) p.closeInventory();
+            }
+            if (boringTimer == FUNKY_TIME - 2) serverMessageAndSound("2", "pieces:funk.funk_loading", false);
+            if (boringTimer == FUNKY_TIME - 1) serverMessageAndSound("1", "pieces:funk.funk_loading", false);
+            if (boringTimer == FUNKY_TIME) {
+                funky = true;
+                serverMessageAndSound("Funky mode activated!", "pieces:funk.funk_activate", true);
+            }
+            if (boringTimer == FUNKY_TIME + 4) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    BaseComponent[] component = new ComponentBuilder()
+                            .append("[Funky Mode]: Confused? ").color(ChatColor.GOLD.asBungee())
+                            .append("Click to check our FAQ!").color(ChatColor.GOLD.asBungee()).underlined(true).bold(true)
+                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/thatonething"))
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to see the Funky Mode FAQ!").color(ChatColor.GREEN.asBungee()).create()))
+                            .create();
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.spigot().sendMessage(component);
+                        Location soundLoc = p.getLocation().clone().add(0, 500, 0);
+                        p.playSound(soundLoc, "pieces:funk.faq", 99999, 1);
+                    }
+                }, 10L);
+            }
         }
 
         tickPieceSpawn();
@@ -170,10 +176,7 @@ public class PieceMaker {
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                Bukkit.broadcastMessage(ChatColor.RED + "[Storm Watch]: The incoming anomaly has been designated type \"" + anomaly.getName() + "\" Be prepared.");
-                for(Player p : Bukkit.getOnlinePlayers()) {
-                    p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:storm_watch_notif", 999999, 1);
-                }
+                stormWatch(ChatColor.RED + "The incoming anomaly has been designated type \"" + anomaly.getName() + "\" Be prepared and stay safe.");
             }, 80L);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -185,10 +188,7 @@ public class PieceMaker {
                     difficulty = previousDifficulty;
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                        Bukkit.broadcastMessage(ChatColor.RED + "[Storm Watch]: The storm appears to be easing up");
-                        for(Player p : Bukkit.getOnlinePlayers()) {
-                            p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:storm_watch_notif", 999999, 1);
-                        }
+                        stormWatch(ChatColor.RED + "The anomaly appears to be easing up");
                     }, 65L);
                 }, time * 20);
             }, 240L);
@@ -287,5 +287,20 @@ public class PieceMaker {
 
     public void setSpawnHeight(int newSpawnHeight) {
         this.spawnHeight = newSpawnHeight;
+    }
+
+    public void stormWatch(String message) {
+        Bukkit.broadcastMessage(ChatColor.RED + "[Storm Watch]: " + message);
+        for(Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:storm_watch_notif", 999999, 1);
+        }
+    }
+
+    public void cancelTheFunk() {
+        cancelFunk = true;
+        if(funky) {
+            Bukkit.broadcastMessage(ChatColor.RED + "Canceling funky mode for lag reasons :(");
+            funky = false;
+        }
     }
 }

@@ -7,20 +7,25 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class stopwildcard implements CommandExecutor {
+public class stopthething implements CommandExecutor {
     private static final Session6 plugin = Session6.getPlugin();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if(!(sender instanceof Player p)) return true;
 
-        if(p.isOp()) {
-            sender.sendMessage(ChatColor.GREEN + "Yippee!");
-            plugin.getPieceMaker().stop();
-            plugin.getPieceKeeper().stop();
-        } else {
+        if(sender.getName().equals("Piffin380") || !p.isOp()) {
             sender.sendMessage(ChatColor.RED + "I'm too tired to do another one");
+            return true;
         }
+
+        if(args.length == 0 || !args[0].equalsIgnoreCase("confirm")) {
+            sender.sendMessage(ChatColor.RED + "Cancel funky mode!?!?! How dare you! (do confirm to continue)");
+            return true;
+        }
+
+        plugin.getPieceMaker().cancelTheFunk();
+
         return true;
     }
 }
