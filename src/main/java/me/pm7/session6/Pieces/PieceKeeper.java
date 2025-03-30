@@ -5,13 +5,9 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 public class PieceKeeper {
     private static final Session6 plugin = Session6.getPlugin();
@@ -35,7 +31,7 @@ public class PieceKeeper {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 Bukkit.getScheduler().cancelTask(taskID);
                 taskID = null;
-            }, 70L + 150L); //70 for the slowing down, and an extra 150 for the flashing/disappearing
+            }, 318L);
         }, 60L); // Wait 60 ticks to make sure any pieces still spawning correctly finish
     }
 
@@ -51,9 +47,8 @@ public class PieceKeeper {
             piece.moveDown();
 
             // Color animation/player collisions can stop after the slowing down has finished
-            if(endAnimationTick > 55) continue;
+            if(endAnimationTick > 70) continue;
 
-            piece.tickColor();
             if(piece.shouldRemove()) remove.add(piece);
         }
 
@@ -82,6 +77,19 @@ public class PieceKeeper {
                 }
 
                 entry.setValue(entry.getValue()-1);
+            }
+        }
+
+        // Specifically for sounds during the ending animation
+        if(endAnimationTick > 170 && endAnimationTick <= 338) {
+            if(endAnimationTick == 171) {
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    p.playSound(p.getLocation().clone().add(0, 500, 0), "pieces:piece.broken_intro", 9999999, 1);
+                }
+            } else {
+                for(Player p : Bukkit.getOnlinePlayers()) {
+                    p.playSound(p.getLocation().clone().add(0, 500, 0), "pieces:piece.broken", 9999999, 1);
+                }
             }
         }
 

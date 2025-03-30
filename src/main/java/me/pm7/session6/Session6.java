@@ -34,7 +34,6 @@ public final class Session6 extends JavaPlugin {
         getCommand("stormdifficulty").setExecutor(new stormdifficulty());
         getCommand("stormdifficulty").setTabCompleter(new stormdifficulty());
         getCommand("startwildcard").setExecutor(new startwildcard());
-        getCommand("thatonething").setExecutor(new thatonething());
         getCommand("stopwildcard").setExecutor(new stopwildcard());
         getServer().getPluginManager().registerEvents(new DeathListener(), plugin);
         getServer().getPluginManager().registerEvents(new ConnectionListener(), plugin);
@@ -65,6 +64,8 @@ public final class Session6 extends JavaPlugin {
         pieceKeeper.start();
 
         pieceMaker = new PieceMaker();
+
+
     }
 
     @Override

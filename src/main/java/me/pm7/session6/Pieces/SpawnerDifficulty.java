@@ -91,7 +91,7 @@ public enum SpawnerDifficulty {
 
     LAG_TEST(null,
             2,
-            100.0,
+            150.0,
             2,
             7,
             8,

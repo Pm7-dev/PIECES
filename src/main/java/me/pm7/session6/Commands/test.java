@@ -1,6 +1,5 @@
 package me.pm7.session6.Commands;
 
-import me.pm7.session6.Pieces.Color.PieceColorPattern;
 import me.pm7.session6.Pieces.Piece;
 import me.pm7.session6.Pieces.PieceType;
 import org.bukkit.Location;
@@ -21,11 +20,6 @@ public class test implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         Player p = (Player) sender;
         Location loc = p.getLocation().getBlock().getLocation();
-
-        if(args.length>0) {
-            new Piece(loc.getWorld(), loc.getBlockX(), 200, loc.getBlockZ(), 20, 2, PieceType.getRandom().getModel(), PieceColorPattern.COTTON_CANDY.getColor());
-            return true;
-        }
 
         TextDisplay PLUS_Z = (TextDisplay) loc.getWorld().spawnEntity(loc.clone().add(10, 10, 10), EntityType.TEXT_DISPLAY);
         PLUS_Z.setBillboard(Display.Billboard.FIXED);

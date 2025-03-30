@@ -270,7 +270,4 @@ public enum PieceType {
             }
         };
     }
-
-    private static final List<PieceType> boring = List.of(PLUS_5, X_5, I_4, Z_4, N_6, T_5, P_5, W_5, L_5, O_4, DOUBLE_SQUARE);
-    public static PieceType getBoring() {return boring.get((int) (Math.random()*boring.size()));}
 }

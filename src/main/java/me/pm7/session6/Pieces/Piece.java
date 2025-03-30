@@ -1,9 +1,9 @@
 package me.pm7.session6.Pieces;
 
-import me.pm7.session6.Pieces.Color.PieceColor;
 import me.pm7.session6.Session6;
 import me.pm7.session6.Utils.Direction;
 import org.bukkit.*;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -13,10 +13,37 @@ import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 public class Piece {
     private static final Session6 plugin = Session6.getPlugin();
+
+    // The materials that pieces can be made out of
+    private static final List<BlockData> colors = List.of(
+            //Material.SHULKER_BOX.createBlockData(), missing something somewhere; not finding it.
+            Material.BLACK_SHULKER_BOX.createBlockData(),
+            Material.BLUE_SHULKER_BOX.createBlockData(),
+            Material.BROWN_SHULKER_BOX.createBlockData(),
+            Material.CYAN_SHULKER_BOX.createBlockData(),
+            Material.GRAY_SHULKER_BOX.createBlockData(),
+            Material.GREEN_SHULKER_BOX.createBlockData(),
+            Material.LIGHT_BLUE_SHULKER_BOX.createBlockData(),
+            Material.LIGHT_GRAY_SHULKER_BOX.createBlockData(),
+            Material.LIME_SHULKER_BOX.createBlockData(),
+            Material.MAGENTA_SHULKER_BOX.createBlockData(),
+            Material.ORANGE_SHULKER_BOX.createBlockData(),
+            Material.PINK_SHULKER_BOX.createBlockData(),
+            Material.PURPLE_SHULKER_BOX.createBlockData(),
+            Material.RED_SHULKER_BOX.createBlockData(),
+            Material.WHITE_SHULKER_BOX.createBlockData(),
+            Material.YELLOW_SHULKER_BOX.createBlockData(),
+            Material.PRISMARINE_BRICKS.createBlockData(),
+            Material.DARK_PRISMARINE.createBlockData(),
+            Material.END_STONE.createBlockData(),
+            Material.PURPUR_PILLAR.createBlockData(),
+            Material.END_STONE_BRICKS.createBlockData(),
+            Material.JIGSAW.createBlockData()
+            //Material.PURPUR_BLOCK.createBlockData(), THIS IS THE INVISIBLE ONE
+    );
 
     // Keeps track of the pieces that exist
     private static final List<Piece> pieces = new ArrayList<>();
@@ -30,8 +57,9 @@ public class Piece {
     // constants
     private static final int spawnTime = 55; // Defines how long it takes for the piece to scale up before dropping (in ticks)
     private static final NamespacedKey pieceID = new NamespacedKey(plugin, "piece-face-entity");
-    private static final int TELEPORT_DURATION = 10; // Higher numbers are slightly more efficient, but cause greater client desync
+    private static final int TELEPORT_DURATION = 3; // Higher numbers are slightly more efficient, but cause greater client desync
 
+    private final BlockData color;
     private final int size;
     private final double x, z, speed;
     private double y;
@@ -39,28 +67,26 @@ public class Piece {
     private final boolean[][] modelData;
     private final World world;
     private final List<UUID> faces;
-    private final List<UUID> facesToRemove;
-    private final PieceColor color;
     private boolean running;
     private boolean remove = false;
     private int spawnAnimationTicks = 0; // counts how many ticks the piece has been spawning for
     private final Random random;
     private final HashMap<UUID, Integer> endAnimationDestroyTick;
 
-    public Piece(World world, int x, double y, int z, int size, double speed, boolean[][] modelData, PieceColor color) {
+    public Piece(World world, int x, double y, int z, int size, double speed, boolean[][] modelData) {
         this.world = world;
         this.x = x + 0.5d;
         this.y = y;
         this.z = z + 0.5d;
         this.size = size;
         this.speed = speed;
-        this.color = color;
         this.modelData = modelData;
         this.faces = new ArrayList<>();
-        this.facesToRemove = new ArrayList<>();
         this.voiceDistance = (size * 1.2) + 8;
         this.random = new Random();
         this.endAnimationDestroyTick = new HashMap<>();
+
+        this.color = colors.get((int) (random.nextDouble() * colors.size()));
 
         //Load all the chunks that this entity will be in
         for(double cx = x; cx < x+(modelData.length*size); cx+=16) {
@@ -71,19 +97,10 @@ public class Piece {
         }
 
         // Create all the piece's faces
-        for(int i=0; i<modelData.length; i++) {
-            for(int j=0; j<modelData.length; j++) {
-                if(modelData[i][j]) { //REMEMBER it is Z and THEN X
-
-                    // If this is an edge of the model, spawn a face normally, otherwise spawn a face that will be removed later
-                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.POSITIVE_Z, 0, i + 1 != modelData.length && modelData[i + 1][j]);
-                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.NEGATIVE_Z, 0, i - 1 != -1 && modelData[i - 1][j]);
-                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.POSITIVE_X, 0, j + 1 != modelData.length && modelData[i][j + 1]);
-                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.NEGATIVE_X, 0, j - 1 != -1 && modelData[i][j - 1]);
-
-                    // Spawn the up/down face for each block
-                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.POSITIVE_X, 90, false);
-                    spawnFace(this.x+(j*size), this.z+(i*size), Direction.POSITIVE_X, -90, false);
+        for (int i = 0; i < modelData.length; i++) {
+            for (int j = 0; j < modelData.length; j++) {
+                if (modelData[i][j]) { //REMEMBER it is Z and THEN X
+                    spawnFace(this.x + (j * size), this.z + (i * size));
                 }
             }
         }
@@ -100,10 +117,10 @@ public class Piece {
 
                 float currentSize = (float) ((1 - Math.pow(1 - ((double) spawnAnimationTicks/spawnTime), 3))*size);
                 for(UUID uuid : faces) {
-                    TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
-                    if(face==null) continue;
+                    BlockDisplay face = (BlockDisplay) Bukkit.getEntity(uuid);
+                    if (face == null) continue;
                     face.setInterpolationDelay(0);
-                    face.setTransformation(new Transformation(new Vector3f(-currentSize/2,-currentSize/2,currentSize/2),new AxisAngle4f(),new Vector3f(40*currentSize,2*currentSize,1),new AxisAngle4f()));
+                    face.setTransformation(new Transformation(new Vector3f(-currentSize / 2, -currentSize / 2, -currentSize / 2), new AxisAngle4f(), new Vector3f(currentSize, currentSize, currentSize), new AxisAngle4f()));
                 }
 
                 spawnAnimationTicks++;
@@ -113,22 +130,6 @@ public class Piece {
         // Start the piece after all the animations are done
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 
-            // Remove the inner faces
-            for(UUID uuid : facesToRemove) {
-                Entity e = Bukkit.getEntity(uuid);
-                if(e != null) e.remove();
-                faces.remove(uuid);
-            }
-            facesToRemove.clear();
-
-            for(UUID uuid : faces) {
-                TextDisplay e = (TextDisplay) Bukkit.getEntity(uuid);
-                if(e == null) continue;
-                e.setInterpolationDelay(0);
-                if(color.doesFading()) e.setInterpolationDuration(color.getFadeTicks());
-                else e.setInterpolationDuration(0);
-            }
-
             // running! yay
             this.running = true;
         }, spawnTime + 8);
@@ -136,32 +137,28 @@ public class Piece {
         pieces.add(this);
     }
 
-    private void spawnFace(double x, double z, Direction direction, float pitch, boolean remove) {
-        Location spawnLoc = new Location(world, x+((double)size/2), y+((double)size/2), z+((double)size/2));
-        spawnLoc.setYaw(direction.getCardinal());
-        spawnLoc.setPitch(pitch);
-        TextDisplay face = (TextDisplay) world.spawnEntity(spawnLoc, EntityType.TEXT_DISPLAY);
+    private void spawnFace(double x, double z) {
+        Location spawnLoc = new Location(world, x + ((double) size / 2), y + ((double) size / 2), z + ((double) size / 2));
+
+        spawnLoc.setYaw(0);
+        spawnLoc.setPitch(0);
+        BlockDisplay face = (BlockDisplay) world.spawnEntity(spawnLoc, EntityType.BLOCK_DISPLAY);
         face.getPersistentDataContainer().set(pieceID, PersistentDataType.BOOLEAN, true);
 
-        face.setSeeThrough(false);
-        face.setShadowed(false);
+        face.setBlock(color);
+        face.setShadowStrength(0);
         face.setBrightness(new Display.Brightness(15, 15));
-        face.setBillboard(Display.Billboard.FIXED);
-        face.setDefaultBackground(false);
-        face.setBackgroundColor(color.getColor());
-        face.setAlignment(TextDisplay.TextAlignment.LEFT);
-        face.setText("\n");
 
         face.setViewRange(999999999);
-        face.setTransformation(new Transformation(new Vector3f(0,0,0),new AxisAngle4f(),new Vector3f(0,0,1),new AxisAngle4f()));
+        face.setTransformation(new Transformation(new Vector3f(0, 0, 0), new AxisAngle4f(), new Vector3f(0, 0, 1), new AxisAngle4f()));
         face.setInterpolationDelay(0); // 1?
         face.setInterpolationDuration(1);
         face.setTeleportDuration(TELEPORT_DURATION);
 
-        faces.add(face.getUniqueId());
-        if(remove) facesToRemove.add(face.getUniqueId());
-        else endAnimationDestroyTick.put(face.getUniqueId(), random.nextInt(176, 218));
+        // It's a surprise tool that will help us later
+        endAnimationDestroyTick.put(face.getUniqueId(), random.nextInt(245, 318));
 
+        faces.add(face.getUniqueId());
     }
 
     // Moves every face down lol
@@ -171,39 +168,50 @@ public class Piece {
 
         // Multiplier used during the ending animation (will just be 1 the rest of the time)
         int endAnimationTick = plugin.getPieceKeeper().getEndAnimationTick();
-        double multiplier = 1 - Math.sqrt(1 - Math.pow(((double) endAnimationTick/70) - 1, 2));
+        double multiplier = 1 - Math.sqrt(1 - Math.pow(((double) endAnimationTick/120) - 1, 2));
         if(!Double.isFinite(multiplier)) multiplier = 0;
 
         // Code that moves the piece down (also plays the ending animation flashing)
         double movementPerTick = (speed/20) * multiplier;
         if(teleportTick == 0 || endAnimationTick != 0) {
+
             for (UUID uuid : faces) {
-                TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
+                BlockDisplay face = (BlockDisplay) Bukkit.getEntity(uuid);
                 if (face == null) continue;
 
-                if(endAnimationTick>0) {
+                if (endAnimationTick > 0) {
                     face.setTeleportDuration(1);
                 }
-
-                if (endAnimationTick <= 70) {
+                if (endAnimationTick <= 120) {
                     Location tpLoc = face.getLocation().clone();
-                    if(endAnimationTick==0) tpLoc.setY(y - (movementPerTick * TELEPORT_DURATION) + (size/2d));
-                    else tpLoc.setY(y - (movementPerTick) + (size/2d));
+                    if (endAnimationTick == 0) tpLoc.setY(y - (movementPerTick * TELEPORT_DURATION) + (size / 2d));
+                    else tpLoc.setY(y - (movementPerTick) + (size / 2d));
                     face.teleport(tpLoc);
-                } else if (endAnimationTick <= 218) {
-                    face.setDefaultBackground((random.nextInt(0, 3) == 0) == face.isDefaultBackground());
-                    if(endAnimationTick > 175) {
-                        if(endAnimationTick >= endAnimationDestroyTick.get(uuid)) {
+                } else if (endAnimationTick > 150 && endAnimationTick <= 318) {
+
+                    if(random.nextInt(3) == 0) {face.setGlowing(!face.isGlowing());}
+                    java.awt.Color randomColor = new java.awt.Color(java.awt.Color.HSBtoRGB(random.nextFloat(), 0.8f, 1.0f));
+                    face.setGlowColorOverride(Color.fromRGB(randomColor.getRed(), randomColor.getGreen(), randomColor.getBlue()));
+
+                    if(random.nextInt(3) == 0) {
+                        face.setBlock(Material.PURPUR_BLOCK.createBlockData());
+                    } else {
+                        face.setBlock(colors.get((int) (random.nextDouble() * colors.size())));
+                    }
+
+                    if (endAnimationTick > 245) {
+                        if (endAnimationTick >= endAnimationDestroyTick.get(uuid)) {
                             face.remove();
                         }
                     }
-                } else {
+                } else if (endAnimationTick > 338) {
                     this.kill();
                     return;
                 }
             }
         }
         y-=movementPerTick;
+
         teleportTick++;
         if(teleportTick==TELEPORT_DURATION) teleportTick = 0;
 
@@ -253,7 +261,7 @@ public class Piece {
                     double zDist = mZ-pZ;
 
                     // If the player's ears are close to the block, play the ambience
-                    if(soundTick == 0) {
+                    if(soundTick == 0 && endAnimationTick < 120) {
                         if (Math.abs(yDist) - (size / 2d) < voiceDistance && Math.abs(xDist) - (size / 2d) < voiceDistance && Math.abs(zDist) - (size / 2d) < voiceDistance) {
                             double distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(zDist, 2));
                             distance -= (double) size / 2;
@@ -262,13 +270,7 @@ public class Piece {
 
                             if (volume > 0) {
                                 Location soundLoc = new Location(getWorld(), mX, y + (size * 0.25), mZ);
-                                if (endAnimationTick >= 70) {
-                                    if (endAnimationTick < 73) {
-                                        p.playSound(soundLoc, "pieces:piece.broken_intro", volume * 2 + 1.2f, 0.9f);
-                                    }
-                                    p.playSound(soundLoc, "pieces:piece.broken", endAnimationTick <= 175 ? volume * 2 + 1.2f : (volume * 2 + 1.2f) * (1.0f - ((endAnimationTick - 175) / 45f)), 0.9f);
-                                    //p.playSound(loc, "pieces:piece.bloop", volume * 2 + 1.2f, (random.nextFloat() * 1.2f) + 0.8f); this sounds so funny lol
-                                } else p.playSound(soundLoc, "pieces:piece.ambience", (volume * 2 + 1.2f) * (1.0f - (endAnimationTick / 68f)), 0.8f);
+                                p.playSound(soundLoc, "pieces:piece.ambience", (volume * 2 + 1.2f) * (1.0f - (endAnimationTick / 68f)), 0.8f);
                             }
                         }
                     }
@@ -319,18 +321,6 @@ public class Piece {
     }
     public boolean shouldRemove() {return remove;}
 
-    public void tickColor() {
-        color.tick();
-        for(UUID uuid : faces) {
-            TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
-            if(face==null) continue;
-            if(face.getBackgroundColor() == null || !face.getBackgroundColor().equals(color.getColor())) {
-                face.setInterpolationDelay(0);
-                face.setBackgroundColor(color.getColor());
-            }
-        }
-    }
-
     public double getX() {return x;}
     public double getZ() {return z;}
     public double getY() {return y;}
@@ -353,12 +343,11 @@ public class Piece {
 
         // Kill all the faces
         for(UUID uuid : faces) {
-            TextDisplay face = (TextDisplay) Bukkit.getEntity(uuid);
-            if(face==null) continue;
+            BlockDisplay face = (BlockDisplay) Bukkit.getEntity(uuid);
+            if(face == null) continue;
             face.remove();
         }
         faces.clear();
-        facesToRemove.clear();
 
         if(!plugin.isEnabled()) return;
 

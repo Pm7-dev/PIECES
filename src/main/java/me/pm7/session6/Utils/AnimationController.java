@@ -9,11 +9,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.inventory.meta.components.EquippableComponent;
@@ -29,6 +27,16 @@ public class AnimationController implements Listener {
     public void start() {
         if(taskID !=null) return;
         taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::animationLoop, 0L, 1L);
+
+        // Clear any previous animation frames
+        for(Player p : Bukkit.getOnlinePlayers()) {
+            ItemStack helmet = p.getInventory().getHelmet();
+            if (helmet == null || !helmet.getItemMeta().getPersistentDataContainer().has(acKey)) {
+                p.getInventory().setHelmet(createControllerItem());
+                continue;
+            }
+            p.getInventory().setHelmet(null);
+        }
     }
     public void stop() {
         if(taskID==null) return;
