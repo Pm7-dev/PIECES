@@ -25,14 +25,14 @@ public class PieceKeeper {
     }
     public void stop() {
         if(taskID==null) return;
+        endingAnimation = true;
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            endingAnimation = true;
-            plugin.getAnimationController().stop();
+            Bukkit.getScheduler().cancelTask(taskID);
+            taskID = null;
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                Bukkit.getScheduler().cancelTask(taskID);
-                taskID = null;
-            }, 318L);
-        }, 60L); // Wait 60 ticks to make sure any pieces still spawning correctly finish
+                plugin.getPieceMaker().stormWatch("Looks like there's nothing but clear skies ahead! Good job everyone.");
+            }, 125L);
+        }, 318L);
     }
 
     public boolean isRunning() {return taskID != null;}
@@ -81,8 +81,8 @@ public class PieceKeeper {
         }
 
         // Specifically for sounds during the ending animation
-        if(endAnimationTick > 170 && endAnimationTick <= 338) {
-            if(endAnimationTick == 171) {
+        if(endAnimationTick > 150 && endAnimationTick <= 298) {
+            if(endAnimationTick == 151) {
                 for(Player p : Bukkit.getOnlinePlayers()) {
                     p.playSound(p.getLocation().clone().add(0, 500, 0), "pieces:piece.broken_intro", 9999999, 1);
                 }

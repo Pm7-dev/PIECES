@@ -57,7 +57,7 @@ public class Piece {
     // constants
     private static final int spawnTime = 55; // Defines how long it takes for the piece to scale up before dropping (in ticks)
     private static final NamespacedKey pieceID = new NamespacedKey(plugin, "piece-face-entity");
-    private static final int TELEPORT_DURATION = 3; // Higher numbers are slightly more efficient, but cause greater client desync
+    private static final int TELEPORT_DURATION = 2; // Higher numbers are slightly more efficient, but cause greater client desync
 
     private final BlockData color;
     private final int size;
@@ -115,7 +115,7 @@ public class Piece {
                     return;
                 }
 
-                float currentSize = (float) ((1 - Math.pow(1 - ((double) spawnAnimationTicks/spawnTime), 3))*size);
+                float currentSize = (float) ((1 - Math.pow(1 - ((double) spawnAnimationTicks/spawnTime), 3))*(size+0.01d));
                 for(UUID uuid : faces) {
                     BlockDisplay face = (BlockDisplay) Bukkit.getEntity(uuid);
                     if (face == null) continue;
@@ -189,14 +189,21 @@ public class Piece {
                     face.teleport(tpLoc);
                 } else if (endAnimationTick > 150 && endAnimationTick <= 318) {
 
-                    if(random.nextInt(3) == 0) {face.setGlowing(!face.isGlowing());}
+                    if(face.isGlowing()) face.setGlowing(false);
+                    else if(random.nextInt(3) == 0) face.setGlowing(true);
                     java.awt.Color randomColor = new java.awt.Color(java.awt.Color.HSBtoRGB(random.nextFloat(), 0.8f, 1.0f));
                     face.setGlowColorOverride(Color.fromRGB(randomColor.getRed(), randomColor.getGreen(), randomColor.getBlue()));
 
-                    if(random.nextInt(3) == 0) {
-                        face.setBlock(Material.PURPUR_BLOCK.createBlockData());
+                    if(face.getBlock().getMaterial() == Material.PURPUR_BLOCK) {
+                        if(random.nextInt(3)==0) {
+                            face.setBlock(colors.get((int) (random.nextDouble() * colors.size())));
+                        }
                     } else {
-                        face.setBlock(colors.get((int) (random.nextDouble() * colors.size())));
+                        if(random.nextInt(4) == 0) {
+                            face.setBlock(Material.PURPUR_BLOCK.createBlockData());
+                        } else {
+                            face.setBlock(colors.get((int) (random.nextDouble() * colors.size())));
+                        }
                     }
 
                     if (endAnimationTick > 245) {
@@ -204,7 +211,7 @@ public class Piece {
                             face.remove();
                         }
                     }
-                } else if (endAnimationTick > 338) {
+                } else if (endAnimationTick > 318) {
                     this.kill();
                     return;
                 }

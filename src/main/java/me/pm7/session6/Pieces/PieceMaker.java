@@ -19,6 +19,7 @@ public class PieceMaker {
     private Integer taskID;
     private int spawnTick; // used to keep track of the time before the next group of pieces spawn
     private final Random random;
+    private boolean tickDifficulty = true;
 
     public PieceMaker() {
         spawnHeight = 190; //190
@@ -44,7 +45,9 @@ public class PieceMaker {
 
     private void loop() {
         tickPieceSpawn();
-        tickDifficulty();
+        if(tickDifficulty) {
+            tickDifficulty();
+        }
     }
 
     private void tickPieceSpawn() {
@@ -232,5 +235,9 @@ public class PieceMaker {
         for(Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:storm_watch_notif", 999999, 1);
         }
+    }
+
+    public void stopDifficultyTick() {
+        this.tickDifficulty = false;
     }
 }

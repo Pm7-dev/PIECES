@@ -1,6 +1,7 @@
 package me.pm7.session6.Commands;
 
 import me.pm7.session6.Session6;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,9 +16,14 @@ public class stopwildcard implements CommandExecutor {
         if(!(sender instanceof Player p)) return true;
 
         if(p.isOp()) {
-            sender.sendMessage(ChatColor.GREEN + "Yippee!");
-            plugin.getPieceMaker().stop();
-            plugin.getPieceKeeper().stop();
+            plugin.getPieceMaker().stormWatch("We're picking up some new kind of signal. Remain vigilant.");
+            plugin.getPieceMaker().stopDifficultyTick();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                plugin.getPieceMaker().stop();
+                plugin.getPieceKeeper().stop();
+                plugin.getAnimationController().stop();
+            }, 400);
+
         } else {
             sender.sendMessage(ChatColor.RED + "I'm too tired to do another one");
         }
