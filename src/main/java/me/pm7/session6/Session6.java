@@ -29,7 +29,6 @@ public final class Session6 extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        getCommand("test").setExecutor(new test());
         getCommand("raisetheroof").setExecutor(new raisetheroof());
         getCommand("stormdifficulty").setExecutor(new stormdifficulty());
         getCommand("stormdifficulty").setTabCompleter(new stormdifficulty());

@@ -57,7 +57,7 @@ public class Piece {
     // constants
     private static final int spawnTime = 55; // Defines how long it takes for the piece to scale up before dropping (in ticks)
     private static final NamespacedKey pieceID = new NamespacedKey(plugin, "piece-face-entity");
-    private static final int TELEPORT_DURATION = 2; // Higher numbers are slightly more efficient, but cause greater client desync
+    private static final int TELEPORT_DURATION = 5; // Higher numbers are slightly more efficient, but seem to cause greater client desync, unless I can figure out how to fix it
 
     private final BlockData color;
     private final int size;

@@ -30,7 +30,7 @@ public class PieceKeeper {
             Bukkit.getScheduler().cancelTask(taskID);
             taskID = null;
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                plugin.getPieceMaker().stormWatch("Looks like there's nothing but clear skies ahead! Good job everyone.");
+                plugin.getPieceMaker().stormWatch("Looks like there's nothing but clear weather ahead! Good job everyone.");
             }, 125L);
         }, 318L);
     }

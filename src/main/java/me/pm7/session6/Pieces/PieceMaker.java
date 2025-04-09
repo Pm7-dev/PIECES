@@ -196,12 +196,10 @@ public class PieceMaker {
                             for(int sZ=0; sZ<model.length; sZ++) { // 5 for loops deep, wowzers
                                 if(!model[sZ][sX]) continue;
 
-                                // These two if statements might be my least favorite ever.
-                                if(x+(sX*size)<=pC.getX()+(pcX*pC.getSize()) && x+((sX+1)*size)>pC.getX()+(pcX*pC.getSize()) || (x+(sX*size)>=pC.getX()+(pcX*pC.getSize()) && x+(sX*size)<pC.getX()+((pcX+1)*pC.getSize()))) {
-                                    if(z+(sZ*size)<=pC.getZ()+(pcZ*pC.getSize()) && z+((sZ+1)*size)>pC.getZ()+(pcZ*pC.getSize()) || (z+(sZ*size)>=pC.getZ()+(pcZ*pC.getSize()) && z+(sZ*size)<pC.getZ()+((pcZ+1)*pC.getSize()))) {
-                                        collision = true;
-                                        break;
-                                    }
+                                // This is the single worst if statement ever made.
+                                if((x+(sX*size)<=pC.getX()+(pcX*pC.getSize())&&x+((sX+1)*size)>pC.getX()+(pcX*pC.getSize()))||(x+(sX*size)>=pC.getX()+(pcX*pC.getSize())&&x+(sX*size)<pC.getX()+((pcX+1)*pC.getSize()))&&(z+(sZ*size)<=pC.getZ()+(pcZ*pC.getSize())&&z+((sZ+1)*size)>pC.getZ()+(pcZ*pC.getSize()))||(z+(sZ*size)>=pC.getZ()+(pcZ*pC.getSize())&&z+(sZ*size)<pC.getZ()+((pcZ+1)*pC.getSize()))) {
+                                    collision = true;
+                                    break;
                                 }
                             }if(collision) break;
                         }if(collision) break;
