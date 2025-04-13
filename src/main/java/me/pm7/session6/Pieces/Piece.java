@@ -156,7 +156,7 @@ public class Piece {
         face.setTeleportDuration(TELEPORT_DURATION);
 
         // It's a surprise tool that will help us later
-        endAnimationDestroyTick.put(face.getUniqueId(), random.nextInt(245, 318));
+        endAnimationDestroyTick.put(face.getUniqueId(), random.nextInt(175, 245));
 
         faces.add(face.getUniqueId());
     }
@@ -179,41 +179,47 @@ public class Piece {
                 BlockDisplay face = (BlockDisplay) Bukkit.getEntity(uuid);
                 if (face == null) continue;
 
-                if (endAnimationTick > 0) {
-                    face.setTeleportDuration(1);
-                }
+                if (endAnimationTick == 1) face.setTeleportDuration(1);
+
+                // Gradually slow the piece down
                 if (endAnimationTick <= 120) {
                     Location tpLoc = face.getLocation().clone();
                     if (endAnimationTick == 0) tpLoc.setY(y - (movementPerTick * TELEPORT_DURATION) + (size / 2d));
                     else tpLoc.setY(y - (movementPerTick) + (size / 2d));
                     face.teleport(tpLoc);
-                } else if (endAnimationTick > 150 && endAnimationTick <= 318) {
+                }
 
+                // Crazy color flashes, outlines, and rotation things
+                else if (endAnimationTick > 150) {
+
+                    // Random rotations
+                    if (endAnimationTick == 151) face.setTeleportDuration(0);
+                    face.setRotation(random.nextFloat(-5.0f, 5.0f), random.nextFloat(-5.0f, 5.0f));
+
+                    // Handle the outline
                     if(face.isGlowing()) face.setGlowing(false);
-                    else if(random.nextInt(3) == 0) face.setGlowing(true);
-                    java.awt.Color randomColor = new java.awt.Color(java.awt.Color.HSBtoRGB(random.nextFloat(), 0.8f, 1.0f));
-                    face.setGlowColorOverride(Color.fromRGB(randomColor.getRed(), randomColor.getGreen(), randomColor.getBlue()));
+                    else if(random.nextInt(4) == 0) face.setGlowing(true);
+//                    java.awt.Color randomColor = new java.awt.Color(java.awt.Color.HSBtoRGB(random.nextFloat(), 0.8f, 1.0f));
+//                    face.setGlowColorOverride(Color.fromRGB(randomColor.getRed(), randomColor.getGreen(), randomColor.getBlue()));
+                    face.setGlowColorOverride(Color.fromRGB(0, 0, 0));
 
+                    // Flash in and out
                     if(face.getBlock().getMaterial() == Material.PURPUR_BLOCK) {
-                        if(random.nextInt(3)==0) {
-                            face.setBlock(colors.get((int) (random.nextDouble() * colors.size())));
-                        }
+                        face.setBlock(color);
                     } else {
-                        if(random.nextInt(4) == 0) {
-                            face.setBlock(Material.PURPUR_BLOCK.createBlockData());
-                        } else {
-                            face.setBlock(colors.get((int) (random.nextDouble() * colors.size())));
-                        }
+                        if(random.nextInt(2) == 0) face.setBlock(Material.PURPUR_BLOCK.createBlockData());
                     }
 
-                    if (endAnimationTick > 245) {
-                        if (endAnimationTick >= endAnimationDestroyTick.get(uuid)) {
-                            face.remove();
+                    // Start decaying at this tick
+                    if (endAnimationTick > 175) {
+                        if (endAnimationTick >= endAnimationDestroyTick.get(uuid)) face.remove();
+
+                        // Pieces should have finished decaying by this tick
+                        if (endAnimationTick > 245) {
+                            this.kill();
+                            return;
                         }
                     }
-                } else if (endAnimationTick > 318) {
-                    this.kill();
-                    return;
                 }
             }
         }

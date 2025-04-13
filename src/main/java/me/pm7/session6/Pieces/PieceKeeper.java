@@ -30,8 +30,8 @@ public class PieceKeeper {
             Bukkit.getScheduler().cancelTask(taskID);
             taskID = null;
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                plugin.getPieceMaker().stormWatch("Looks like there's nothing but clear weather ahead! Good job everyone.");
-            }, 125L);
+                plugin.getPieceMaker().stormWatch("Nothing but clear weather ahead! Good job everyone.");
+            }, 95L);
         }, 318L);
     }
 
@@ -80,16 +80,21 @@ public class PieceKeeper {
             }
         }
 
-        // Specifically for sounds during the ending animation
-        if(endAnimationTick > 150 && endAnimationTick <= 298) {
-            if(endAnimationTick == 151) {
-                for(Player p : Bukkit.getOnlinePlayers()) {
-                    p.playSound(p.getLocation().clone().add(0, 500, 0), "pieces:piece.broken_intro", 9999999, 1);
-                }
-            } else {
-                for(Player p : Bukkit.getOnlinePlayers()) {
-                    p.playSound(p.getLocation().clone().add(0, 500, 0), "pieces:piece.broken", 9999999, 1);
-                }
+//        // Specifically for sounds during the ending animation
+//        if(endAnimationTick > 150 && endAnimationTick <= 298) {
+//            if(endAnimationTick == 151) {
+//                for(Player p : Bukkit.getOnlinePlayers()) {
+//                    p.playSound(p.getLocation().clone().add(0, 500, 0), "pieces:piece.broken_intro", 9999999, 1);
+//                }
+//            } else {
+//                for(Player p : Bukkit.getOnlinePlayers()) {
+//                    p.playSound(p.getLocation().clone().add(0, 500, 0), "pieces:piece.broken", 9999999, 1);
+//                }
+//            }
+//        }
+        if(endAnimationTick == 151) {
+            for(Player p : Bukkit.getOnlinePlayers()) {
+                p.playSound(p.getLocation().clone().add(0, 800, 0), "pieces:piece.broken", 9999999, 1);
             }
         }
 

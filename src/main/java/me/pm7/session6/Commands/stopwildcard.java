@@ -16,7 +16,7 @@ public class stopwildcard implements CommandExecutor {
         if(!(sender instanceof Player p)) return true;
 
         if(p.isOp()) {
-            plugin.getPieceMaker().stormWatch("We're picking up some new kind of signal. Remain vigilant.");
+            plugin.getPieceMaker().stormWatch("We're picking up some new kind of signal. Look out for anything strange.");
             plugin.getPieceMaker().stopDifficultyTick();
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 plugin.getPieceMaker().stop();
