@@ -1,4 +1,4 @@
-name: session6
+name: storm
 version: '1.0'
 main: me.pm7.storm.Storm
 api-version: '1.21'

@@ -17,15 +17,13 @@ public class stormsettings implements CommandExecutor, TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if(!(sender instanceof Player p)) return true;
-
-        if(sender.getName().equals("Piffin380") || !p.isOp()) {
-            sender.sendMessage(ChatColor.RED + "I'm too tired to do another one");
+        if(!(sender instanceof Player p)) {
+            sender.sendMessage(ChatColor.RED + "This command must be run by a player");
             return true;
         }
 
-        if(args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Not enough arguments");
+        if(!p.isOp()) {
+            sender.sendMessage(ChatColor.RED + "You must be operator to run this command.");
             return true;
         }
 
@@ -57,27 +55,5 @@ public class stormsettings implements CommandExecutor, TabExecutor {
             }
         }
         return true;
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
-        return getTabComplete(List.of("get", "set"), args[0]);
-    }
-
-    List<String> getTabComplete(List<String> list, String arg) {
-        if(arg.isEmpty()) { return list; }
-        arg = arg.toLowerCase();
-
-        List<String> availableArgs = new ArrayList<>();
-        List<String> argsThatStartWithTerm = new ArrayList<>();
-        List<String> argsThatContainTerm = new ArrayList<>();
-        for(String setting : list) {
-            if(setting.toLowerCase().startsWith(arg)) { argsThatStartWithTerm.add(setting); }
-            else if(setting.toLowerCase().contains(arg)) { argsThatContainTerm.add(setting); }
-        }
-
-        availableArgs.addAll(argsThatStartWithTerm);
-        availableArgs.addAll(argsThatContainTerm);
-        return availableArgs;
     }
 }

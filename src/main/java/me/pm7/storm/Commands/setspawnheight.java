@@ -12,10 +12,8 @@ public class setspawnheight implements CommandExecutor  {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if(!(sender instanceof Player p)) return true;
-
-        if(sender.getName().equals("Piffin380") || !p.isOp()) {
-            sender.sendMessage(ChatColor.RED + "I'm too tired to do another one");
+        if(!sender.isOp()) {
+            sender.sendMessage(ChatColor.RED + "You must be operator to run this command");
             return true;
         }
 
@@ -36,7 +34,6 @@ public class setspawnheight implements CommandExecutor  {
         if(newSpawnHeight > 320) {
             sender.sendMessage(ChatColor.RED + "That is literally past the build height");
             return true;
-
         }
 
         plugin.getPieceMaker().setSpawnHeight(newSpawnHeight);
