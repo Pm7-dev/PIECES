@@ -3,11 +3,11 @@ version: '1.0'
 main: me.pm7.storm.Storm
 api-version: '1.21'
 commands:
-  stormdifficulty:
-    description: for admin use ^w^
+  stormsettings:
+    description: Opens the settings menu for the plugin
   startstorm:
-    description: for admin use :3
-  raisetheroof:
-    description: for admin use >w<
+    description: Starts the storm
+  setstormheight:
+    description: Sets the height at which the pieces spawn at
   stopstorm:
-    description: for admin use OwO
+    description: Stops the storm

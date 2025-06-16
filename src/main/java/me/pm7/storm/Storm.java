@@ -30,9 +30,8 @@ public final class Storm extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        getCommand("raisetheroof").setExecutor(new raisetheroof());
-        getCommand("stormdifficulty").setTabCompleter(new stormdifficulty());
-        getCommand("stormdifficulty").setExecutor(new stormdifficulty());
+        getCommand("setspawnheight").setExecutor(new setspawnheight());
+        getCommand("stormsettings").setExecutor(new stormsettings());
         getCommand("startstorm").setExecutor(new startstorm());
         getCommand("stopstorm").setExecutor(new stopstorm());
         getServer().getPluginManager().registerEvents(new DeathListener(), plugin);

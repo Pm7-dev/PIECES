@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class raisetheroof implements CommandExecutor  {
+public class setspawnheight implements CommandExecutor  {
     private static final Storm plugin = Storm.getPlugin();
 
     @Override
