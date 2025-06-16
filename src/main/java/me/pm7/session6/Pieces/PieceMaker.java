@@ -1,6 +1,7 @@
 package me.pm7.session6.Pieces;
 
 import me.pm7.session6.Session6;
+import me.pm7.session6.Tangerines.HitListener;
 import me.pm7.session6.Utils.AreaCalculator;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
@@ -22,7 +23,7 @@ public class PieceMaker {
     private boolean tickDifficulty = true;
 
     public PieceMaker() {
-        spawnHeight = 190; //190
+        spawnHeight = 210; //190
 
         this.difficulty = SpawnerDifficulty.LEVEL_1;
         this.previousDifficulty = null;
@@ -70,19 +71,18 @@ public class PieceMaker {
         spawnTick--;
     }
 
-    private final int secondsBeforeDifficultyShift = 2200;
+    private final int secondsBeforeDifficultyShift = 2400; // 2 difficulty shifts in 2 hours ( 1 -> 2 -> 3)
     private int secondsBeforeNextDifficultyShift = secondsBeforeDifficultyShift;
-    private final int secondsBeforeAnomaly = 1100;
+    private final int secondsBeforeAnomaly = 1260;
     private int secondsBeforeNextAnomaly = secondsBeforeAnomaly;
     private int anomalyCount = 0;
     private void tickDifficulty() {
-        if(secondsBeforeNextDifficultyShift <= 0) {
+
+        int current = getDifficulty();
+        if(secondsBeforeNextDifficultyShift <= 0 && current < 3) { // <3
             secondsBeforeNextDifficultyShift = secondsBeforeDifficultyShift;
 
-            int current = getDifficulty();
             if(current == -1) return;
-            if(current >= 6) return;
-
             SpawnerDifficulty newDifficulty = SpawnerDifficulty.fromInt(current + 1);
             if(newDifficulty == null) {
                 plugin.getLogger().log(Level.WARNING, "ERROR! Next difficulty is null!");
@@ -97,34 +97,48 @@ public class PieceMaker {
             }
         }
 
-        if(secondsBeforeNextAnomaly <= 0) {
+        if(secondsBeforeNextAnomaly <= 0 && anomalyCount < 6) {
             anomalyCount++;
             secondsBeforeNextAnomaly = secondsBeforeAnomaly;
             this.previousDifficulty = difficulty;
+            String message;
             final SpawnerDifficulty anomaly;
             switch (anomalyCount) {
-                case 1:
-                case 3: {
+                case 1: {
+                    message = "The incoming anomaly has been designated type SPEED. Get to the surface and be prepared.";
                     anomaly = SpawnerDifficulty.ANOMALY_SPEED;
                     break;
                 }
-                case 2:
+                case 2: {
+                    message = "This anomaly has been designated type SCALE. Brace yourselves for something huge.";
+                    anomaly = SpawnerDifficulty.ANOMALY_SCALE;
+                    break;
+                }
+                case 3: {
+                    message = "We're getting another SPEED anomaly. Be ready.";
+                    anomaly = SpawnerDifficulty.ANOMALY_SPEED;
+                    break;
+                }
                 case 4: {
+                    message = "Another SCALE anomaly coming in. Watch out.";
                     anomaly = SpawnerDifficulty.ANOMALY_SCALE;
                     break;
                 }
                 default: {
+                    message = "This anomaly has been named TOTAL_CHAOS. Seems like it might be the last one.";
                     anomaly = SpawnerDifficulty.ANOMALY_TOTAL_CHAOS;
                     break;
                 }
             }
+            HitListener.enabled = false;
             for(Player p : Bukkit.getOnlinePlayers()) {
-                p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:anomaly", 999999, 1);
+                p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:anomaly", SoundCategory.RECORDS, 999999, 1);
                 p.sendTitle(ChatColor.RED + "", ChatColor.RED + "Storm Anomaly detected!", 0, 5, 45);
             }
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                stormWatch(ChatColor.RED + "The incoming anomaly has been designated type \"" + anomaly.getName() + "\" Be prepared and stay safe.");
+                stormWatch(message);
+                HitListener.enabled = true;
             }, 80L);
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -136,10 +150,10 @@ public class PieceMaker {
                     difficulty = previousDifficulty;
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                        stormWatch(ChatColor.RED + "The anomaly appears to be easing up");
+                        stormWatch(ChatColor.RED + "The anomaly is clearing up.");
                     }, 65L);
                 }, time * 20);
-            }, 240L);
+            }, 440);
         }
         secondsBeforeNextDifficultyShift--;
         secondsBeforeNextAnomaly--;
@@ -217,6 +231,7 @@ public class PieceMaker {
 
     public int getDifficulty() {
         if(difficulty.getDifficultyNumber() == null) {
+            if(previousDifficulty == null) return 1;
             if(previousDifficulty.getDifficultyNumber() == null) return -1;
             return previousDifficulty.getDifficultyNumber();
         }
@@ -231,7 +246,7 @@ public class PieceMaker {
     public void stormWatch(String message) {
         Bukkit.broadcastMessage(ChatColor.RED + "[Storm Watch]: " + message);
         for(Player p : Bukkit.getOnlinePlayers()) {
-            p.playSound(p.getLocation().clone().add(0, 200, 0), "pieces:storm_watch_notif", 999999, 1);
+            p.playSound(p.getLocation().clone().add(0, 2, 0), "pieces:storm_watch_notif", SoundCategory.RECORDS, 1, 1);
         }
     }
 

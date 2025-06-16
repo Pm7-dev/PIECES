@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class stormdifficulty implements CommandExecutor, TabExecutor {
+public class carddifficulty implements CommandExecutor, TabExecutor {
     private static final Session6 plugin = Session6.getPlugin();
 
     @Override

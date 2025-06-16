@@ -1,11 +1,20 @@
 package me.pm7.session6;
 
 import me.pm7.session6.Commands.*;
+import me.pm7.session6.Friend.fren;
+import me.pm7.session6.Granite.Uninvisible;
+import me.pm7.session6.Granite.volcanicroc;
+import me.pm7.session6.LargeFernMinecart.RidingEntityManagement;
+import me.pm7.session6.LargeFernMinecart.fernace;
 import me.pm7.session6.Listener.ConnectionListener;
 import me.pm7.session6.Listener.DeathListener;
+import me.pm7.session6.Listener.DimensionChangeListener;
 import me.pm7.session6.Pieces.Piece;
 import me.pm7.session6.Pieces.PieceKeeper;
 import me.pm7.session6.Pieces.PieceMaker;
+import me.pm7.session6.SugarCane.BreakListener;
+import me.pm7.session6.SugarCane.DropListener;
+import me.pm7.session6.Tangerines.*;
 import me.pm7.session6.Utils.AnimationController;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -30,12 +39,24 @@ public final class Session6 extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         getCommand("raisetheroof").setExecutor(new raisetheroof());
-        getCommand("stormdifficulty").setExecutor(new stormdifficulty());
-        getCommand("stormdifficulty").setTabCompleter(new stormdifficulty());
+        getCommand("carddifficulty").setTabCompleter(new carddifficulty());
+        getCommand("carddifficulty").setExecutor(new carddifficulty());
         getCommand("startwildcard").setExecutor(new startwildcard());
         getCommand("stopwildcard").setExecutor(new stopwildcard());
+        getCommand("think").setExecutor(new think());
+        getCommand("fren").setExecutor(new fren());
+        getCommand("volcanicroc").setExecutor(new volcanicroc());
+        getCommand("fernace").setExecutor(new fernace());
         getServer().getPluginManager().registerEvents(new DeathListener(), plugin);
         getServer().getPluginManager().registerEvents(new ConnectionListener(), plugin);
+        getServer().getPluginManager().registerEvents(new DimensionChangeListener(), plugin);
+        getServer().getPluginManager().registerEvents(new HitListener(), plugin); //tangerine
+        getServer().getPluginManager().registerEvents(new OpenInvListener(), plugin); //tangerine
+        getServer().getPluginManager().registerEvents(new FishBigInator(), plugin); // not tangerine
+        getServer().getPluginManager().registerEvents(new Uninvisible(), plugin); // granite
+        getServer().getPluginManager().registerEvents(new RidingEntityManagement(), plugin); // largefernminecart
+        getServer().getPluginManager().registerEvents(new DropListener(), plugin); // sugarcane
+        getServer().getPluginManager().registerEvents(new BreakListener(), plugin); // sugarcane
 
         for(World world : Bukkit.getWorlds()) {
             if(world.getPluginChunkTickets().containsKey(this)) {
@@ -64,7 +85,9 @@ public final class Session6 extends JavaPlugin {
 
         pieceMaker = new PieceMaker();
 
-
+        // tangerines
+        ScoreMarker.startloop();
+        Dispensary.startloop();
     }
 
     @Override

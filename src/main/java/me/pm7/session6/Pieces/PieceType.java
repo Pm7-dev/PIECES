@@ -120,11 +120,11 @@ public enum PieceType {
     }),
 
     O_18(new boolean[][] {
-            { true,  true,  true,  true,  true},
+            { true,  true,  false,  true,  true},
             { true, false, false, false,  true},
-            { true, false,  true, false,  true},
+            { false, false,  true, false,  false},
             { true, false, false, false,  true},
-            { true,  true,  true,  true,  true}
+            { true,  true,  false,  true,  true}
     }),
 
     CHECKER(new boolean[][] {
@@ -167,7 +167,7 @@ public enum PieceType {
 
     }),
 
-//    PIFFIN(new boolean[][] {
+//    PIFFIN(new boolean[][] {                      // THIS WAS SUCH A BAD IDEA
 //            {true, true, false, true, true},
 //            {true, false, false, false, true},
 //            {false, true, false, true, false},
@@ -204,18 +204,18 @@ public enum PieceType {
             {true, true, true, false},
     }),
 
-    CIRCLE(new boolean[][] { // heavy quotes
-            {false, true, true, false},
-            {true, true, true, true},
-            {true, true, true, true},
-            {false, true, true, false},
-    }),
+//    CIRCLE(new boolean[][] { //  NOTE: REMOVED BECAUSE THIS IS SO HECKING BRUTAL
+//            {false, true, true, false},
+//            {true, true, true, true},
+//            {true, true, true, true},
+//            {false, true, true, false},
+//    }),
 
     INVERSE_SLASH(new boolean[][] {
-            {false, true, true, true},
+            {false, true, true, false},
             {true, false, true, true},
             {true, true, false, true},
-            {true, true, true, false},
+            {false, true, true, false},
     }),
 
     SLASH(new boolean[][] {

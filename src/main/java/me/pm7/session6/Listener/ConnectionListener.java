@@ -14,7 +14,7 @@ public class ConnectionListener implements Listener {
         if(plugin.isStarted()) {
             Player p = e.getPlayer();
             plugin.getPieceKeeper().setImmunity(p, 240);
-            plugin.getAnimationController().clearQueue(p.getUniqueId());
+            plugin.getAnimationController().clearQueue(p.getUniqueId(), true);
         }
     }
 }

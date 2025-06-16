@@ -75,10 +75,9 @@ public class AnimationController implements Listener {
                         continue;
                     }
 
-                    Location soundLoc = loc.clone().add(0, 500, 0);
                     float pitch = (float) ((distance / (3.2 * lowestPiece.getSpeed() * 3) * -0.3) + 1.2f); //*3 for 3 sections of sound?
 
-                    int pulseSection = (int) Math.floor(distance / (lowestPiece.getSpeed() * 3.2)); //3.2
+                    int pulseSection = (int) Math.floor(distance / (lowestPiece.getSpeed() * 3.2)); // *3.2 at the end, now 6.4?
                     if (pulseSection < 3) {
                         int ticksBetweenPulses;
                         if (distance <= lowestPiece.getSpeed() * 1.4) { // Override when it gets *really* close for a stressful effect
@@ -86,10 +85,10 @@ public class AnimationController implements Listener {
                             pitch += 0.05f;
                         } else ticksBetweenPulses = (int) Math.pow(2, pulseSection + 2);
                         if (tick % ticksBetweenPulses == 0) {
-                            clearQueue(p.getUniqueId());
+                            clearQueue(p.getUniqueId(), false);
                             for (int i = 0; i < 32; i += 5) addFrame(p.getUniqueId(), "warning_overlay/" + i);
                             addFrame(p.getUniqueId(), "warning_overlay/blank");
-                            p.playSound(soundLoc, "pieces:warning", 9999, pitch);
+                            p.playSound(loc.clone().add(0, 2, 0), "pieces:warning", SoundCategory.RECORDS, 1, pitch);
                         }
                     }
                 }
@@ -123,8 +122,9 @@ public class AnimationController implements Listener {
         frameQueue.removeFirst();
     }
 
-    public void clearQueue(UUID uuid) {
+    public void clearQueue(UUID uuid, boolean putBlank) {
         frameQueues.get(uuid).clear();
+        if(putBlank) addFrame(uuid, "warning_overlay/blank");
     }
 
     private void addFrame(UUID uuid, String frame) {

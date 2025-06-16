@@ -236,13 +236,20 @@ public class Piece {
         double centerX = x + halfSize;
         double centerZ = z + halfSize;
         for(Player p : Bukkit.getOnlinePlayers()) {
+            UUID uuid = p.getUniqueId();
 
-            if(!p.getWorld().getUID().equals(getWorld().getUID())) continue;
+            if(!p.getWorld().getUID().equals(getWorld().getUID())) {
+                if(playersUnderPieces.containsKey(uuid)) {
+                    if(playersUnderPieces.get(uuid).equals(this)) {
+                        playersUnderPieces.remove(uuid);
+                    }
+                }
+                continue;
+            }
 
             double footY = p.getLocation().getY(); // If the player is fully above this piece, stop calculations
             if(footY > y + size) continue;
 
-            UUID uuid = p.getUniqueId();
             Location head = p.getEyeLocation();
             double pX = head.getX();
             double pZ = head.getZ();
@@ -283,7 +290,7 @@ public class Piece {
 
                             if (volume > 0) {
                                 Location soundLoc = new Location(getWorld(), mX, y + (size * 0.25), mZ);
-                                p.playSound(soundLoc, "pieces:piece.ambience", (volume * 2 + 1.2f) * (1.0f - (endAnimationTick / 68f)), 0.8f);
+                                p.playSound(soundLoc, "pieces:piece.ambience", SoundCategory.RECORDS, (volume + 1.2f) * (1.0f - (endAnimationTick / 68f)), 0.8f);
                             }
                         }
                     }

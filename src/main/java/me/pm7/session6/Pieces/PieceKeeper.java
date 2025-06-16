@@ -5,6 +5,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -30,7 +31,7 @@ public class PieceKeeper {
             Bukkit.getScheduler().cancelTask(taskID);
             taskID = null;
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                plugin.getPieceMaker().stormWatch("Nothing but clear weather ahead! Good job everyone.");
+                plugin.getPieceMaker().stormWatch("Storm's over :D");
             }, 95L);
         }, 318L);
     }
@@ -94,7 +95,7 @@ public class PieceKeeper {
 //        }
         if(endAnimationTick == 151) {
             for(Player p : Bukkit.getOnlinePlayers()) {
-                p.playSound(p.getLocation().clone().add(0, 800, 0), "pieces:piece.broken", 9999999, 1);
+                p.playSound(p.getLocation().clone().add(0, 800, 0), "pieces:piece.broken", SoundCategory.RECORDS, 9999999, 1);
             }
         }
 
@@ -103,6 +104,10 @@ public class PieceKeeper {
     }
 
     public void setImmunity(Player p, int ticks) {
+        if(pieceInvincibilityTicks.containsKey(p.getUniqueId())) {
+            Integer value = pieceInvincibilityTicks.get(p.getUniqueId());
+            if(value != null && value > ticks) return;
+        }
         pieceInvincibilityTicks.put(p.getUniqueId(), ticks);
     }
 
