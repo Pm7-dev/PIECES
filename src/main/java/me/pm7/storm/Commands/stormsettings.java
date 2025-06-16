@@ -11,12 +11,14 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class stormsettings implements CommandExecutor, TabExecutor {
+public class stormsettings implements CommandExecutor {
     private static final Storm plugin = Storm.getPlugin();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+
         if(!(sender instanceof Player p)) {
             sender.sendMessage(ChatColor.RED + "This command must be run by a player");
             return true;
@@ -27,33 +29,18 @@ public class stormsettings implements CommandExecutor, TabExecutor {
             return true;
         }
 
-        if(args[0].equalsIgnoreCase("get")) {
-            sender.sendMessage(ChatColor.GREEN + "The current storm difficulty is " + plugin.getPieceMaker().getDifficulty());
+        if(args.length == 2) {
+            if(args[0].equals("add")) {
+                // TODO: in both of these, switch through args[1] and add/subtract using += -= on the difficulty object's data
+            } else if(Objects.equals(args[0], "sub")) {
+
+            }
         }
 
-        else if(args[0].equalsIgnoreCase("set")) {
-            if(args.length < 2) {
-                sender.sendMessage(ChatColor.RED + "Not enough arguments");
-                return true;
-            }
 
-            int newDiff;
-            try {
-                newDiff = Integer.parseInt(args[1]);
-            }
-            catch (NumberFormatException e) {
-                //sender.sendMessage(ChatColor.RED + "You must have a number lol");
-                plugin.getPieceMaker().setDifficulty(SpawnerDifficulty.valueOf(args[1].toUpperCase()));
-                return true;
-            }
+        //TODO: chat window stuff here & clicky events and stuff
 
-            if(newDiff >= 1 && newDiff <= 6) {
-                plugin.getPieceMaker().setDifficulty(SpawnerDifficulty.fromInt(newDiff));
-            }
-            else {
-                sender.sendMessage(ChatColor.RED + "There is no difficulty for that number.");
-            }
-        }
+
         return true;
     }
 }
