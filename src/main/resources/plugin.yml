@@ -1,21 +1,13 @@
 name: session6
 version: '1.0'
-main: me.pm7.session6.Session6
+main: me.pm7.storm.Storm
 api-version: '1.21'
 commands:
-  carddifficulty:
+  stormdifficulty:
     description: for admin use ^w^
-  startwildcard:
+  startstorm:
     description: for admin use :3
   raisetheroof:
     description: for admin use >w<
-  stopwildcard:
+  stopstorm:
     description: for admin use OwO
-  think:
-    description: for thinking
-  fren:
-    description: for... something
-  volcanicroc:
-    description: surprisingly, not for piffin
-  fernace:
-    description: idk at this point
