@@ -384,7 +384,7 @@ public class Piece {
                         }
                     }
                 }
-                if(remove) chunk.addPluginChunkTicket(plugin);
+                if(remove) chunk.removePluginChunkTicket(plugin);
             }
         }
     }
