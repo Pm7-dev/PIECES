@@ -19,6 +19,7 @@ public class startstorm implements CommandExecutor {
                 p.playSound(p.getLocation().clone().add(0, 2, 0), "pieces:storm_watch_notif", SoundCategory.RECORDS, 1, 1);
             }
             plugin.getPieceMaker().start();
+            plugin.getPieceKeeper().start();
             plugin.start(); // used for invincibility bits
         } else {
             sender.sendMessage("You must be operator to run this command.");
