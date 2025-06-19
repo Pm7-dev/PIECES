@@ -5,6 +5,7 @@ import me.pm7.storm.Storm;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,7 +36,7 @@ public class stormsettings implements CommandExecutor {
 
         if(args.length == 2) {
 
-            
+            p.playSound(p, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
 
             if(args[0].equals("add")) {
                 switch (args[1]) {
@@ -72,14 +73,17 @@ public class stormsettings implements CommandExecutor {
             } else if(Objects.equals(args[0], "sub")) {
                 switch (args[1]) {
                     case "secondsBetweenSpawns": {
+                        if(difficulty.secondsBetweenSpawns == 1) break;
                         difficulty.secondsBetweenSpawns -= 1;
                         break;
                     }
                     case "spawnMultiplier": {
+                        if(difficulty.spawnMultiplier == 0.25d) break;
                         difficulty.spawnMultiplier -= 0.25;
                         break;
                     }
                     case "minSize": {
+                        if(difficulty.minSize == 1) break;
                         difficulty.minSize -= 1;
                         break;
                     }
@@ -89,6 +93,7 @@ public class stormsettings implements CommandExecutor {
                         break;
                     }
                     case "minSpeed": {
+                        if(difficulty.minSpeed == 1) break;
                         difficulty.minSpeed -= 1;
                         break;
                     }
@@ -105,7 +110,7 @@ public class stormsettings implements CommandExecutor {
         }
 
         ComponentBuilder builder = new ComponentBuilder()
-                .append("STORM SETTINGS: \n")
+                .append("\n\n\n\n\n\n\nSTORM SETTINGS: \n")
                 .color(ChatColor.GOLD.asBungee()).bold(true)
 
                 .append("[+]")
@@ -178,7 +183,6 @@ public class stormsettings implements CommandExecutor {
                 .color(ChatColor.YELLOW.asBungee()).bold(false)
                 .append(String.valueOf(difficulty.maxSpeed))
                 .color(ChatColor.GREEN.asBungee())
-                .append("\n")
         ;
 
         p.spigot().sendMessage(builder.build());
