@@ -2,6 +2,8 @@ package me.pm7.storm.Commands;
 
 import me.pm7.storm.Pieces.SpawnerDifficulty;
 import me.pm7.storm.Storm;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -29,17 +31,157 @@ public class stormsettings implements CommandExecutor {
             return true;
         }
 
-        if(args.length == 2) {
-            if(args[0].equals("add")) {
-                // TODO: in both of these, switch through args[1] and add/subtract using += -= on the difficulty object's data
-            } else if(Objects.equals(args[0], "sub")) {
+        SpawnerDifficulty difficulty = plugin.getPieceMaker().getDifficulty();
 
+        if(args.length == 2) {
+
+            
+
+            if(args[0].equals("add")) {
+                switch (args[1]) {
+                    case "secondsBetweenSpawns": {
+                        difficulty.secondsBetweenSpawns += 1;
+                        break;
+                    }
+                    case "spawnMultiplier": {
+                        difficulty.spawnMultiplier += 0.25;
+                        break;
+                    }
+                    case "minSize": {
+                        if(difficulty.minSize == difficulty.maxSize) break;
+                        difficulty.minSize += 1;
+                        break;
+                    }
+                    case "maxSize": {
+                        difficulty.maxSize += 1;
+                        break;
+                    }
+                    case "minSpeed": {
+                        if(difficulty.minSpeed == difficulty.maxSpeed) break;
+                        difficulty.minSpeed += 1;
+                        break;
+                    }
+                    case "maxSpeed": {
+                        difficulty.maxSpeed += 1;
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            } else if(Objects.equals(args[0], "sub")) {
+                switch (args[1]) {
+                    case "secondsBetweenSpawns": {
+                        difficulty.secondsBetweenSpawns -= 1;
+                        break;
+                    }
+                    case "spawnMultiplier": {
+                        difficulty.spawnMultiplier -= 0.25;
+                        break;
+                    }
+                    case "minSize": {
+                        difficulty.minSize -= 1;
+                        break;
+                    }
+                    case "maxSize": {
+                        if(difficulty.minSize == difficulty.maxSize) break;
+                        difficulty.maxSize -= 1;
+                        break;
+                    }
+                    case "minSpeed": {
+                        difficulty.minSpeed -= 1;
+                        break;
+                    }
+                    case "maxSpeed": {
+                        if(difficulty.minSpeed == difficulty.maxSpeed) break;
+                        difficulty.maxSpeed -= 1;
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
             }
         }
 
+        ComponentBuilder builder = new ComponentBuilder()
+                .append("STORM SETTINGS: \n")
+                .color(ChatColor.GOLD.asBungee()).bold(true)
 
-        //TODO: chat window stuff here & clicky events and stuff
+                .append("[+]")
+                .color(ChatColor.GREEN.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings add secondsBetweenSpawns"))
+                .append("[-]")
+                .color(ChatColor.RED.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings sub secondsBetweenSpawns"))
+                .append(" Seconds between spawns: ")
+                .color(ChatColor.YELLOW.asBungee()).bold(false)
+                .append(String.valueOf(difficulty.secondsBetweenSpawns))
+                .color(ChatColor.GREEN.asBungee())
+                .append("\n")
 
+                .append("[+]")
+                .color(ChatColor.GREEN.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings add spawnMultiplier"))
+                .append("[-]")
+                .color(ChatColor.RED.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings sub spawnMultiplier"))
+                .append(" Spawn Multiplier: ")
+                .color(ChatColor.YELLOW.asBungee()).bold(false)
+                .append(String.valueOf(difficulty.spawnMultiplier))
+                .color(ChatColor.GREEN.asBungee())
+                .append("\n")
+
+                .append("[+]")
+                .color(ChatColor.GREEN.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings add minSize"))
+                .append("[-]")
+                .color(ChatColor.RED.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings sub minSize"))
+                .append(" Minimum Piece Size: ")
+                .color(ChatColor.YELLOW.asBungee()).bold(false)
+                .append(String.valueOf(difficulty.minSize))
+                .color(ChatColor.GREEN.asBungee())
+                .append("\n")
+
+                .append("[+]")
+                .color(ChatColor.GREEN.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings add maxSize"))
+                .append("[-]")
+                .color(ChatColor.RED.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings sub maxSize"))
+                .append(" Maximum Piece Size: ")
+                .color(ChatColor.YELLOW.asBungee()).bold(false)
+                .append(String.valueOf(difficulty.maxSize))
+                .color(ChatColor.GREEN.asBungee())
+                .append("\n")
+
+                .append("[+]")
+                .color(ChatColor.GREEN.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings add minSpeed"))
+                .append("[-]")
+                .color(ChatColor.RED.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings sub minSpeed"))
+                .append(" Minimum Piece Speed: ")
+                .color(ChatColor.YELLOW.asBungee()).bold(false)
+                .append(String.valueOf(difficulty.minSpeed))
+                .color(ChatColor.GREEN.asBungee())
+                .append("\n")
+
+                .append("[+]")
+                .color(ChatColor.GREEN.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings add maxSpeed"))
+                .append("[-]")
+                .color(ChatColor.RED.asBungee()).bold(true)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stormsettings sub maxSpeed"))
+                .append(" Maximum Piece Speed: ")
+                .color(ChatColor.YELLOW.asBungee()).bold(false)
+                .append(String.valueOf(difficulty.maxSpeed))
+                .color(ChatColor.GREEN.asBungee())
+                .append("\n")
+        ;
+
+        p.spigot().sendMessage(builder.build());
 
         return true;
     }
