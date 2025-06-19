@@ -33,9 +33,11 @@ public class stopstorm implements CommandExecutor {
                     }
                 }
                 for(Entity e : remove) e.remove();
-
-                for (Chunk chunk : world.getPluginChunkTickets().get(plugin)) {
-                    chunk.removePluginChunkTicket(plugin);
+                
+                if(world.getPluginChunkTickets().containsKey(plugin)) {
+                    for (Chunk chunk : world.getPluginChunkTickets().get(plugin)) {
+                        chunk.removePluginChunkTicket(plugin);
+                    }
                 }
             }
 
