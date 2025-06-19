@@ -176,6 +176,7 @@ public class AnimationController implements Listener {
         eq.setSlot(EquipmentSlot.HEAD);
         eq.setAllowedEntities(EntityType.PLAYER);
         eq.setModel(new NamespacedKey(plugin, "none"));
+        eq.setCameraOverlay(new NamespacedKey("pieces", "warning_overlay/blank"));
         eq.setDamageOnHurt(false);
         eq.setDispensable(false);
         meta.setEquippable(eq);
