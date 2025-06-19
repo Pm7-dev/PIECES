@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +32,7 @@ public class AnimationController implements Listener {
         // Clear any previous animation frames
         for(Player p : Bukkit.getOnlinePlayers()) {
             ItemStack helmet = p.getInventory().getHelmet();
-            if (helmet == null || !helmet.getItemMeta().getPersistentDataContainer().has(acKey)) {
+            if (helmet == null) {
                 p.getInventory().setHelmet(createControllerItem());
                 continue;
             }
@@ -58,7 +59,7 @@ public class AnimationController implements Listener {
     private void animationLoop() {
         for(Player p : Bukkit.getOnlinePlayers()) {
             ItemStack helmet = p.getInventory().getHelmet();
-            if(helmet == null || !helmet.getItemMeta().getPersistentDataContainer().has(acKey)) {
+            if(helmet == null) {
                 p.getInventory().setHelmet(createControllerItem());
                 continue;
             }
@@ -102,7 +103,6 @@ public class AnimationController implements Listener {
 
     private final HashMap<UUID, List<String>> frameQueues = new HashMap<>();
     private void animate(ItemStack item, UUID uuid) {
-        if(!item.getItemMeta().getPersistentDataContainer().has(acKey)) return;
 
         if(!frameQueues.containsKey(uuid)) {
             frameQueues.put(uuid, new ArrayList<>());
@@ -135,7 +135,9 @@ public class AnimationController implements Listener {
     public void onInvChange(InventoryClickEvent e) {
         ItemStack helmet = e.getWhoClicked().getInventory().getHelmet();
         if(helmet != null && helmet.equals(e.getCurrentItem())) {
-            e.setCancelled(true);
+            if(e.getCurrentItem().getItemMeta().getPersistentDataContainer().has(acKey)) {
+                e.setCurrentItem(null);
+            }
         }
     }
 
