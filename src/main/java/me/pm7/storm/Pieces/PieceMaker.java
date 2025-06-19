@@ -39,7 +39,7 @@ public class PieceMaker {
 
     public void start() {
         if(taskID != null) return;
-        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tickPieceSpawn, 300L, 20L);
+        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::tickPieceSpawn, 40L, 20L);
     }
 
     public void stop() {

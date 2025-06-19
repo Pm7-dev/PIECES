@@ -69,8 +69,6 @@ public class Piece {
     private boolean running;
     private boolean remove = false;
     private int spawnAnimationTicks = 0; // counts how many ticks the piece has been spawning for
-    private final Random random;
-    private final HashMap<UUID, Integer> endAnimationDestroyTick;
 
     public Piece(World world, int x, double y, int z, int size, double speed, boolean[][] modelData) {
         this.world = world;
@@ -82,10 +80,8 @@ public class Piece {
         this.modelData = modelData;
         this.faces = new ArrayList<>();
         this.voiceDistance = (size * 1.2) + 8;
-        this.random = new Random();
-        this.endAnimationDestroyTick = new HashMap<>();
 
-        this.color = colors.get((int) (random.nextDouble() * colors.size()));
+        this.color = colors.get((int) (Math.random() * colors.size()));
 
         //Load all the chunks that this entity will be in
         for(double cx = x; cx < x+(modelData.length*size); cx+=16) {
@@ -154,9 +150,6 @@ public class Piece {
         face.setInterpolationDuration(1);
         face.setTeleportDuration(TELEPORT_DURATION);
 
-        // It's a surprise tool that will help us later
-        endAnimationDestroyTick.put(face.getUniqueId(), random.nextInt(175, 245));
-
         faces.add(face.getUniqueId());
     }
 
@@ -165,7 +158,17 @@ public class Piece {
     int teleportTick = 0;
     public void moveDown() {
         // Code that moves the piece down (also plays the ending animation flashing)
-        double movementPerTick = speed/20;
+        double movementPerTick = (speed/20);
+        if(teleportTick == 0) {
+            for (UUID uuid : faces) {
+                BlockDisplay face = (BlockDisplay) Bukkit.getEntity(uuid);
+                if (face == null) continue;
+
+                Location tpLoc = face.getLocation().clone();
+                tpLoc.setY(y - (movementPerTick * TELEPORT_DURATION) + (size / 2d));
+                face.teleport(tpLoc);
+            }
+        }
         y-=movementPerTick;
 
         teleportTick++;
