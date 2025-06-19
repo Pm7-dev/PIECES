@@ -86,5 +86,8 @@ public final class Storm extends JavaPlugin {
     private static boolean started = false;
     public boolean isStarted() {return started;}
     public void start() {started = true;}
-    public void stop() {started = false;}
+    public void stop() {
+        started = false;
+        Piece.getPlayersUnderPieces().clear();
+    }
 }
