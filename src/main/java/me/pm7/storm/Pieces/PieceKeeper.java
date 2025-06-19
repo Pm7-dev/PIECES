@@ -21,6 +21,7 @@ public class PieceKeeper {
         taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::loop, 0L, 1L);
     }
     public void stop() {
+        pieceInvincibilityTicks.clear();
         Bukkit.getScheduler().cancelTask(taskID);
         taskID = null;
     }

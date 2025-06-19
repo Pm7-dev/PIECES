@@ -12,11 +12,12 @@ import java.util.*;
 public class PieceMaker {
     private static final Storm plugin = Storm.getPlugin();
 
+    private final Random random;
+
     private int spawnHeight;
     private SpawnerDifficulty difficulty;
     private Integer taskID;
     private int spawnTick; // used to keep track of the time before the next group of pieces spawn
-    private final Random random;
 
     public PieceMaker() {
         spawnHeight = 210; //190
@@ -42,6 +43,7 @@ public class PieceMaker {
     }
 
     public void stop() {
+        spawnTick = 0;
         if(taskID == null) return;
         Bukkit.getScheduler().cancelTask(taskID);
         taskID = null;
