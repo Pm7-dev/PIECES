@@ -23,11 +23,6 @@ public class stopstorm implements CommandExecutor {
         if(sender.isOp()) {
 
             for(World world : Bukkit.getWorlds()) {
-                if(world.getPluginChunkTickets().containsKey(plugin)) {
-                    for (Chunk chunk : world.getPluginChunkTickets().get(plugin)) {
-                        chunk.removePluginChunkTicket(plugin);
-                    }
-                }
 
                 // Kill any remaining piece faces
                 List<Entity> remove = new ArrayList<>();
@@ -38,6 +33,10 @@ public class stopstorm implements CommandExecutor {
                     }
                 }
                 for(Entity e : remove) e.remove();
+
+                for (Chunk chunk : world.getPluginChunkTickets().get(plugin)) {
+                    chunk.removePluginChunkTicket(plugin);
+                }
             }
 
             for(Player p : Bukkit.getOnlinePlayers()) {
@@ -47,7 +46,6 @@ public class stopstorm implements CommandExecutor {
 
             plugin.getPieceMaker().stop();
             plugin.getPieceKeeper().stop();
-            plugin.getAnimationController().stop();
 
         } else {
             sender.sendMessage(ChatColor.RED + "You must be operator to use this command.");

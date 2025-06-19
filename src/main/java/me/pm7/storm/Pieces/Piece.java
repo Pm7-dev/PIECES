@@ -164,64 +164,8 @@ public class Piece {
     int soundTick = 0;
     int teleportTick = 0;
     public void moveDown() {
-
-        // Multiplier used during the ending animation (will just be 1 the rest of the time)
-        int endAnimationTick = plugin.getPieceKeeper().getEndAnimationTick();
-        double multiplier = 1 - Math.sqrt(1 - Math.pow(((double) endAnimationTick/120) - 1, 2));
-        if(!Double.isFinite(multiplier)) multiplier = 0;
-
         // Code that moves the piece down (also plays the ending animation flashing)
-        double movementPerTick = (speed/20) * multiplier;
-        if(teleportTick == 0 || endAnimationTick != 0) {
-
-            for (UUID uuid : faces) {
-                BlockDisplay face = (BlockDisplay) Bukkit.getEntity(uuid);
-                if (face == null) continue;
-
-                if (endAnimationTick == 1) face.setTeleportDuration(1);
-
-                // Gradually slow the piece down
-                if (endAnimationTick <= 120) {
-                    Location tpLoc = face.getLocation().clone();
-                    if (endAnimationTick == 0) tpLoc.setY(y - (movementPerTick * TELEPORT_DURATION) + (size / 2d));
-                    else tpLoc.setY(y - (movementPerTick) + (size / 2d));
-                    face.teleport(tpLoc);
-                }
-
-                // Crazy color flashes, outlines, and rotation things
-                else if (endAnimationTick > 150) {
-
-                    // Random rotations
-                    if (endAnimationTick == 151) face.setTeleportDuration(0);
-                    face.setRotation(random.nextFloat(-5.0f, 5.0f), random.nextFloat(-5.0f, 5.0f));
-
-                    // Handle the outline
-                    if(face.isGlowing()) face.setGlowing(false);
-                    else if(random.nextInt(4) == 0) face.setGlowing(true);
-//                    java.awt.Color randomColor = new java.awt.Color(java.awt.Color.HSBtoRGB(random.nextFloat(), 0.8f, 1.0f));
-//                    face.setGlowColorOverride(Color.fromRGB(randomColor.getRed(), randomColor.getGreen(), randomColor.getBlue()));
-                    face.setGlowColorOverride(Color.fromRGB(0, 0, 0));
-
-                    // Flash in and out
-                    if(face.getBlock().getMaterial() == Material.PURPUR_BLOCK) {
-                        face.setBlock(color);
-                    } else {
-                        if(random.nextInt(2) == 0) face.setBlock(Material.PURPUR_BLOCK.createBlockData());
-                    }
-
-                    // Start decaying at this tick
-                    if (endAnimationTick > 175) {
-                        if (endAnimationTick >= endAnimationDestroyTick.get(uuid)) face.remove();
-
-                        // Pieces should have finished decaying by this tick
-                        if (endAnimationTick > 245) {
-                            this.kill();
-                            return;
-                        }
-                    }
-                }
-            }
-        }
+        double movementPerTick = speed/20;
         y-=movementPerTick;
 
         teleportTick++;
@@ -280,7 +224,7 @@ public class Piece {
                     double zDist = mZ-pZ;
 
                     // If the player's ears are close to the block, play the ambience
-                    if(soundTick == 0 && endAnimationTick < 120) {
+                    if(soundTick == 0) {
                         if (Math.abs(yDist) - (size / 2d) < voiceDistance && Math.abs(xDist) - (size / 2d) < voiceDistance && Math.abs(zDist) - (size / 2d) < voiceDistance) {
                             double distance = Math.sqrt(Math.pow(xDist, 2) + Math.pow(zDist, 2));
                             distance -= (double) size / 2;
@@ -289,7 +233,7 @@ public class Piece {
 
                             if (volume > 0) {
                                 Location soundLoc = new Location(getWorld(), mX, y + (size * 0.25), mZ);
-                                p.playSound(soundLoc, "pieces:piece.ambience", SoundCategory.RECORDS, (volume + 1.2f) * (1.0f - (endAnimationTick / 68f)), 0.8f);
+                                p.playSound(soundLoc, "pieces:piece.ambience", SoundCategory.RECORDS, volume + 1.2f, 0.8f);
                             }
                         }
                     }
@@ -310,7 +254,6 @@ public class Piece {
                     }
 
                     // If the player is touching a piece, it's time for death!
-                    if(endAnimationTick > 55) continue; // Don't run if the end animation is running
                     if(Math.abs(xDist) < (size/2d) + hitboxBuffer && Math.abs(zDist) < (size/2d) + hitboxBuffer) {
                         if((footY >= y && footY <= y + size) || (headY >= y && headY <= y + size)) {
 

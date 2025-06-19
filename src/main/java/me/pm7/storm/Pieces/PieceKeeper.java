@@ -15,13 +15,9 @@ public class PieceKeeper {
 
     private static final HashMap<UUID, Integer> pieceInvincibilityTicks = new HashMap<>();
     private Integer taskID = null;
-    private int endAnimationTick = 0;
-    private boolean endingAnimation = false;
 
     public void start() {
         if(taskID !=null) return;
-        endAnimationTick = 0;
-        endingAnimation = false;
         taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::loop, 0L, 1L);
     }
     public void stop() {
@@ -33,15 +29,11 @@ public class PieceKeeper {
 
     private int tick;
     private void loop() {
-        if(endingAnimation) endAnimationTick++;
 
         List<Piece> remove = new ArrayList<>();
         for(Piece piece : Piece.getPieces()) {
             if(!piece.isRunning()) continue;
             piece.moveDown();
-
-            // Color animation/player collisions can stop after the slowing down has finished
-            if(endAnimationTick > 70) continue;
 
             if(piece.shouldRemove()) remove.add(piece);
         }
@@ -74,24 +66,6 @@ public class PieceKeeper {
             }
         }
 
-//        // Specifically for sounds during the ending animation
-//        if(endAnimationTick > 150 && endAnimationTick <= 298) {
-//            if(endAnimationTick == 151) {
-//                for(Player p : Bukkit.getOnlinePlayers()) {
-//                    p.playSound(p.getLocation().clone().add(0, 500, 0), "pieces:piece.broken_intro", 9999999, 1);
-//                }
-//            } else {
-//                for(Player p : Bukkit.getOnlinePlayers()) {
-//                    p.playSound(p.getLocation().clone().add(0, 500, 0), "pieces:piece.broken", 9999999, 1);
-//                }
-//            }
-//        }
-        if(endAnimationTick == 151) {
-            for(Player p : Bukkit.getOnlinePlayers()) {
-                p.playSound(p.getLocation().clone().add(0, 800, 0), "pieces:piece.broken", SoundCategory.RECORDS, 9999999, 1);
-            }
-        }
-
         tick++;
         if(tick>=3) tick = 0;
     }
@@ -107,6 +81,4 @@ public class PieceKeeper {
     public static HashMap<UUID, Integer> getPieceInvincibilityTicks() {
         return pieceInvincibilityTicks;
     }
-
-    public int getEndAnimationTick() {return endAnimationTick;}
 }
