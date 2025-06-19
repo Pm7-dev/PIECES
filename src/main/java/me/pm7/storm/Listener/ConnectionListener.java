@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.util.UUID;
+
 public class ConnectionListener implements Listener {
     private static final Storm plugin = Storm.getPlugin();
 
@@ -15,6 +17,8 @@ public class ConnectionListener implements Listener {
             Player p = e.getPlayer();
             plugin.getPieceKeeper().setImmunity(p, 240);
             plugin.getAnimationController().clearQueue(p.getUniqueId(), true);
+
+            p.addResourcePack(UUID.randomUUID(), "", , "hi there u need this :3", true);
         }
     }
 }
