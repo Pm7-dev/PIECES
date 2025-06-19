@@ -14,6 +14,11 @@ public class startstorm implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
 
         if(sender.isOp()) {
+            if(plugin.isStarted()) {
+                sender.sendMessage(ChatColor.RED + "The storm is already running");
+                return true;
+            }
+
             for(Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(ChatColor.RED + "The Storm is starting!");
                 p.playSound(p.getLocation().clone().add(0, 2, 0), "pieces:storm_watch_notif", SoundCategory.RECORDS, 1, 1);
@@ -22,7 +27,7 @@ public class startstorm implements CommandExecutor {
             plugin.getPieceKeeper().start();
             plugin.start(); // used for invincibility bits
         } else {
-            sender.sendMessage("You must be operator to run this command.");
+            sender.sendMessage(ChatColor.RED + "You must be operator to run this command.");
         }
         return true;
     }

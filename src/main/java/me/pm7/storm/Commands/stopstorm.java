@@ -22,6 +22,11 @@ public class stopstorm implements CommandExecutor {
 
         if(sender.isOp()) {
 
+            if(!plugin.isStarted()) {
+                sender.sendMessage("The Storm is not running");
+                return true;
+            }
+
             for(World world : Bukkit.getWorlds()) {
 
                 // Kill any remaining piece faces
@@ -48,6 +53,7 @@ public class stopstorm implements CommandExecutor {
 
             plugin.getPieceMaker().stop();
             plugin.getPieceKeeper().stop();
+            plugin.stop();
 
         } else {
             sender.sendMessage(ChatColor.RED + "You must be operator to use this command.");
