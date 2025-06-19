@@ -29,6 +29,11 @@ public final class Storm extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        getConfig().options().copyDefaults(true);
+        saveDefaultConfig();
+        saveConfig();
+
         plugin = this;
         getCommand("setspawnheight").setExecutor(new setspawnheight());
         getCommand("stormsettings").setExecutor(new stormsettings());

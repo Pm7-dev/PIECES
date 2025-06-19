@@ -34,14 +34,7 @@ public class Piece {
             Material.PURPLE_SHULKER_BOX.createBlockData(),
             Material.RED_SHULKER_BOX.createBlockData(),
             Material.WHITE_SHULKER_BOX.createBlockData(),
-            Material.YELLOW_SHULKER_BOX.createBlockData(),
-            Material.PRISMARINE_BRICKS.createBlockData(),
-            Material.DARK_PRISMARINE.createBlockData(),
-            Material.END_STONE.createBlockData(),
-            Material.PURPUR_PILLAR.createBlockData(),
-            Material.END_STONE_BRICKS.createBlockData(),
-            Material.JIGSAW.createBlockData()
-            //Material.PURPUR_BLOCK.createBlockData(), THIS IS THE INVISIBLE ONE
+            Material.YELLOW_SHULKER_BOX.createBlockData()
     );
 
     // Keeps track of the pieces that exist

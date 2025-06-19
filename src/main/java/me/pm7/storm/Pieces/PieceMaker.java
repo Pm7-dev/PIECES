@@ -23,14 +23,7 @@ public class PieceMaker {
         spawnHeight = 210; //190
 
         // These values mimic the "difficulty 1" in session
-        this.difficulty = new SpawnerDifficulty(
-                5,
-                1.0,
-                9,
-                12,
-                5,
-                7
-        );
+        this.difficulty = SpawnerDifficulty.loadFromConfig(plugin.getConfig().getConfigurationSection("difficulty"));
 
         taskID = null;
         this.spawnTick = difficulty.secondsBetweenSpawns;

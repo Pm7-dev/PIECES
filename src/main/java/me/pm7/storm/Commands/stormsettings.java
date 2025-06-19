@@ -36,7 +36,7 @@ public class stormsettings implements CommandExecutor {
 
         if(args.length == 2) {
 
-            p.playSound(p, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+            p.playSound(p, Sound.BLOCK_LEVER_CLICK, 1, 2);
 
             if(args[0].equals("add")) {
                 switch (args[1]) {
@@ -59,11 +59,11 @@ public class stormsettings implements CommandExecutor {
                     }
                     case "minSpeed": {
                         if(difficulty.minSpeed == difficulty.maxSpeed) break;
-                        difficulty.minSpeed += 1;
+                        difficulty.minSpeed += 1.0;
                         break;
                     }
                     case "maxSpeed": {
-                        difficulty.maxSpeed += 1;
+                        difficulty.maxSpeed += 1.0;
                         break;
                     }
                     default: {
@@ -94,12 +94,12 @@ public class stormsettings implements CommandExecutor {
                     }
                     case "minSpeed": {
                         if(difficulty.minSpeed == 1) break;
-                        difficulty.minSpeed -= 1;
+                        difficulty.minSpeed -= 1.0;
                         break;
                     }
                     case "maxSpeed": {
                         if(difficulty.minSpeed == difficulty.maxSpeed) break;
-                        difficulty.maxSpeed -= 1;
+                        difficulty.maxSpeed -= 1.0;
                         break;
                     }
                     default: {
@@ -107,10 +107,12 @@ public class stormsettings implements CommandExecutor {
                     }
                 }
             }
+
+            difficulty.saveToConfig(plugin.getConfig().getConfigurationSection("difficulty"));
         }
 
         ComponentBuilder builder = new ComponentBuilder()
-                .append("\n\n\n\n\n\n\nSTORM SETTINGS: \n")
+                .append("\n\n\n\n\n\n\n\n\n\n\n\n\nSTORM DIFFICULTY SETTINGS: \n")
                 .color(ChatColor.GOLD.asBungee()).bold(true)
 
                 .append("[+]")
@@ -183,6 +185,8 @@ public class stormsettings implements CommandExecutor {
                 .color(ChatColor.YELLOW.asBungee()).bold(false)
                 .append(String.valueOf(difficulty.maxSpeed))
                 .color(ChatColor.GREEN.asBungee())
+
+                .append("\n")
         ;
 
         p.spigot().sendMessage(builder.build());

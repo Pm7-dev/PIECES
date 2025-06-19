@@ -1,8 +1,12 @@
 package me.pm7.storm.Pieces;
 
+import me.pm7.storm.Storm;
+import org.bukkit.configuration.ConfigurationSection;
+
 import java.util.Random;
 
 public class SpawnerDifficulty {
+    private static final Storm plugin = Storm.getPlugin();
 
     private static final Random random = new Random();
     public int secondsBetweenSpawns;
@@ -21,7 +25,51 @@ public class SpawnerDifficulty {
         this.maxSpeed = maxSpeed;
     }
 
-    // !!
-    public int getRandomSize() {return random.nextInt(minSize, maxSize + 1);}
-    public double getRandomSpeed() {return (random.nextDouble(minSpeed, maxSpeed));}
+    public int getRandomSize() {
+        if(minSize==maxSize) return minSize;
+        return random.nextInt(minSize, maxSize + 1);
+    }
+    public double getRandomSpeed() {
+        if(minSpeed==maxSpeed) return minSpeed;
+        return (random.nextDouble(minSpeed, maxSpeed));
+    }
+
+    public void saveToConfig(ConfigurationSection section) {
+        if(section == null) {
+            section = plugin.getConfig().createSection("difficulty");
+        }
+
+        section.set("secondsBetweenSpawns", secondsBetweenSpawns);
+        section.set("spawnMultiplier", spawnMultiplier);
+        section.set("minSize", minSize);
+        section.set("maxSize", maxSize);
+        section.set("minSpeed", minSpeed);
+        section.set("maxSpeed", maxSpeed);
+
+        plugin.saveConfig();
+    }
+
+    public static SpawnerDifficulty loadFromConfig(ConfigurationSection section) {
+        if(section == null) {
+            SpawnerDifficulty difficulty = new SpawnerDifficulty(
+                    5,
+                    1.0,
+                    9,
+                    12,
+                    5,
+                    7
+            );
+            difficulty.saveToConfig(plugin.getConfig().getConfigurationSection("difficulty"));
+            return difficulty;
+        }
+
+        return new SpawnerDifficulty(
+                section.getInt("secondsBetweenSpawns"),
+                section.getDouble("spawnMultiplier"),
+                section.getInt("minSize"),
+                section.getInt("maxSize"),
+                section.getDouble("minSpeed"),
+                section.getDouble("maxSpeed")
+        );
+    }
 }
