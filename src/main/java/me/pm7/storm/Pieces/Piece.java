@@ -315,7 +315,7 @@ public class Piece {
                 Chunk chunk = world.getChunkAt((int) (cx/16), (int) (cz/16));
 
                 boolean remove = true;
-                if(!chunk.getPluginChunkTickets().contains(plugin)) {
+                if(chunk.getPluginChunkTickets().contains(plugin)) {
                     for(Entity e : chunk.getEntities()) {
                         PersistentDataContainer c = e.getPersistentDataContainer();
                         if(c.has(pieceID, PersistentDataType.BOOLEAN) && Boolean.TRUE.equals(c.get(pieceID, PersistentDataType.BOOLEAN))) {
