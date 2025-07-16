@@ -1,13 +1,13 @@
-package me.pm7.storm;
+package me.pm7.blockstorm;
 
-import me.pm7.storm.Commands.*;
-import me.pm7.storm.Listener.ConnectionListener;
-import me.pm7.storm.Listener.DeathListener;
-import me.pm7.storm.Listener.DimensionChangeListener;
-import me.pm7.storm.Pieces.Piece;
-import me.pm7.storm.Pieces.PieceKeeper;
-import me.pm7.storm.Pieces.PieceMaker;
-import me.pm7.storm.Utils.AnimationController;
+import me.pm7.blockstorm.Commands.*;
+import me.pm7.blockstorm.Listener.ConnectionListener;
+import me.pm7.blockstorm.Listener.DeathListener;
+import me.pm7.blockstorm.Listener.DimensionChangeListener;
+import me.pm7.blockstorm.Pieces.Piece;
+import me.pm7.blockstorm.Pieces.PieceKeeper;
+import me.pm7.blockstorm.Pieces.PieceMaker;
+import me.pm7.blockstorm.Utils.AnimationController;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public final class Storm extends JavaPlugin {
+public final class BlockStorm extends JavaPlugin {
 
-    private static Storm plugin;
+    private static BlockStorm plugin;
     private static PieceKeeper pieceKeeper;
     private static PieceMaker pieceMaker;
     private static AnimationController animationController;
@@ -78,7 +78,7 @@ public final class Storm extends JavaPlugin {
         while (!pieces.isEmpty()) pieces.getFirst().kill();
     }
 
-    public static Storm getPlugin() {return plugin;}
+    public static BlockStorm getPlugin() {return plugin;}
     public PieceKeeper getPieceKeeper() {return pieceKeeper;}
     public PieceMaker getPieceMaker() {return pieceMaker;}
     public AnimationController getAnimationController() {return animationController;}

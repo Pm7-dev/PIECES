@@ -1,6 +1,6 @@
-package me.pm7.storm.Pieces;
+package me.pm7.blockstorm.Pieces;
 
-import me.pm7.storm.Storm;
+import me.pm7.blockstorm.BlockStorm;
 import org.bukkit.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.*;
@@ -14,7 +14,7 @@ import org.joml.Vector3f;
 import java.util.*;
 
 public class Piece {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
 
     // The materials that pieces can be made out of
     private static final List<BlockData> colors = List.of(

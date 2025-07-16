@@ -1,6 +1,6 @@
-name: storm
+name: BlockStorm
 version: '1.0'
-main: me.pm7.storm.Storm
+main: me.pm7.blockstorm.BlockStorm
 api-version: '1.21'
 commands:
   stormsettings:

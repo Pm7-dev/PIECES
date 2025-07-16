@@ -1,4 +1,4 @@
-package me.pm7.storm.Pieces;
+package me.pm7.blockstorm.Pieces;
 
 // Piece names are modified from this random page of the blokus pieces I found lol https://blokusstrategy.com/piece-names/
 

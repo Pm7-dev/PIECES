@@ -1,7 +1,7 @@
-package me.pm7.storm.Commands;
+package me.pm7.blockstorm.Commands;
 
-import me.pm7.storm.Pieces.Piece;
-import me.pm7.storm.Storm;
+import me.pm7.blockstorm.Pieces.Piece;
+import me.pm7.blockstorm.BlockStorm;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class stopstorm implements CommandExecutor {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {

@@ -1,7 +1,7 @@
-package me.pm7.storm.Utils;
+package me.pm7.blockstorm.Utils;
 
-import me.pm7.storm.Pieces.Piece;
-import me.pm7.storm.Storm;
+import me.pm7.blockstorm.Pieces.Piece;
+import me.pm7.blockstorm.BlockStorm;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -21,7 +21,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.*;
 
 public class AnimationController implements Listener {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
     private static final NamespacedKey acKey = new NamespacedKey(plugin, "animation-controller");
     private Integer taskID = null;
 

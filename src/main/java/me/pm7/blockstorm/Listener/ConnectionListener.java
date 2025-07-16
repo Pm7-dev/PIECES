@@ -1,6 +1,6 @@
-package me.pm7.storm.Listener;
+package me.pm7.blockstorm.Listener;
 
-import me.pm7.storm.Storm;
+import me.pm7.blockstorm.BlockStorm;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.util.UUID;
 
 public class ConnectionListener implements Listener {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
 
     private static final String sha1string = "55e4cb58e557efeeea6da699cb58f545ea19bc7c";
     private static final UUID uuid = UUID.fromString("0facade0-feed-cafe-fade-0decaf0beef0");

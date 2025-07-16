@@ -1,12 +1,12 @@
-package me.pm7.storm.Pieces;
+package me.pm7.blockstorm.Pieces;
 
-import me.pm7.storm.Storm;
+import me.pm7.blockstorm.BlockStorm;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Random;
 
 public class SpawnerDifficulty {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
 
     private static final Random random = new Random();
     public int secondsBetweenSpawns;

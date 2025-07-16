@@ -1,4 +1,4 @@
-package me.pm7.storm.Utils;
+package me.pm7.blockstorm.Utils;
 
 import org.bukkit.util.Vector;
 

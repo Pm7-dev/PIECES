@@ -1,6 +1,6 @@
-package me.pm7.storm.Commands;
+package me.pm7.blockstorm.Commands;
 
-import me.pm7.storm.Storm;
+import me.pm7.blockstorm.BlockStorm;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class startstorm implements CommandExecutor {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {

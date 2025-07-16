@@ -1,6 +1,6 @@
-package me.pm7.storm.Commands;
+package me.pm7.blockstorm.Commands;
 
-import me.pm7.storm.Storm;
+import me.pm7.blockstorm.BlockStorm;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class setspawnheight implements CommandExecutor  {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -32,7 +32,7 @@ public class setspawnheight implements CommandExecutor  {
         }
 
         if(newSpawnHeight > 320) {
-            sender.sendMessage(ChatColor.RED + "That is literally past the build height");
+            sender.sendMessage(ChatColor.RED + "That is past the build height");
             return true;
         }
 

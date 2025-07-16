@@ -1,6 +1,6 @@
-package me.pm7.storm.Pieces;
+package me.pm7.blockstorm.Pieces;
 
-import me.pm7.storm.Storm;
+import me.pm7.blockstorm.BlockStorm;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class PieceKeeper {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
 
     private static final HashMap<UUID, Integer> pieceInvincibilityTicks = new HashMap<>();
     private Integer taskID = null;

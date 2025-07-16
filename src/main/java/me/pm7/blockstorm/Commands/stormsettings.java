@@ -1,7 +1,7 @@
-package me.pm7.storm.Commands;
+package me.pm7.blockstorm.Commands;
 
-import me.pm7.storm.Pieces.SpawnerDifficulty;
-import me.pm7.storm.Storm;
+import me.pm7.blockstorm.Pieces.SpawnerDifficulty;
+import me.pm7.blockstorm.BlockStorm;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.ChatColor;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class stormsettings implements CommandExecutor {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {

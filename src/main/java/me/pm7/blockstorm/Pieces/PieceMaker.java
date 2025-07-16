@@ -1,7 +1,7 @@
-package me.pm7.storm.Pieces;
+package me.pm7.blockstorm.Pieces;
 
-import me.pm7.storm.Storm;
-import me.pm7.storm.Utils.AreaCalculator;
+import me.pm7.blockstorm.BlockStorm;
+import me.pm7.blockstorm.Utils.AreaCalculator;
 import org.bukkit.*;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.entity.Player;
@@ -10,7 +10,7 @@ import java.util.*;
 
 // You'd think I'd be satisfied with the first pun of "Piece Keeper," but no, I need more
 public class PieceMaker {
-    private static final Storm plugin = Storm.getPlugin();
+    private static final BlockStorm plugin = BlockStorm.getPlugin();
 
     private final Random random;
 
