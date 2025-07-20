@@ -1,5 +1,5 @@
 name: BlockStorm
-version: '1.0'
+version: '1.01'
 main: me.pm7.blockstorm.BlockStorm
 api-version: '1.21'
 commands:
