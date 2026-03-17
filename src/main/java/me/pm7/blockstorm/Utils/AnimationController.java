@@ -9,7 +9,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +31,7 @@ public class AnimationController implements Listener {
         // Clear any previous animation frames
         for(Player p : Bukkit.getOnlinePlayers()) {
             ItemStack helmet = p.getInventory().getHelmet();
-            if (helmet == null) {
+            if (helmet == null || helmet.getType() == Material.AIR) {
                 p.getInventory().setHelmet(createControllerItem());
                 continue;
             }
@@ -59,7 +58,7 @@ public class AnimationController implements Listener {
     private void animationLoop() {
         for(Player p : Bukkit.getOnlinePlayers()) {
             ItemStack helmet = p.getInventory().getHelmet();
-            if(helmet == null) {
+            if(helmet == null || helmet.getType() == Material.AIR) {
                 p.getInventory().setHelmet(createControllerItem());
                 continue;
             }
@@ -115,6 +114,15 @@ public class AnimationController implements Listener {
         ItemMeta meta = item.getItemMeta();
         if(meta == null) return;
         EquippableComponent equippable = meta.getEquippable();
+        switch (item.getType()) {
+            case CHAINMAIL_HELMET -> equippable.setModel(new NamespacedKey("minecraft", "chainmail"));
+            case DIAMOND_HELMET -> equippable.setModel(new NamespacedKey("minecraft", "diamond"));
+            case GOLDEN_HELMET -> equippable.setModel(new NamespacedKey("minecraft", "golden"));
+            case IRON_HELMET -> equippable.setModel(new NamespacedKey("minecraft", "iron"));
+            case LEATHER_HELMET -> equippable.setModel(new NamespacedKey("minecraft", "leather"));
+            case NETHERITE_HELMET -> equippable.setModel(new NamespacedKey("minecraft", "netherite"));
+            case TURTLE_HELMET -> equippable.setModel(new NamespacedKey("minecraft", "turtle_scute"));
+        }
         equippable.setCameraOverlay(new NamespacedKey("pieces", frameQueue.getFirst()));
         meta.setEquippable(equippable);
         item.setItemMeta(meta);
@@ -134,9 +142,10 @@ public class AnimationController implements Listener {
     @EventHandler
     public void onInvChange(InventoryClickEvent e) {
         ItemStack helmet = e.getWhoClicked().getInventory().getHelmet();
-        if(helmet != null && helmet.equals(e.getCurrentItem())) {
+        if(helmet != null && helmet.getType() != Material.AIR && helmet.equals(e.getCurrentItem())) {
+            if(e.getCurrentItem().getItemMeta() == null) return;
             if(e.getCurrentItem().getItemMeta().getPersistentDataContainer().has(acKey)) {
-                e.setCurrentItem(null);
+                e.setCurrentItem(new ItemStack(Material.AIR));
             }
         }
     }
